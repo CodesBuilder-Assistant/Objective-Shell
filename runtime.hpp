@@ -1,9 +1,19 @@
 #ifndef RUNTIME_HPP
 #define RUNTIME_HPP
 #include "keyword.hpp"
-#include <string.h>
+#include "stack.hpp"
 #include <string>
+#include <thread>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <new>
 using namespace std;
+#ifdef __linux
+#include <unistd.h>
+#elif defined(_WIN32)||defined(_WIN64)
+#include <windows.h>
+#endif
 constexpr char comment_char1='#';
 bool IsInvalidIdentifier(char *identifier)
 {
@@ -19,22 +29,28 @@ struct _operator
 };
 /* Operators */
 constexpr char op_plus='+',op_minus='-',op_multi='*',op_division='/',op_or='|',op_and='&',op_xor='^';
+
+char *errbuffer_line="@$LINE$@",*errbuffer_column="@$COLUMN@$";
+
 struct error_info
 {
     unsigned int line;
     unsigned int column;
-    unsigned short error_number_in_file;
-};
-char *errlog_filename=".__ObJEctIvEsHelL_eRrOR_lOG__";
-void ShowErrorMessage(error_info err_struct)
+    string error_info;
+}errbuffer;
+void ShowErrorMessage(void)
 {
-    FILE *errlog=fopen(errlog_filename,"r");
     
-    printf("In line:%u column:%u\n",err_struct.line,err_struct.column);
 }
+
+//Return buffers.
+long long *value_return=NULL;
+unsigned long long exvalue_return=NULL;
+char *str_return=NULL;
+wchar_t *wstr_return=NULL;
+
 short ExecCommand(char *one_line_of_command,unsigned short line_in_file)
 {
-    FILE *errlog=fopen(errlog_filename,"w");
     /* Separation parameters. */
     unsigned int part_count=0;
     unsigned int ops_count=0;
@@ -57,11 +73,13 @@ short ExecCommand(char *one_line_of_command,unsigned short line_in_file)
             switch(one_line_of_command[i])
             {
                 case op_plus:
+                    if(part_count==0)
+                    {
+                        errbuffer.error_info="";
+                    }
                     ops=new _operator[1];
                     ops_count++;
                     ops[ops_count-1].operator_char=one_line_of_command[i];
-                    if(part_count==0)
-
                 default:
                     cmdpart+=one_line_of_command[i];
             }
