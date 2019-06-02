@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <new>
+#include <string.h>
 using namespace std;
 #ifdef __linux
 #include <unistd.h>
