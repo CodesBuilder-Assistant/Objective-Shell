@@ -9,7 +9,7 @@
 #include <time.h>
 #include <new>
 #include <string.h>
-#include <vector>
+#include <list>
 using namespace std;
 #ifdef __linux
 #include <unistd.h>
@@ -86,18 +86,51 @@ short ExecCommand(char *one_line_of_command,unsigned short line_in_file)
                 default:
                     cmdpart+=one_line_of_command[i];
             }
-    vector<int>last_commands;
+    list<int>last_commands;
     /* Execute command. */
-    for(int i=0;i<part_count;i++)
+    for(int i=0,command_ptr=0;i<part_count;i++)
+    {
+        //TODO:Add show error messages code and syntax check code.
+        //I cannot finish it today,but we have the tomorrow.
         if(cmdparts[i]=="int")
-        {
-            if(last_commands[i-1]==KEYWORD_UNSIGNED)
-
             last_commands.push_back(TYPE_INT);
-        }
         elif(cmdparts[i]=="short")
             last_commands.push_back(TYPE_SHORT);
         elif(cmdparts[i]=="long")
             last_commands.push_back(TYPE_LONG);
+        elif(cmdparts[i]=="byte")
+            last_command.push_back(TYPE_BYTE);
+        elif(cmdparts[i]=="boolean")
+            last_command.push_back(TYPE_BOOLEAN);
+        elif(cmdparts[i]=="var")
+            last_command.push_back(TYPE_VAR);
+        elif(cmdparts[i]=="exception")
+            last_command.push_back(TYPE_EXCEPTION);
+        elif(cmdparts[i]=="typename")
+            last_command.push_back(TYPE_TYPENAME);
+        elif(cmdparts[i]=="str")
+            last_command.push_back(TYPE_STR);
+        elif(cmdparts[i]=="unsigned")
+        {
+            if(last_commands[i-1]==MODIFIER_SIGNED)
+            {
+                last_commands.remove(i-1);
+                command_ptr--;
+            }
+            command_ptr.push_back(MODIFIER_UNSIGNED);
+        }
+        elif(cmdparts[i]=="signed")
+        {
+            if(last_commands[i-1]==MODIFIER_UNSIGNED)
+            {
+                last_commands.remove(i-1);
+                command_ptr--;
+            }
+            command_ptr.push_back(MODIFIER_SIGNED);
+        }
+        elif(cmdparts[i]=="ptr")
+            last_command.push_back(MODIFIER_PTR);
+        command_ptr++;
+    }
 }
 #endif
