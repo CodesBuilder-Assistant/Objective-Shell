@@ -1,5 +1,7 @@
 #ifndef VAR_HPP
 #define VAR_HPP
+#include <list>
+using namespace std;
 template<class var_type>class var
 {
     private:
@@ -17,14 +19,29 @@ template<class var_type>class var
             switch(var_type)
             {
                 case int:
-                    if(initial_value<-2147483648)
+                    if(initial_value>2147483648)
                         this->data=reinterpret_cast<long long>(initial_value);
                     else
                         this->data=initial_value;
                 case short:
-                    if(initial_value<-32767)
-                        if()
+                    if(initial_value>32767)
+                        this->data=reinterpret_cast<int>(initial_value);
+                    else
+                        this->data=initial_value;
+                case long long:
+                    if(initial_value>=0)
+                        if(initial_value<=4294967295)
+                            if(initial_value<=65535)
+                                if(initial_value<=256)
+                                    this->data=reinterpret_cast<unsigned char>((unsigned char)initial_value);
+                                else
+                                    this->data=reinterpret_cast<unsigned short>((unsigned short)initial_value);
+                            else
+                                this->data=reinterpret_cast<unsigned int>((unsigned int)initial_value);
+                        else
+                            this->data=reinterpret_cast<long long>(initial_value);
             }
         }
 };
+list<var<void *>>var_list;
 #endif

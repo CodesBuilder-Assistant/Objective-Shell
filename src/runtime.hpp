@@ -9,12 +9,14 @@
 #include <time.h>
 #include <new>
 #include <string.h>
+#include <vector>
 using namespace std;
 #ifdef __linux
 #include <unistd.h>
 #elif defined(_WIN32)||defined(_WIN64)
 #include <windows.h>
 #endif
+#define elif else if
 constexpr char comment_char1='#';
 bool IsInvalidIdentifier(char *identifier)
 {
@@ -68,7 +70,7 @@ short ExecCommand(char *one_line_of_command,unsigned short line_in_file)
             cmdparts=new string[1];
             part_count++;
             cmdparts[part_count-1]=cmdpart;
-            cmdpart.empty();
+            cmdpart.clear();
         }
         else
             switch(one_line_of_command[i])
@@ -84,7 +86,18 @@ short ExecCommand(char *one_line_of_command,unsigned short line_in_file)
                 default:
                     cmdpart+=one_line_of_command[i];
             }
+    vector<int>last_commands;
     /* Execute command. */
+    for(int i=0;i<part_count;i++)
+        if(cmdparts[i]=="int")
+        {
+            if(last_commands[i-1]==KEYWORD_UNSIGNED)
 
+            last_commands.push_back(TYPE_INT);
+        }
+        elif(cmdparts[i]=="short")
+            last_commands.push_back(TYPE_SHORT);
+        elif(cmdparts[i]=="long")
+            last_commands.push_back(TYPE_LONG);
 }
 #endif
