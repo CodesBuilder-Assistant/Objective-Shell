@@ -10,6 +10,7 @@
 #include <new>
 #include <string.h>
 #include <list>
+#include <iostream>
 using namespace std;
 #ifdef __linux
 #include <unistd.h>
@@ -35,22 +36,58 @@ constexpr char op_plus='+',op_minus='-',op_multi='*',op_division='/',op_or='|',o
 
 char *errbuffer_line="@$LINE$@",*errbuffer_column="@$COLUMN@$";
 
+#define ERROR_TOO_MANY_TYPES "Too many type "
+
 struct error_info
 {
     unsigned int line;
-    unsigned int column;
     string error_info;
+    bool actived;
+    bool IsWarning;
 }errbuffer;
+errbuffer.line=0;
+errbuffer.column=0;
+errbuffer.error_info="";
+errbuffer.actived=false;
+errbuffer.IsWarning=false;
 void ShowErrorMessage(void)
 {
-    
+    if(!errbuffer.actived)
+        return;
+    #ifdef __linux
+    if(!IsWarning)
+        printf("\033[0m[\033[31mError\033[0m]");
+    else
+        printf("\033[0m[\033[33mWarning\033[0m]");
+    #elif defined(_WIN32)||defined(_WIN64)
+    if(!IsWarning)
+    {
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+        printf("[");
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED);
+        printf("Error");
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+        printf("]");
+    }
+    else
+    {
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+        printf("[");
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN);
+        printf("Warning");
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+        printf("]");
+    }
+    #endif
+    printf("Line:%u\n",errbuffer.line);
+    //I hate the C++ I/O stream classes,but I must use it.
+    cout<<"\t"<<errbuffer.error_info<<endl;
 }
 
-//Return buffers.
-long long *value_return=NULL;
+long long value_return=NULL;
 unsigned long long exvalue_return=NULL;
-char *str_return=NULL;
-wchar_t *wstr_return=NULL;
+char str_return=NULL;
+wchar_t wstr_return=NULL;
 
 short ExecCommand(char *one_line_of_command,unsigned short line_in_file)
 {
@@ -109,7 +146,13 @@ short ExecCommand(char *one_line_of_command,unsigned short line_in_file)
         elif(cmdparts[i]=="typename")
             last_command.push_back(TYPE_TYPENAME);
         elif(cmdparts[i]=="str")
-            last_command.push_back(TYPE_STR);
+        {
+            if(last_commands[i-1]<=TYPE_STR)
+            {
+                errbuffer.error_info=
+            }
+            last_commands.push_back(TYPE_STR);
+        }
         elif(cmdparts[i]=="unsigned")
         {
             if(last_commands[i-1]==MODIFIER_SIGNED)
