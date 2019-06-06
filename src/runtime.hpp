@@ -1,14 +1,18 @@
 #ifndef RUNTIME_HPP
 #define RUNTIME_HPP
-#include "keyword.hpp"
 #include "stack.hpp"
+#include "var.hpp"
+#include "algorithm.hpp"
+#include "register.hpp"
+#include "interrupt.hpp"
+#include "gotofunc.hpp"
+#include <algorithm>
 #include <string>
 #include <thread>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <new>
-#include <string.h>
 #include <list>
 #include <iostream>
 using namespace std;
@@ -19,9 +23,9 @@ using namespace std;
 #endif
 #define elif else if
 constexpr char comment_char1='#';
-bool IsInvalidIdentifier(char *identifier)
+bool IsInvalidIdentifier(string identifier)
 {
-    for(int i=0;i<strlen(identifier);i++)
+    for(int i=0;i<identifier.length();i++)
         if((identifier[i]<'A'||identifier[i]>'Z')&&(identifier[i]<'a'||identifier[i]>'z')&&identifier[i]!='_'||identifier[0]<='0'&&identifier[0]>='9')
             return false;
     return true;
@@ -32,56 +36,26 @@ struct _operator
     unsigned int after_part_number;
 };
 /* Operators */
-constexpr char op_plus='+',op_minus='-',op_multi='*',op_division='/',op_or='|',op_and='&',op_xor='^';
+string valid_spec_char="+-*/!^&|=[]',.<>~:?()#";
 
-char *errbuffer_line="@$LINE$@",*errbuffer_column="@$COLUMN@$";
+char *errbuffer_line="##LINE##",*errbuffer_column="##COLUMN##";
 
-#define ERROR_TOO_MANY_TYPES "Too many type "
+#define ERROR_TOO_MANY_TYPES "Too many types."
 
-struct error_info
+bool error_actived=false;
+string error_info;
+wstring werror_info;
+char info_type=-1;
+
+constexpr char infotype_error='1',
+
+void PrintErrorInfo(bool outwerrinfo)
 {
-    unsigned int line;
-    string error_info;
-    bool actived;
-    bool IsWarning;
-}errbuffer;
-errbuffer.line=0;
-errbuffer.column=0;
-errbuffer.error_info="";
-errbuffer.actived=false;
-errbuffer.IsWarning=false;
-void ShowErrorMessage(void)
-{
-    if(!errbuffer.actived)
-        return;
-    #ifdef __linux
-    if(!IsWarning)
-        printf("\033[0m[\033[31mError\033[0m]");
-    else
-        printf("\033[0m[\033[33mWarning\033[0m]");
-    #elif defined(_WIN32)||defined(_WIN64)
-    if(!IsWarning)
+    if(outwerrinfo)
     {
-        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
-        printf("[");
-        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED);
-        printf("Error");
-        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
-        printf("]");
+
+        wcout<<werror_info<<endl;
     }
-    else
-    {
-        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
-        printf("[");
-        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN);
-        printf("Warning");
-        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
-        printf("]");
-    }
-    #endif
-    printf("Line:%u\n",errbuffer.line);
-    //I hate the C++ I/O stream classes,but I must use it.
-    cout<<"\t"<<errbuffer.error_info<<endl;
 }
 
 long long value_return=NULL;
@@ -89,91 +63,126 @@ unsigned long long exvalue_return=NULL;
 char str_return=NULL;
 wchar_t wstr_return=NULL;
 
-short ExecCommand(char *one_line_of_command,unsigned short line_in_file)
+/*
+* Range of values:
+* int:–2147483648-4294967295
+* short:–32768-65535
+* long:–9223372036854775808-18446744073709551615
+* byte:-128-256
+* boolean:0-1
+* var:auto
+* The interpreter will auto set the variable is signed or unsigned.
+*/
+char *cmd_int="int";
+char *cmd_short="short";
+char *cmd_long="long";
+char *cmd_byte="byte";
+char *cmd_boolean="boolean";
+char *cmd_exception="exception";
+char *cmd_typename="typename";
+char *cmd_str="str";
+char *cmd_ptr="ptr";
+char *cmd_signed="signed";
+char *cmd_unsigned="unsigned";
+char *cmd_extern="extern";
+char *cmd_global="global";
+char *cmd_local="local";
+char *cmd_const="const";
+char *cmd_type_const="type_const";
+char *cmd_disable="disable";
+char *cmd_enable="enable";
+char *cmd_scope="scope";
+char *cmd_interrupt="interrupt";
+char *cmd_new="new";
+char *cmd_delete="delete";
+char *cmd_port_in="port_in";
+char *cmd_port_out="port_out";
+char *cmd_reg="reg";
+char *cmd_swap="swap";
+char *cmd_import="import";
+char *cmd_unexport="unexport";
+char *cmd_export="export";
+char *cmd_function="function";
+char *cmd_class="class";
+char *cmd_public="public";
+char *cmd_private="private";
+char *cmd_protected="protected";
+char *cmd_final="final";
+char *cmd_inherited="inherited";
+char *cmd_def="def";
+char *cmd_return="return";
+char *cmd_throw="throw";
+char *cmd_catch="catch";
+char *cmd_sizeof="sizeof";
+char *cmd_typeof="typeof";
+char *cmd_call="call";
+char *cmd_goto="goto";
+char *cmd_if="if";
+char *cmd_elif="elif";
+char *cmd_else="else";
+char *cmd_switch="switch";
+char *cmd_for="for";
+char *cmd_loop="loop";
+char *cmd_while="while";
+char *cmd_end="end";
+char *cmd_defined="defined";
+char *cmd_spush="spush";
+char *cmd_spop="spop";
+char *cmd_type_cast="type_cast";
+char *cmd_enum="enum";
+char *cmd_reversed_enum="reversed_enum";
+char *cmd_using="using";
+char *cmd_inited="inited";
+
+short ExecCommand(string one_line_of_command,unsigned short line_in_file)
 {
     /* Separation parameters. */
-    unsigned int part_count=0;
-    unsigned int ops_count=0;
-    string *cmdparts;
-    string cmdpart;
-    _operator *ops;
-    if(strlen(one_line_of_command)==0)
-        return false;
-    for(int i=0;i<strlen(one_line_of_command);i++)
-        if(one_line_of_command[i]==' ')
-        {
-            if(cmdpart=="")
-                continue;
-            cmdparts=new string[1];
-            part_count++;
-            cmdparts[part_count-1]=cmdpart;
-            cmdpart.clear();
-        }
-        else
-            switch(one_line_of_command[i])
-            {
-                case op_plus:
-                    if(part_count==0)
-                    {
-                        errbuffer.error_info="";
-                    }
-                    ops=new _operator[1];
-                    ops_count++;
-                    ops[ops_count-1].operator_char=one_line_of_command[i];
-                default:
-                    cmdpart+=one_line_of_command[i];
-            }
-    list<int>last_commands;
-    /* Execute command. */
-    for(int i=0,command_ptr=0;i<part_count;i++)
+    bool IsOperator=false;
+    list<string>cmdpts;
+    string CurrentString;
+    for(int i=0;i<one_line_of_command.length();i++)
     {
-        //TODO:Add show error messages code and syntax check code.
-        //I cannot finish it today,but we have the tomorrow.
-        if(cmdparts[i]=="int")
-            last_commands.push_back(TYPE_INT);
-        elif(cmdparts[i]=="short")
-            last_commands.push_back(TYPE_SHORT);
-        elif(cmdparts[i]=="long")
-            last_commands.push_back(TYPE_LONG);
-        elif(cmdparts[i]=="byte")
-            last_command.push_back(TYPE_BYTE);
-        elif(cmdparts[i]=="boolean")
-            last_command.push_back(TYPE_BOOLEAN);
-        elif(cmdparts[i]=="var")
-            last_command.push_back(TYPE_VAR);
-        elif(cmdparts[i]=="exception")
-            last_command.push_back(TYPE_EXCEPTION);
-        elif(cmdparts[i]=="typename")
-            last_command.push_back(TYPE_TYPENAME);
-        elif(cmdparts[i]=="str")
-        {
-            if(last_commands[i-1]<=TYPE_STR)
+        if(IsOperator)
+            for(int i=0;i<one_line_of_command.length();i++)
             {
-                errbuffer.error_info=
+                for(int j=0;j<valid_spec_char.length();j++)
+                    if(one_line_of_command[i]!=valid_spec_char[j])
+                    {
+                        IsOperator=false;
+                        cmdpts.push_back(CurrentString);
+                        CurrentString.clear();
+                        break;
+                    }
+                if(!IsOperator)
+                    continue;
+                CurrentString+=one_line_of_command[i];
             }
-            last_commands.push_back(TYPE_STR);
-        }
-        elif(cmdparts[i]=="unsigned")
+        else
         {
-            if(last_commands[i-1]==MODIFIER_SIGNED)
-            {
-                last_commands.remove(i-1);
-                command_ptr--;
-            }
-            command_ptr.push_back(MODIFIER_UNSIGNED);
+            for(int i=0;i<one_line_of_command.length;i++)
+                for(int j=0;j<valid_spec_char.length;j++)
+                    if(one_line_of_command[i]==valid_spec_char[i])
+                    {
+                        IsOperator=true;
+                        cmdpts.push_back(CurrentString);
+                        CurrentString.clear;
+                        break;
+                    }
+                if(IsOperator)
+                    continue;
+                CurrentString+=one_line_of_command[i];
         }
-        elif(cmdparts[i]=="signed")
+    }
+    /* Main process */
+    for(int i=0;i<cmdpts.size();i++)
+    {
+        if(cmdpts[i]==cmd_boolean)
         {
-            if(last_commands[i-1]==MODIFIER_UNSIGNED)
+            if(IsInvalidIdentifier(cmdpts[i+1]))
             {
-                last_commands.remove(i-1);
-                command_ptr--;
+                //TODO:Add the print error info codes.
             }
-            command_ptr.push_back(MODIFIER_SIGNED);
         }
-        elif(cmdparts[i]=="ptr")
-            last_command.push_back(MODIFIER_PTR);
-        command_ptr++;
     }
 }
 #endif
