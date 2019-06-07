@@ -2,13 +2,14 @@
 #define STACK_HPP
 #include <stack>
 #include <stdio.h>
-using std::stack;
-extern wchar_t *shell_path;
+#include <string>
+using namespace std;
+extern wstring CurrentPath;
 stack<long long>value_stack;
 stack<unsigned long long>exvalue_stack;
 stack<char *>str_stack;
 stack<wchar_t *>wstr_stack;
-stack<wchar_t *>path_stack;
+stack<wstring>path_stack;
 void pop_path(void)
 {
     if(path_stack.size()==0)
@@ -16,7 +17,16 @@ void pop_path(void)
         puts("Error:Unable to restore path from stack.");
         return;
     }
-    shell_path=path_stack.top();
+    CurrentPath=path_stack.top();
     path_stack.pop();
+}
+void push_path(wchar_t *push_dir)
+{
+    wstring push_class=push_dir;
+    path_stack.push(push_class);
+}
+void push_path(wstring push_dir)
+{
+    path_stack.push(push_dir);
 }
 #endif

@@ -4,3 +4,4 @@ build
 *.txt
 *.log
 .vscode
+.asm
