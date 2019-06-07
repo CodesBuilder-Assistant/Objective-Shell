@@ -12,9 +12,12 @@
 #include <stdlib.h>
 #include <time.h>
 #include <new>
-#include <list>
 #include <iostream>
+#ifdef __linux
 #include <sys/io.h>
+#elif defined(_WIN32)||defined(_WIN64)
+#include <io.h>
+#endif
 #include <wchar.h>
 using namespace std;
 #ifdef __linux
