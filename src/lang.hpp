@@ -10,7 +10,7 @@
 #include <windows.h>
 #endif
 #define LANGUAGE_ID_MAX 3
-char *language_select_menu_shows[]={"en-us","zh-hans","zh-hant"};
+char *language_select_menu_title[]={"en-us","zh-hans","zh-hant"};
 enum language_id
 {
     EN_US=0,
@@ -36,14 +36,12 @@ void ShowLanguageSetting(void)
     while(true)
     {
         for(int i=0;i<LANGUAGE_ID_MAX;i++)
-            if(i+4==selected_lang_id||i+3==selected_lang_id||i+2==selected_lang_id||i+1==selected_lang_id||\
-            i-1==selected_lang_id||i-2==selected_lang_id||i-3==selected_lang_id||i-4==selected_lang_id)
-                printf("%s",language_select_menu_shows[i]);
-            else if(i==selected_lang_id)
-            {
+        {
+            if(current_selected_lang_id==i)
                 SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),BACKGROUND_RED|BACKGROUND_GREEN|BACKGROUND_BLUE);
-                printf("%s",language_select_menu_shows[i]);
-            }
+            printf("%s\n",language_select_menu_title[i]);
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+        }
         puts("=====================");
         switch((user_kbhit=getch()))
         {
