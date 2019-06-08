@@ -26,7 +26,6 @@ using namespace std;
 #include <windows.h>
 #endif
 
-#define elif else if
 constexpr wchar_t comment_char1='#';
 bool IsInvalidIdentifier(string identifier)
 {
