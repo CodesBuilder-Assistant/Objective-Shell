@@ -1,6 +1,6 @@
 #ifndef VAR_HPP
 #define VAR_HPP
-#include <list>
+#include <deque>
 using namespace std;
 template<class var_type>class var
 {
@@ -14,5 +14,5 @@ template<class var_type>class var
             this->_auto=true;
         }
 };
-list<var<void *>>var_list;
+deque<var<void *>>var_list;
 #endif
