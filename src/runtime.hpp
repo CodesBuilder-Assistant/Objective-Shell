@@ -142,7 +142,7 @@ short ExecCommand(wstring one_line_of_command)
 {
     /* Separation parameters. */
     bool IsOperator=false;
-    list<wstring>cmdpts;
+    deque<wstring>cmdpts;
     wstring CurrentString;
     for(int i=0;i<one_line_of_command.length();i++)
     {
