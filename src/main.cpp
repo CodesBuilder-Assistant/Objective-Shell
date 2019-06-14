@@ -6,12 +6,18 @@
 /*
 * Objective Shell runtime module.
 */
+#if defined(_WIN32)||defined(_WIN64)
+#include "res.h"
+#endif
 #include "runtime.hpp"
 
 wstring CurrentPath;
 
 int main(int argc,char *argv[])
 {
+    #if defined(_WIN32)||defined(_WIN64)
+    SetConsoleTitleA("Objective Shell");
+    #endif
     if(argc>1)
     {
         for(int i=0;i<argc;i++)
@@ -28,7 +34,7 @@ int main(int argc,char *argv[])
                 printf("ll");
                 SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_GREEN|FOREGROUND_INTENSITY);
                 printf("o");
-                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED,FOREGROUND_GREEN,FOREGROUND_BLUE);
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
                 printf(",");
                 SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_INTENSITY);
                 printf("W");
@@ -40,7 +46,7 @@ int main(int argc,char *argv[])
                 printf("l");
                 SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE|FOREGROUND_INTENSITY);
                 printf("d\n");
-                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED,FOREGROUND_GREEN,FOREGROUND_BLUE);
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
                 #endif
                 return 0;
             }
@@ -48,8 +54,13 @@ int main(int argc,char *argv[])
     while(true)
     {
         wstring user_input;
+        #ifdef __linux
+        #elif defined(_WIN32)||defined(_WIN64)
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_GREEN|FOREGROUND_INTENSITY);
+        #endif
         wcout<<CurrentPath;
         wcin>>user_input;
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_GREEN|FOREGROUND_BLUE|FOREGROUND_RED);
         ExecCommand(user_input);
     }
 }

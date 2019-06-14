@@ -1,7 +1,10 @@
 *.exe
 *.dll
-build
-*.txt
-*.log
+*.deb
+*.rpm
+*.tar
+*.gz
+*.zip
+*.7z
+*.rar
 .vscode
-.asm

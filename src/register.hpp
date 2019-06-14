@@ -40,11 +40,11 @@ enum registers_8bit
     DH,
     DL
 };
-template<class register_type>void RegisterMov(unsigned short reg_id)
+template<class register_type>__fastcall void RegisterMov(unsigned short reg_id)
 {
 
 }
-void MappingRegister(unsigned short reg_id,bool cancel_mapping)
+__fastcall void MappingRegister(unsigned short reg_id,bool cancel_mapping)
 {
     switch(reg_id)
     {

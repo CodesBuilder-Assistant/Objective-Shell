@@ -18,11 +18,11 @@ enum language_id
     ZH_HANT
 };
 unsigned short current_selected_lang_id=EN_US;
-void ReadLanguageFile(unsigned short lang_id)
+__fastcall void ReadLanguageFile(unsigned short lang_id)
 {
     switch(lang_id)
     {
-        
+
     }
 }
 void ShowLanguageSetting(void)

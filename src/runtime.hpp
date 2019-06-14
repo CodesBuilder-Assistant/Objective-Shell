@@ -27,7 +27,7 @@ using namespace std;
 #endif
 
 constexpr wchar_t comment_char1='#';
-bool IsInvalidIdentifier(string identifier)
+bool IsInvalidIdentifier(wstring identifier)
 {
     for(int i=0;i<identifier.length();i++)
         if((identifier[i]<'A'||identifier[i]>'Z')&&(identifier[i]<'a'||identifier[i]>'z')&&identifier[i]!='_'||identifier[0]<='0'&&identifier[0]>='9')
