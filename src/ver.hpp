@@ -1,9 +1,13 @@
 #ifndef VER_HPP
 #define VER_HPP
 #include <stdio.h>
+#include <stdlib.h>
+#include <memory.h>
+#include <time.h>
 #if defined(_WIN32)||defined(_WIN64)
 #include <windows.h>
 #endif
+
 enum ver_type
 {
     test=0,
@@ -12,7 +16,7 @@ enum ver_type
     secret_test
 };
 constexpr unsigned short version_type=secret_test;
-#define CODENAME ""
+#define CODENAME "INITIAL"
 constexpr unsigned int build=1;
 /*
 * Version Format:
@@ -68,6 +72,19 @@ void ShowVersionInfo(void)
     puts("amd64");
     #elif defined(__i386__)
     puts("i386");
+    #endif
+    printf("Build Date&Time:%s %s\n",__DATE__,__TIME__);
+    printf("To get more information,please visit:");
+    #ifdef __linux
+    printf("\033[94;1;4m")
+    #elif defined(_WIN32)||defined(_WIN64)
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),COMMON_LVB_UNDERSCORE|FOREGROUND_BLUE|FOREGROUND_INTENSITY);
+    #endif
+    puts("codesbuilder.github.io/objshell/updlog");
+    #ifdef __linux
+    printf("\033[0m");
+    #elif defined(_WIN32)||defined(_WIN64)
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
     #endif
 }
 #endif
