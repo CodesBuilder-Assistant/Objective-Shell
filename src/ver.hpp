@@ -27,6 +27,7 @@ constexpr unsigned int build=1;
 * L Main Version
 */
 constexpr char *VERSION="1.0.0";
+
 void ShowVersionInfo(void)
 {
     printf("Objective Shell");
@@ -61,17 +62,11 @@ void ShowVersionInfo(void)
             #endif
     }
     #ifdef __linux
-    puts("Target OS:Linux");
+    puts("OS:Linux");
     #elif defined(_WIN32)
-    puts("Target OS:Windows 32-bit");
+    puts("OS:Windows 32-bit");
     #elif defined(_WIN64)
-    puts("Target OS:Windows 64-bit");
-    #endif
-    printf("Processor Architecture:");
-    #ifdef __x86_64__
-    puts("amd64");
-    #elif defined(__i386__)
-    puts("i386");
+    puts("OS:Windows 64-bit");
     #endif
     printf("Build Date&Time:%s %s\n",__DATE__,__TIME__);
     printf("To get more information,please visit:");
