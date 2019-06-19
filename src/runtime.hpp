@@ -42,7 +42,7 @@ struct _operator
 /* Operators */
 wstring valid_spec_char=L"+-*/!^&|=[]',.<>~:?()#";
 
-wchar_t *errbuffer_line=L"##LINE##",*errbuffer_column=L"##COLUMN##";
+constexpr wchar_t *errbuffer_line=L"##LINE##",*errbuffer_column=L"##COLUMN##";
 
 #define ERROR_TOO_MANY_TYPES "Too many types."
 
@@ -57,15 +57,25 @@ void PrintErrorInfo(bool outwerrinfo)
 {
     if(outwerrinfo)
     {
-
-        wcout<<werror_info<<endl;
+        #ifdef __linux
+        printf("\033[0m[\033[31mError\033[0m]");
+        #elif defined(_WIN32)||defined(_WIN64)
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+        printf("[");
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED);
+        printf("Error");
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+        printf("]");
+        #endif
+        wprintf(werror_info.c_str());
+        puts("");
     }
 }
 
 long long value_return=NULL;
 unsigned long long exvalue_return=NULL;
 char *str_return=NULL;
-wchar_t *wstr_return=NULL;
+constexpr wchar_t *wstr_return=NULL;
 
 /*
 * Range of values:
@@ -77,66 +87,76 @@ wchar_t *wstr_return=NULL;
 * var:auto
 * The interpreter will auto set the variable is signed or unsigned.
 */
-wchar_t *cmd_int=L"int";
-wchar_t *cmd_short=L"short";
-wchar_t *cmd_long=L"long";
-wchar_t *cmd_byte=L"byte";
-wchar_t *cmd_boolean=L"boolean";
-wchar_t *cmd_exception=L"exception";
-wchar_t *cmd_typename=L"typename";
-wchar_t *cmd_str=L"str";
-wchar_t *cmd_ptr=L"ptr";
-wchar_t *cmd_signed=L"signed";
-wchar_t *cmd_unsigned=L"unsigned";
-wchar_t *cmd_extern=L"extern";
-wchar_t *cmd_global=L"global";
-wchar_t *cmd_local=L"local";
-wchar_t *cmd_const=L"const";
-wchar_t *cmd_type_const=L"type_const";
-wchar_t *cmd_disable=L"disable";
-wchar_t *cmd_enable=L"enable";
-wchar_t *cmd_scope=L"scope";
-wchar_t *cmd_interrupt=L"interrupt";
-wchar_t *cmd_new=L"new";
-wchar_t *cmd_delete=L"delete";
-wchar_t *cmd_port_in=L"port_in";
-wchar_t *cmd_port_out=L"port_out";
-wchar_t *cmd_reg=L"reg";
-wchar_t *cmd_swap=L"swap";
-wchar_t *cmd_import=L"import";
-wchar_t *cmd_unexport=L"unexport";
-wchar_t *cmd_export=L"export";
-wchar_t *cmd_function=L"function";
-wchar_t *cmd_class=L"class";
-wchar_t *cmd_public=L"public";
-wchar_t *cmd_private=L"private";
-wchar_t *cmd_protected=L"protected";
-wchar_t *cmd_final=L"final";
-wchar_t *cmd_inherited=L"inherited";
-wchar_t *cmd_def=L"def";
-wchar_t *cmd_return=L"return";
-wchar_t *cmd_throw=L"throw";
-wchar_t *cmd_catch=L"catch";
-wchar_t *cmd_sizeof=L"sizeof";
-wchar_t *cmd_typeof=L"typeof";
-wchar_t *cmd_call=L"call";
-wchar_t *cmd_goto=L"goto";
-wchar_t *cmd_if=L"if";
-wchar_t *cmd_elif=L"elif";
-wchar_t *cmd_else=L"else";
-wchar_t *cmd_switch=L"switch";
-wchar_t *cmd_for=L"for";
-wchar_t *cmd_loop=L"loop";
-wchar_t *cmd_while=L"while";
-wchar_t *cmd_end=L"end";
-wchar_t *cmd_defined=L"defined";
-wchar_t *cmd_spush=L"spush";
-wchar_t *cmd_spop=L"spop";
-wchar_t *cmd_type_cast=L"type_cast";
-wchar_t *cmd_enum=L"enum";
-wchar_t *cmd_reversed_enum=L"reversed_enum";
-wchar_t *cmd_using=L"using";
-wchar_t *cmd_inited=L"inited";
+constexpr wchar_t *keyword_int=L"int";
+constexpr wchar_t *keyword_short=L"short";
+constexpr wchar_t *keyword_long=L"long";
+constexpr wchar_t *keyword_byte=L"byte";
+constexpr wchar_t *keyword_boolean=L"boolean";
+constexpr wchar_t *keyword_exception=L"exception";
+constexpr wchar_t *keyword_typename=L"typename";
+constexpr wchar_t *keyword_str=L"str";
+constexpr wchar_t *keyword_ptr=L"ptr";
+constexpr wchar_t *keyword_signed=L"signed";
+constexpr wchar_t *keyword_unsigned=L"unsigned";
+constexpr wchar_t *keyword_extern=L"extern";
+constexpr wchar_t *keyword_global=L"global";
+constexpr wchar_t *keyword_local=L"local";
+constexpr wchar_t *keyword_const=L"const";
+constexpr wchar_t *keyword_type_const=L"type_const";
+constexpr wchar_t *keyword_disable=L"disable";
+constexpr wchar_t *keyword_enable=L"enable";
+constexpr wchar_t *keyword_scope=L"scope";
+constexpr wchar_t *keyword_interrupt=L"interrupt";
+constexpr wchar_t *keyword_new=L"new";
+constexpr wchar_t *keyword_delete=L"delete";
+constexpr wchar_t *keyword_port_in=L"port_in";
+constexpr wchar_t *keyword_port_out=L"port_out";
+constexpr wchar_t *keyword_reg=L"reg";
+constexpr wchar_t *keyword_swap=L"swap";
+constexpr wchar_t *keyword_import=L"import";
+constexpr wchar_t *keyword_unexport=L"unexport";
+constexpr wchar_t *keyword_export=L"export";
+constexpr wchar_t *keyword_function=L"function";
+constexpr wchar_t *keyword_class=L"class";
+constexpr wchar_t *keyword_public=L"public";
+constexpr wchar_t *keyword_private=L"private";
+constexpr wchar_t *keyword_protected=L"protected";
+constexpr wchar_t *keyword_final=L"final";
+constexpr wchar_t *keyword_inherited=L"inherited";
+constexpr wchar_t *keyword_def=L"def";
+constexpr wchar_t *keyword_return=L"return";
+constexpr wchar_t *keyword_throw=L"throw";
+constexpr wchar_t *keyword_catch=L"catch";
+constexpr wchar_t *keyword_sizeof=L"sizeof";
+constexpr wchar_t *keyword_typeof=L"typeof";
+constexpr wchar_t *keyword_call=L"call";
+constexpr wchar_t *keyword_goto=L"goto";
+constexpr wchar_t *keyword_if=L"if";
+constexpr wchar_t *keyword_elif=L"elif";
+constexpr wchar_t *keyword_else=L"else";
+constexpr wchar_t *keyword_switch=L"switch";
+constexpr wchar_t *keyword_for=L"for";
+constexpr wchar_t *keyword_loop=L"loop";
+constexpr wchar_t *keyword_while=L"while";
+constexpr wchar_t *keyword_end=L"end";
+constexpr wchar_t *keyword_defined=L"defined";
+constexpr wchar_t *keyword_spush=L"spush";
+constexpr wchar_t *keyword_spop=L"spop";
+constexpr wchar_t *keyword_type_cast=L"type_cast";
+constexpr wchar_t *keyword_enum=L"enum";
+constexpr wchar_t *keyword_reversed_enum=L"reversed_enum";
+constexpr wchar_t *keyword_using=L"using";
+constexpr wchar_t *keyword_inited=L"inited";
+constexpr wchar_t *keyword_null=L"null";
+
+constexpr wchar_t *cmd_echo=L"echo";
+constexpr wchar_t *cmd_exec=L"exec";
+constexpr wchar_t *cmd_sleep=L"sleep";
+constexpr wchar_t *cmd_pause=L"pause";
+constexpr wchar_t *cmd_input=L"input";
+constexpr wchar_t *cmd_getline=L"getline";
+
+constexpr wchar_t *predef_var_random=L"$random$";
 
 short ExecCommand(wstring one_line_of_command)
 {
@@ -180,12 +200,36 @@ short ExecCommand(wstring one_line_of_command)
     /* Main process */
     for(unsigned int i=0;i<cmdpts.size();i++)
     {
-        if(cmdpts[i]==cmd_boolean)
+        if(cmdpts[i]==keyword_boolean)
         {
             if(IsInvalidIdentifier(cmdpts[i+1]))
             {
                 //TODO:Add the print error info codes.
             }
+        }
+        else if(cmdpts[i]==cmd_exec)
+        {
+            #ifdef __linux
+            if(fork()==0)
+            {
+                wstring exec_arg;
+                for(int j=i+1;j<cmdpts.size();j++)
+                {
+                    wstring+=' ';
+                    wstring+=cmdpts[j];
+                }
+                execlp()
+            }
+            else
+            {
+                wait()
+            }
+            #elif defined(_WIN32)||defined(_WIN64)
+            #endif
+        }
+        else
+        {
+
         }
     }
 }
