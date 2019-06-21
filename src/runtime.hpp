@@ -155,11 +155,14 @@ constexpr wchar_t *cmd_sleep=L"sleep";
 constexpr wchar_t *cmd_pause=L"pause";
 constexpr wchar_t *cmd_input=L"input";
 constexpr wchar_t *cmd_getline=L"getline";
-constexpr wchar_t *cmd_print=L"print";
 constexpr wchar_t *cmd_mkdir=L"mkdir";
 constexpr wchar_t *cmd_rmdir=L"rmdir";
 constexpr wchar_t *cmd_del=L"del";
 constexpr wchar_t *cmd_mkfile=L"mkfile";
+constexpr wchar_t *cmd_cpuid=L"cpuid";
+constexpr wchar_t *cmd_help=L"help";
+constexpr wchar_t *cmd_pvf=L"pvf";
+constexpr wchar_t *cmd_diff=L"diff";
 
 enum COMPILED_COMMAND
 {

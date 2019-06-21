@@ -2,8 +2,10 @@
 #include <string>
 #if defined(_WIN32)||defined(_WIN64)
 #include <io.h>
+#include <windows.h>
 #elif defined(__linux)
-#include <dirent.h>
+#include <sys/io.h>
+#include <sys/stat.h>
 #endif
 using namespace std;
 char *cpp[]={"*.c","*.cpp","*.cc","*.cxx","*.h","*.hpp","*.hxx","*.hh"};
@@ -23,7 +25,7 @@ char *php[]={"*.php"};
 char *jsp[]={"*.jsp"};
 char *asp[]={"*.asp","*.aspx"};
 char *action_script[]={"*.as"};
-char *batch[]={"*.bat","*.cmd"};
+char *batchfile[]={"*.bat","*.cmd"};
 char *ruby[]={"*.rb","*.ru"};
 char *rust[]={"*.rs"};
 char *restructure_text[]={"*.rst"};
@@ -47,12 +49,21 @@ char *unreal_script[]={".uc"};
 char *yaml[]={"*.yml"};
 char *vim_script[]={".vimrc"};
 char *emacs[]={".emacs"};
-//CRLF:MS-DOS/Windows newline.
-#define CRLF "\r\n"
-//LF:*nix newline.
-#define LF "\n"
-//CR:Macintosh newline.
-#define CR "\r"
+char *lisp[]={"*.lisp","*.el"};
+char *livescript[]={"*.ls"};
+char *d[]={"*.d"};
+char *java[]={"*.java","*.jav"};
+char *scala[]={"*.scala"};
+char *objsh[]={"*.osh","*.objsh","*.oshc","*.oshed"};
+char *vscode_ignore[]={".vscodeignore"};
+char *fsharp[]={"*.fs"};
+char *diff[]={"*.diff"};
+char *patch[]={"*.patch"};
+char *log[]={"*.log"};
+char *jinja[]={"*.jinja"};
+char *xml[]={"*.xml"};
+char *sources_list[]={"sources.list"};
+
 int main(int argc,char *argv[])
 {
     if(argc>1)
@@ -69,5 +80,44 @@ int main(int argc,char *argv[])
                 puts("-lf [LF characters]   Set file line feed characters");
                 puts("-f [format]           Set statistics output format");
             }
+        return 0;
+    }
+    _finddata_t *current_info;
+    unsigned long long srcline_sum=0;
+    unsigned long long fsize_sum=0;
+    intptr_t ret_int_ptr;
+    for(int i=0;i<7;i++)
+    {
+        if((ret_int_ptr=_findfirst(cpp[i],current_info))==-1)
+            continue;
+        while(true)
+        {
+            #ifdef __linux
+            struct _stat *current_file_stat;
+            _stat(current_info->name,current_file_stat);
+            fsize_sum+=current_file_stat->st_size;
+            #endif
+            FILE *current_file_ptr=fopen(current_info->name,"r");
+            #if defined(_WIN32)||defined(_WIN64)
+            fseek(current_file_ptr,0L,SEEK_END);
+            fsize_sum+=ftell(current_file_ptr);
+            #endif
+            int current_char;
+            #ifdef __linux
+            while((current_char=fgetc(current_file_ptr))!=EOF)
+                if(current_char=='\n')
+                    srcline_sum++;
+            #elif defined(_WIN32)||defined(_WIN64)
+            while((current_char=fgetc(current_file_ptr))!=EOF)
+                if(current_char=='\r')
+                    if((current_char=getc(current_file_ptr))=='\n')
+                        srcline_sum++;
+                    else if(current_char==EOF)
+                        break;
+            #endif
+            fclose(current_file_ptr);
+            if(_findnext(ret_int_ptr,current_info)==-1)
+                break;
+        }
     }
 }
