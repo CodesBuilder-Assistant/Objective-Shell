@@ -1,18 +1,20 @@
 #ifndef GOTOFUNC_HPP
 #define GOTOFUNC_HPP
+#include <iostream>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string>
 #if defined(_WIN32)||defined(_WIN64)
 #include <windows.h>
 #elif defined(__linux)
 #include <unistd.h>
 #endif
-void ShowRandomContent(void)
+void ShowRandomContents(void)
 {
-    srand(2147483647);
+    srand(RAND_MAX);
     unsigned short random_id=rand();
-    if(random_id%2==1)
+    if(random_id%2==0)
     {
         #if defined(_WIN32)||defined(_WIN64)
         system("cls");
@@ -83,6 +85,21 @@ void ShowRandomContent(void)
         printf("\033[2J");
         #endif
         return;
+    }
+    else if(random_id%3==0)
+    {
+        string entered_passwd="NULL";
+        while(entered_passwd!="objshellrandcontentpswd")
+        {
+            if(entered_passwd.empty())
+                puts("Password error.");
+            entered_passwd="";
+            printf("Enter password(Input empty password to exit):");
+            cin>>entered_passwd;
+            if(entered_passwd.empty())
+                return;
+        }
+
     }
 }
 void ASCIITable(void)
