@@ -27,21 +27,9 @@ class function
             this->function_name=new wchar_t[wcslen(func_name)+1];
             this->function_name=func_name;
         }
-        void GotoFunction(FILE *file_ptr)
+        size_t offset(void)
         {
-            if(fseek(file_ptr,0,this->start_offset)!=0)
-            {
-                #ifdef __linux
-                puts("\033[0m[\033[31mError\033[0m]Couldn't change file pointer to function start,Interrupted process");
-                #elif defined(_WIN32)||defined(_WIN64)
-                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
-                printf("[");
-                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED);
-                printf("Error");
-                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
-                printf("]Couldn't change file pointer to function start,Interrupted process");
-                #endif
-            }
+            return this->start_offset;
         }
         ~function(void)
         {

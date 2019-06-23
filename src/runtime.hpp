@@ -13,6 +13,8 @@
 #include <time.h>
 #include <new>
 #include <iostream>
+#include <vector>
+#include <fstream>
 #ifdef __linux
 #include <sys/io.h>
 #elif defined(_WIN32)||defined(_WIN64)
@@ -26,7 +28,6 @@ using namespace std;
 #include <windows.h>
 #endif
 
-constexpr wchar_t comment_char1='#';
 bool IsInvalidIdentifier(wstring identifier)
 {
     for(int i=0;i<identifier.length();i++)
@@ -40,9 +41,7 @@ struct _operator
     unsigned int after_part_number;
 };
 /* Operators */
-wstring valid_spec_char=L"+-*/!^&|=[]',.<>~:?()#";
-
-constexpr wchar_t *errbuffer_line=L"##LINE##",*errbuffer_column=L"##COLUMN##";
+wstring valid_spec_char=L"r";
 
 #define ERROR_TOO_MANY_TYPES "Too many types."
 
@@ -148,9 +147,11 @@ constexpr wchar_t *keyword_reversed_enum=L"reversed_enum";
 constexpr wchar_t *keyword_using=L"using";
 constexpr wchar_t *keyword_inited=L"inited";
 constexpr wchar_t *keyword_null=L"null";
+constexpr wchar_t *keyword_map=L"map";
+constexpr wchar_t *keyword_unmap=L"unmap";
+constexpr wchar_t *keyword_loop=L"loop";
 
 constexpr wchar_t *cmd_echo=L"echo";
-constexpr wchar_t *cmd_exec=L"exec";
 constexpr wchar_t *cmd_sleep=L"sleep";
 constexpr wchar_t *cmd_pause=L"pause";
 constexpr wchar_t *cmd_input=L"input";
@@ -163,6 +164,42 @@ constexpr wchar_t *cmd_cpuid=L"cpuid";
 constexpr wchar_t *cmd_help=L"help";
 constexpr wchar_t *cmd_pvf=L"pvf";
 constexpr wchar_t *cmd_diff=L"diff";
+constexpr wchar_t *cmd_cd=L"cd";
+constexpr wchar_t *cmd_dir=L"dir";
+constexpr wchar_t *cmd_sort=L"sort";
+
+constexpr wchar_t operator_add=L'+';
+constexpr wchar_t operator_sub=L'-';
+constexpr wchar_t operator_mul=L'*';
+constexpr wchar_t operator_div=L'/';
+constexpr wchar_t operator_xor=L'^';
+constexpr wchar_t operator_and=L'&';
+constexpr wchar_t operator_or=L'|';
+constexpr wchar_t operator_subscript_left=L'[';
+constexpr wchar_t operator_subscript_right=L']';
+constexpr wchar_t operator_mov=L'=';
+constexpr wchar_t operator_mod=L'%';
+constexpr wchar_t operator_not=L'!';
+constexpr wchar_t operator_str_a=L'"';
+constexpr wchar_t operator_str_b=L'\'';
+constexpr wchar_t operator_member_access=L'.';
+constexpr wchar_t operator_more=L'>';
+constexpr wchar_t operator_less=L'<';
+constexpr wchar_t operator_var_access=L'$';
+constexpr wchar_t operator_bin_reserve=L'~';
+constexpr wchar_t operator_ternary_part_a=L'?';
+constexpr wchar_t operator_ternary_part_b=L':';
+constexpr wchar_t operator_case_start=operator_ternary_part_b;
+constexpr wchar_t *operator_equ=L"==";
+constexpr wchar_t *operator_notequ=L"!=";
+constexpr wchar_t *operator_inc=L"++";
+constexpr wchar_t *operator_dec=L"--";
+constexpr wchar_t *operator_moreequ=L">=";
+constexpr wchar_t *operator_lessequ=L"<=";
+constexpr wchar_t *operator_double_or=L"||";
+constexpr wchar_t *operator_double_and=L"&&";
+constexpr wchar_t *operator_double_more=L">>";
+constexpr wchar_t *operator_double_less=L"<<";
 
 enum COMPILED_COMMAND
 {
@@ -181,7 +218,8 @@ enum COMPILED_COMMAND
     COMPILED_OPERATOR_INC,
     COMPILED_OPERATOR_DEC,
     COMPILED_OPERATOR_NOT,
-    COMPILED_OPERATOR_SUBSCRIPT,
+    COMPILED_OPERATOR_SUBSCRIPT_LEFT,
+    COMPILED_OPERATOR_SUBSCRIPT_RIGHT,
     COMPILED_OPERATOR_EQU,
     COMPILED_OPERATOR_LESS,
     COMPILED_OPERATOR_MORE,
@@ -215,11 +253,13 @@ enum COMPILED_COMMAND
     COMPILED_KEYWORD_INTERRUPT,
 };
 
+extern wstring CurrentPath;
+
 short ExecCommand(wstring one_line_of_command)
 {
     /* Separation parameters. */
     bool IsOperator=false;
-    deque<wstring>cmdpts;
+    vector<wstring>cmdpts;
     wstring CurrentString;
     for(int i=0;i<one_line_of_command.length();i++)
     {
@@ -264,29 +304,21 @@ short ExecCommand(wstring one_line_of_command)
                 //TODO:Add the print error info codes.
             }
         }
-        else if(cmdpts[i]==cmd_exec)
-        {
-            #ifdef __linux
-            if(fork()==0)
-            {
-                wstring exec_arg;
-                for(int j=i+1;j<cmdpts.size();j++)
-                {
-                    wstring+=' ';
-                    wstring+=cmdpts[j];
-                }
-                execlp()
-            }
-            else
-            {
-                wait()
-            }
-            #elif defined(_WIN32)||defined(_WIN64)
-            #endif
-        }
         else
         {
+            if(cmdpts[i]==cmd_cd)
+            {
+                #ifdef __linux
+                wstring check_file_name=cmdpts[i];
+                check_file_name+=L".__DIRECTORY_EXIST_CHECK__";
+                wfstream dirchk;
+                dirchk.open(check_file_name.c_str(),ios_base::app);
+                #elif defined(_WIN32)||defined(_WIN64)
 
+
+
+                #endif
+            }
         }
     }
 }
