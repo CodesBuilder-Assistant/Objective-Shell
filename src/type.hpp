@@ -1,0 +1,22 @@
+#ifndef TYPE_HPP
+#define TYPE_HPP
+enum objshell_types
+{
+    TYPE_INT=21,
+    TYPE_SHORT,
+    TYPE_LONG,
+    TYPE_BYTE,
+    TYPE_BOOLEAN,
+    TYPE_EXCEPTION,
+    TYPE_TYPENAME,
+    TYPE_STR,
+    TYPE_INT_PTR,
+    TYPE_SHORT_PTR,
+    TYPE_LONG_PTR,
+    TYPE_BYTE_PTR,
+    TYPE_BOOLEAN_PTR,
+    TYPE_EXCEPTION_PTR,
+    TYPE_TYPENAME_PTR,
+    TYPE_STR_PTR
+};
+#endif

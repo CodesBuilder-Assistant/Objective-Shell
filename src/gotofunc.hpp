@@ -89,12 +89,13 @@ void ShowRandomContents(void)
     else if(random_id%3==0)
     {
         string entered_passwd="NULL";
-        while(entered_passwd!="objshellrandcontentpswd")
+        while(entered_passwd!="AD21J-OD243-P2HGJ-GH23L-T74YS"&&entered_passwd!="FGS52-LBG24-UED34-M54ND-AURH5")
         {
             if(entered_passwd.empty())
                 puts("Password error.");
             entered_passwd="";
-            printf("Enter password(Input empty password to exit):");
+            puts("Tip:Input empty password to exit");
+            printf("Enter password(Explame:XXXXX-XXXXX-XXXXX-XXXXX-XXXXX):");
             cin>>entered_passwd;
             if(entered_passwd.empty())
                 return;
