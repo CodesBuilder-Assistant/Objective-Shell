@@ -99,8 +99,241 @@ void ShowRandomContents(void)
             cin>>entered_passwd;
             if(entered_passwd.empty())
                 return;
+            puts("");
         }
-
+        puts("Loading...");
+        #if defined(_WIN32)||defined(_WIN64)
+        for(int i=0;i<64;i++)
+        {
+            printf("\b[                ]");
+		    Sleep(100);
+		    printf("\r[");
+	    	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),BACKGROUND_GREEN|BACKGROUND_INTENSITY);
+    		printf(" ");
+		    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+	    	printf("               ]");
+    		Sleep(100);
+		    printf("\r[");
+	    	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),BACKGROUND_GREEN|BACKGROUND_INTENSITY);
+    		printf("  ");
+		    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+	    	printf("              ]");
+    		Sleep(100);
+		    printf("\r[");
+	    	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),BACKGROUND_GREEN|BACKGROUND_INTENSITY);
+    		printf("   ");
+		    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+	    	printf("             ]");
+    		Sleep(100);
+		    printf("\r[ ");
+	    	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),BACKGROUND_GREEN|BACKGROUND_INTENSITY);
+    		printf("   ");
+		    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+	    	printf("            ]");
+    		Sleep(100);
+		    printf("\r[  ");
+	    	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),BACKGROUND_GREEN|BACKGROUND_INTENSITY);
+    		printf("   ");
+		    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+	    	printf("           ]");
+    		Sleep(100);
+		    printf("\r[   ");
+	    	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),BACKGROUND_GREEN|BACKGROUND_INTENSITY);
+    		printf("   ");
+		    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+	    	printf("          ]");
+    		Sleep(100);
+		    printf("\r[    ");
+	    	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),BACKGROUND_GREEN|BACKGROUND_INTENSITY);
+    		printf("   ");
+		    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+	    	printf("         ]");
+    		Sleep(100);
+		    printf("\r[     ");
+	    	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),BACKGROUND_GREEN|BACKGROUND_INTENSITY);
+    		printf("   ");
+		    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+	    	printf("        ]");
+    		Sleep(100);
+		    printf("\r[      ");
+	    	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),BACKGROUND_GREEN|BACKGROUND_INTENSITY);
+    		printf("   ");
+		    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+	    	printf("       ]");
+    		Sleep(100);
+		    printf("\r[       ");
+	    	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),BACKGROUND_GREEN|BACKGROUND_INTENSITY);
+    		printf("   ");
+		    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+	    	printf("      ]");
+    		Sleep(100);
+		    printf("\r[        ");
+	    	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),BACKGROUND_GREEN|BACKGROUND_INTENSITY);
+    		printf("   ");
+		    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+	    	printf("     ]");
+    		Sleep(100);
+		    printf("\r[         ");
+		    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),BACKGROUND_GREEN|BACKGROUND_INTENSITY);
+		    printf("   ");
+		    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+	    	printf("    ]");
+    		Sleep(100);
+		    printf("\r[          ");
+	    	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),BACKGROUND_GREEN|BACKGROUND_INTENSITY);
+    		printf("   ");
+		    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+	    	printf("   ]");
+    		Sleep(100);
+		    printf("\r[           ");
+	    	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),BACKGROUND_GREEN|BACKGROUND_INTENSITY);
+    		printf("   ");
+		    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+	    	printf("  ]");
+    		Sleep(100);
+		    printf("\r[            ");
+	    	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),BACKGROUND_GREEN|BACKGROUND_INTENSITY);
+    		printf("   ");
+		    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+	    	printf(" ]");
+    		Sleep(100);
+		    printf("\r[             ");
+	    	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),BACKGROUND_GREEN|BACKGROUND_INTENSITY);
+    		printf("   ");
+		    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+	    	printf("]");
+    		Sleep(100);
+		    printf("\r[              ");
+	    	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),BACKGROUND_GREEN|BACKGROUND_INTENSITY);
+    		printf("  ");
+		    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+	    	printf("]");
+    		Sleep(100);
+		    printf("\r[               ");
+	    	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),BACKGROUND_GREEN|BACKGROUND_INTENSITY);
+    		printf(" ");
+		    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+	    	printf("]");
+	    	Sleep(100);
+    		printf("\r");
+        }
+        #elif defined(__linux)
+        for(int i=0;i<64;i++)
+        {
+            printf("\b[                ]");
+		    Sleep(100);
+		    printf("\r[");
+	    	printf("\033[92m");
+    		printf(" ");
+		    printf("\033[0m");
+	    	printf("               ]");
+    		Sleep(100);
+		    printf("\r[");
+	    	printf("\033[92m");
+    		printf("  ");
+		    printf("\033[0m");
+	    	printf("              ]");
+    		Sleep(100);
+		    printf("\r[");
+	    	printf("\033[92m");
+    		printf("   ");
+		    printf("\033[0m");
+	    	printf("             ]");
+    		Sleep(100);
+		    printf("\r[ ");
+	    	printf("\033[92m");
+    		printf("   ");
+		    printf("\033[0m");
+	    	printf("            ]");
+    		Sleep(100);
+		    printf("\r[  ");
+	    	printf("\033[92m");
+    		printf("   ");
+		    printf("\033[0m");
+	    	printf("           ]");
+    		Sleep(100);
+		    printf("\r[   ");
+	    	printf("\033[92m");
+    		printf("   ");
+		    printf("\033[0m");
+	    	printf("          ]");
+    		Sleep(100);
+		    printf("\r[    ");
+	    	printf("\033[92m");
+    		printf("   ");
+		    printf("\033[0m");
+	    	printf("         ]");
+    		Sleep(100);
+		    printf("\r[     ");
+	    	printf("\033[92m");
+    		printf("   ");
+		    printf("\033[0m");
+	    	printf("        ]");
+    		Sleep(100);
+		    printf("\r[      ");
+	    	printf("\033[92m");
+    		printf("   ");
+		    printf("\033[0m");
+	    	printf("       ]");
+    		Sleep(100);
+		    printf("\r[       ");
+	    	printf("\033[92m");
+    		printf("   ");
+		    printf("\033[0m");
+	    	printf("      ]");
+    		Sleep(100);
+		    printf("\r[        ");
+	    	printf("\033[92m");
+    		printf("   ");
+		    printf("\033[0m");
+	    	printf("     ]");
+    		Sleep(100);
+		    printf("\r[         ");
+		    printf("\033[92m");
+		    printf("   ");
+		    printf("\033[0m");
+	    	printf("    ]");
+    		Sleep(100);
+		    printf("\r[          ");
+	    	printf("\033[92m");
+    		printf("   ");
+		    printf("\033[0m");
+	    	printf("   ]");
+    		Sleep(100);
+		    printf("\r[           ");
+	    	printf("\033[92m");
+    		printf("   ");
+		    printf("\033[0m");
+	    	printf("  ]");
+    		Sleep(100);
+		    printf("\r[            ");
+	    	printf("\033[92m");
+    		printf("   ");
+		    printf("\033[0m");
+	    	printf(" ]");
+    		Sleep(100);
+		    printf("\r[             ");
+	    	printf("\033[92m");
+    		printf("   ");
+		    printf("\033[0m");
+	    	printf("]");
+    		Sleep(100);
+		    printf("\r[              ");
+	    	printf("\033[92m");
+    		printf("  ");
+		    printf("\033[0m");
+	    	printf("]");
+    		Sleep(100);
+		    printf("\r[               ");
+	    	printf("\033[92m");
+    		printf(" ");
+		    printf("\033[0m");
+	    	printf("]");
+	    	Sleep(100);
+    		printf("\r");
+        }
+        #endif
+        puts("\nError loading file.");
     }
 }
 void ASCIITable(void)
@@ -110,5 +343,24 @@ void ASCIITable(void)
         puts(" Character  Value");
         printf("  %c          %d\n",i,(int)i);
     }
+}
+void BugReport(void)
+{
+    #ifdef __linux
+    printf("\033[2J");
+    #elif defined(_WIN32)||defined(_WIN64)
+    system("cls");
+    #endif
+    printf("To report bugs of Objective Shell,please visit:\n");
+    #ifdef __linux
+    puts("\033[4;32mhttps://github.com/CodesBuilder/Objective-Shell/issues\033[0m")
+    #elif defined(_WIN32)||defined(_WIN64)
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_GREEN|COMMON_LVB_UNDERSCORE);
+    puts("https://github.com/CodesBuilder/Objective-Shell/issues");
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+    #endif
+    puts("Press enter to back...");
+    getchar();
+    rewind(stdin);
 }
 #endif

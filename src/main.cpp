@@ -1,20 +1,16 @@
 /*
 * Copyright(C)2019 CodesBuilder
-* This software publish under the GPL.
+* This software publish under the GPL
 */
-
-/*
-* Objective Shell runtime module.
-*/
-#if defined(_WIN32)||defined(_WIN64)
-#include "res.h"
-#endif
 #include "runtime.hpp"
+#include <locale>
 
 wstring CurrentPath;
+char CurrentLocale[4];
 
 int main(int argc,char *argv[])
 {
+    setlocale(LC_ALL,CurrentLocale);
     #if defined(_WIN32)||defined(_WIN64)
     SetConsoleCP(CP_UTF8);
     #endif
@@ -48,7 +44,7 @@ int main(int argc,char *argv[])
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_GREEN|FOREGROUND_INTENSITY);
         #endif
         wcout<<CurrentPath;
-        getline(user_input);
+        wcin.getline(user_input);
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_GREEN|FOREGROUND_BLUE|FOREGROUND_RED);
         ExecCommand(user_input);
     }

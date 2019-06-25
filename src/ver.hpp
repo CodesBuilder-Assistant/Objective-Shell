@@ -15,9 +15,9 @@ enum ver_type
     stable,
     secret_test
 };
-constexpr unsigned short version_type=secret_test;
+const unsigned short version_type=secret_test;
 #define CODENAME "INITIAL"
-constexpr unsigned int build=1;
+const unsigned int build=1;
 /*
 * Version Format:
 * 1.0.0.1 <Version Type>
@@ -26,7 +26,7 @@ constexpr unsigned int build=1;
 * | L Minor Version
 * L Main Version
 */
-constexpr char *VERSION="1.0.0";
+const char *VERSION="1.0.0";
 
 void ShowVersionInfo(void)
 {

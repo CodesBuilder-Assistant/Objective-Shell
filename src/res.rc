@@ -1,2 +1,0 @@
-#include <windows.h>
-OBJSHELL_LOGO ICON "../res/objshell_logo.ico"

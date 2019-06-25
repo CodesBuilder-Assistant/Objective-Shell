@@ -36,7 +36,7 @@ template<class var_type>class var
             }
             this->data=reinterpret_cast<data_type>(target_data);
         }
-        template<class data_type>void operator =(<data_type>var target_data)
+        template<class data_type>void operator =(var<data_type> target_data)
         {
             if(this->auto_cast)
             {

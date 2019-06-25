@@ -48,33 +48,11 @@ wstring valid_spec_char=L"r";
 bool error_actived=false;
 string error_info;
 wstring werror_info;
-unsigned short info_type=-1;
-
-constexpr wchar_t infotype_error='1';
-
-void PrintErrorInfo(bool outwerrinfo)
-{
-    if(outwerrinfo)
-    {
-        #ifdef __linux
-        printf("\033[0m[\033[31mError\033[0m]");
-        #elif defined(_WIN32)||defined(_WIN64)
-        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
-        printf("[");
-        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED);
-        printf("Error");
-        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
-        printf("]");
-        #endif
-        wprintf(werror_info.c_str());
-        puts("");
-    }
-}
 
 long long value_return=NULL;
 unsigned long long exvalue_return=NULL;
 char *str_return=NULL;
-constexpr wchar_t *wstr_return=NULL;
+wchar_t *wstr_return=NULL;
 
 /*
 * Range of values:
@@ -86,120 +64,120 @@ constexpr wchar_t *wstr_return=NULL;
 * var:auto
 * The interpreter will auto set the variable is signed or unsigned.
 */
-constexpr wchar_t *keyword_int=L"int";
-constexpr wchar_t *keyword_short=L"short";
-constexpr wchar_t *keyword_long=L"long";
-constexpr wchar_t *keyword_byte=L"byte";
-constexpr wchar_t *keyword_boolean=L"boolean";
-constexpr wchar_t *keyword_exception=L"exception";
-constexpr wchar_t *keyword_typename=L"typename";
-constexpr wchar_t *keyword_str=L"str";
-constexpr wchar_t *keyword_ptr=L"ptr";
-constexpr wchar_t *keyword_signed=L"signed";
-constexpr wchar_t *keyword_unsigned=L"unsigned";
-constexpr wchar_t *keyword_extern=L"extern";
-constexpr wchar_t *keyword_global=L"global";
-constexpr wchar_t *keyword_local=L"local";
-constexpr wchar_t *keyword_const=L"const";
-constexpr wchar_t *keyword_type_const=L"type_const";
-constexpr wchar_t *keyword_disable=L"disable";
-constexpr wchar_t *keyword_enable=L"enable";
-constexpr wchar_t *keyword_scope=L"scope";
-constexpr wchar_t *keyword_interrupt=L"interrupt";
-constexpr wchar_t *keyword_new=L"new";
-constexpr wchar_t *keyword_delete=L"delete";
-constexpr wchar_t *keyword_port_in=L"port_in";
-constexpr wchar_t *keyword_port_out=L"port_out";
-constexpr wchar_t *keyword_reg=L"reg";
-constexpr wchar_t *keyword_swap=L"swap";
-constexpr wchar_t *keyword_import=L"import";
-constexpr wchar_t *keyword_unexport=L"unexport";
-constexpr wchar_t *keyword_export=L"export";
-constexpr wchar_t *keyword_function=L"function";
-constexpr wchar_t *keyword_class=L"class";
-constexpr wchar_t *keyword_public=L"public";
-constexpr wchar_t *keyword_private=L"private";
-constexpr wchar_t *keyword_protected=L"protected";
-constexpr wchar_t *keyword_final=L"final";
-constexpr wchar_t *keyword_inherited=L"inherited";
-constexpr wchar_t *keyword_def=L"def";
-constexpr wchar_t *keyword_return=L"return";
-constexpr wchar_t *keyword_throw=L"throw";
-constexpr wchar_t *keyword_catch=L"catch";
-constexpr wchar_t *keyword_sizeof=L"sizeof";
-constexpr wchar_t *keyword_typeof=L"typeof";
-constexpr wchar_t *keyword_call=L"call";
-constexpr wchar_t *keyword_goto=L"goto";
-constexpr wchar_t *keyword_if=L"if";
-constexpr wchar_t *keyword_elif=L"elif";
-constexpr wchar_t *keyword_else=L"else";
-constexpr wchar_t *keyword_switch=L"switch";
-constexpr wchar_t *keyword_for=L"for";
-constexpr wchar_t *keyword_loop=L"loop";
-constexpr wchar_t *keyword_while=L"while";
-constexpr wchar_t *keyword_end=L"end";
-constexpr wchar_t *keyword_defined=L"defined";
-constexpr wchar_t *keyword_spush=L"spush";
-constexpr wchar_t *keyword_spop=L"spop";
-constexpr wchar_t *keyword_type_cast=L"type_cast";
-constexpr wchar_t *keyword_enum=L"enum";
-constexpr wchar_t *keyword_reversed_enum=L"reversed_enum";
-constexpr wchar_t *keyword_using=L"using";
-constexpr wchar_t *keyword_inited=L"inited";
-constexpr wchar_t *keyword_null=L"null";
-constexpr wchar_t *keyword_map=L"map";
-constexpr wchar_t *keyword_unmap=L"unmap";
-constexpr wchar_t *keyword_loop=L"loop";
+const wchar_t *keyword_int=L"int";
+const wchar_t *keyword_short=L"short";
+const wchar_t *keyword_long=L"long";
+const wchar_t *keyword_byte=L"byte";
+const wchar_t *keyword_boolean=L"boolean";
+const wchar_t *keyword_exception=L"exception";
+const wchar_t *keyword_typename=L"typename";
+const wchar_t *keyword_str=L"str";
+const wchar_t *keyword_ptr=L"ptr";
+const wchar_t *keyword_signed=L"signed";
+const wchar_t *keyword_unsigned=L"unsigned";
+const wchar_t *keyword_extern=L"extern";
+const wchar_t *keyword_global=L"global";
+const wchar_t *keyword_local=L"local";
+const wchar_t *keyword_const=L"const";
+const wchar_t *keyword_type_const=L"type_const";
+const wchar_t *keyword_disable=L"disable";
+const wchar_t *keyword_enable=L"enable";
+const wchar_t *keyword_scope=L"scope";
+const wchar_t *keyword_interrupt=L"interrupt";
+const wchar_t *keyword_new=L"new";
+const wchar_t *keyword_delete=L"delete";
+const wchar_t *keyword_port_in=L"port_in";
+const wchar_t *keyword_port_out=L"port_out";
+const wchar_t *keyword_reg=L"reg";
+const wchar_t *keyword_swap=L"swap";
+const wchar_t *keyword_import=L"import";
+const wchar_t *keyword_unexport=L"unexport";
+const wchar_t *keyword_export=L"export";
+const wchar_t *keyword_function=L"function";
+const wchar_t *keyword_class=L"class";
+const wchar_t *keyword_public=L"public";
+const wchar_t *keyword_private=L"private";
+const wchar_t *keyword_protected=L"protected";
+const wchar_t *keyword_final=L"final";
+const wchar_t *keyword_inherited=L"inherited";
+const wchar_t *keyword_def=L"def";
+const wchar_t *keyword_return=L"return";
+const wchar_t *keyword_throw=L"throw";
+const wchar_t *keyword_catch=L"catch";
+const wchar_t *keyword_sizeof=L"sizeof";
+const wchar_t *keyword_typeof=L"typeof";
+const wchar_t *keyword_call=L"call";
+const wchar_t *keyword_goto=L"goto";
+const wchar_t *keyword_if=L"if";
+const wchar_t *keyword_elif=L"elif";
+const wchar_t *keyword_else=L"else";
+const wchar_t *keyword_switch=L"switch";
+const wchar_t *keyword_for=L"for";
+const wchar_t *keyword_loop=L"loop";
+const wchar_t *keyword_while=L"while";
+const wchar_t *keyword_end=L"end";
+const wchar_t *keyword_defined=L"defined";
+const wchar_t *keyword_spush=L"spush";
+const wchar_t *keyword_spop=L"spop";
+const wchar_t *keyword_type_cast=L"type_cast";
+const wchar_t *keyword_enum=L"enum";
+const wchar_t *keyword_reversed_enum=L"reversed_enum";
+const wchar_t *keyword_using=L"using";
+const wchar_t *keyword_inited=L"inited";
+const wchar_t *keyword_null=L"null";
+const wchar_t *keyword_map=L"map";
+const wchar_t *keyword_unmap=L"unmap";
 
-constexpr wchar_t *cmd_echo=L"echo";
-constexpr wchar_t *cmd_sleep=L"sleep";
-constexpr wchar_t *cmd_pause=L"pause";
-constexpr wchar_t *cmd_input=L"input";
-constexpr wchar_t *cmd_getline=L"getline";
-constexpr wchar_t *cmd_mkdir=L"mkdir";
-constexpr wchar_t *cmd_rmdir=L"rmdir";
-constexpr wchar_t *cmd_del=L"del";
-constexpr wchar_t *cmd_mkfile=L"mkfile";
-constexpr wchar_t *cmd_cpuid=L"cpuid";
-constexpr wchar_t *cmd_help=L"help";
-constexpr wchar_t *cmd_pvf=L"pvf";
-constexpr wchar_t *cmd_diff=L"diff";
-constexpr wchar_t *cmd_cd=L"cd";
-constexpr wchar_t *cmd_dir=L"dir";
-constexpr wchar_t *cmd_sort=L"sort";
+const wchar_t *cmd_echo=L"echo";
+const wchar_t *cmd_sleep=L"sleep";
+const wchar_t *cmd_pause=L"pause";
+const wchar_t *cmd_input=L"input";
+const wchar_t *cmd_getline=L"getline";
+const wchar_t *cmd_mkdir=L"mkdir";
+const wchar_t *cmd_rmdir=L"rmdir";
+const wchar_t *cmd_del=L"del";
+const wchar_t *cmd_mkfile=L"mkfile";
+const wchar_t *cmd_cpuid=L"cpuid";
+const wchar_t *cmd_help=L"help";
+const wchar_t *cmd_pvf=L"pvf";
+const wchar_t *cmd_diff=L"diff";
+const wchar_t *cmd_cd=L"cd";
+const wchar_t *cmd_dir=L"dir";
+const wchar_t *cmd_sort=L"sort";
+const wchar_t *cmd_alert=L"alert";
 
-constexpr wchar_t operator_add=L'+';
-constexpr wchar_t operator_sub=L'-';
-constexpr wchar_t operator_mul=L'*';
-constexpr wchar_t operator_div=L'/';
-constexpr wchar_t operator_xor=L'^';
-constexpr wchar_t operator_and=L'&';
-constexpr wchar_t operator_or=L'|';
-constexpr wchar_t operator_subscript_left=L'[';
-constexpr wchar_t operator_subscript_right=L']';
-constexpr wchar_t operator_mov=L'=';
-constexpr wchar_t operator_mod=L'%';
-constexpr wchar_t operator_not=L'!';
-constexpr wchar_t operator_str_a=L'"';
-constexpr wchar_t operator_str_b=L'\'';
-constexpr wchar_t operator_member_access=L'.';
-constexpr wchar_t operator_more=L'>';
-constexpr wchar_t operator_less=L'<';
-constexpr wchar_t operator_var_access=L'$';
-constexpr wchar_t operator_bin_reserve=L'~';
-constexpr wchar_t operator_ternary_part_a=L'?';
-constexpr wchar_t operator_ternary_part_b=L':';
-constexpr wchar_t operator_case_start=operator_ternary_part_b;
-constexpr wchar_t *operator_equ=L"==";
-constexpr wchar_t *operator_notequ=L"!=";
-constexpr wchar_t *operator_inc=L"++";
-constexpr wchar_t *operator_dec=L"--";
-constexpr wchar_t *operator_moreequ=L">=";
-constexpr wchar_t *operator_lessequ=L"<=";
-constexpr wchar_t *operator_double_or=L"||";
-constexpr wchar_t *operator_double_and=L"&&";
-constexpr wchar_t *operator_double_more=L">>";
-constexpr wchar_t *operator_double_less=L"<<";
+const wchar_t operator_add=L'+';
+const wchar_t operator_sub=L'-';
+const wchar_t operator_mul=L'*';
+const wchar_t operator_div=L'/';
+const wchar_t operator_xor=L'^';
+const wchar_t operator_and=L'&';
+const wchar_t operator_or=L'|';
+const wchar_t operator_subscript_left=L'[';
+const wchar_t operator_subscript_right=L']';
+const wchar_t operator_mov=L'=';
+const wchar_t operator_mod=L'%';
+const wchar_t operator_not=L'!';
+const wchar_t operator_str_a=L'"';
+const wchar_t operator_str_b=L'\'';
+const wchar_t operator_member_access=L'.';
+const wchar_t operator_more=L'>';
+const wchar_t operator_less=L'<';
+const wchar_t operator_var_access=L'$';
+const wchar_t operator_bin_reserve=L'~';
+const wchar_t operator_ternary_part_a=L'?';
+const wchar_t operator_ternary_part_b=L':';
+const wchar_t operator_case_start=operator_ternary_part_b;
+const wchar_t *operator_equ=L"==";
+const wchar_t *operator_notequ=L"!=";
+const wchar_t *operator_inc=L"++";
+const wchar_t *operator_dec=L"--";
+const wchar_t *operator_moreequ=L">=";
+const wchar_t *operator_lessequ=L"<=";
+const wchar_t *operator_double_or=L"||";
+const wchar_t *operator_double_and=L"&&";
+const wchar_t *operator_double_more=L">>";
+const wchar_t *operator_double_less=L"<<";
 
 enum COMPILED_COMMAND
 {
@@ -255,6 +233,44 @@ enum COMPILED_COMMAND
 
 extern wstring CurrentPath;
 
+enum errmsg_types_and_colors
+{
+    RED=1001,
+    GREEN,
+    BLUE,
+    GREY,
+    WHITE,
+    PURPLE,
+    YELLOW,
+    CYAN,
+    ERRMSG_ERROR,
+    ERRMSG_WARNING,
+    ERRMSG_NOTE
+};
+
+void PrintErrorMessage(char *error_message,unsigned short msg_type_color,char *errmsg)
+{
+    #ifdef __linux
+    printf("\033[0m");
+    #elif defined(_WIN32)||defined(_WIN64)
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+    #endif
+    printf("[");
+    switch(msg_type_color)
+    {
+        case RED:
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED);
+            break;
+        case GREEN:
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_GREEN);
+            break;
+        case BLUE:
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_BLUE);
+            break;
+
+    }
+}
+
 short ExecCommand(wstring one_line_of_command)
 {
     /* Separation parameters. */
@@ -302,21 +318,47 @@ short ExecCommand(wstring one_line_of_command)
             if(IsInvalidIdentifier(cmdpts[i+1]))
             {
                 //TODO:Add the print error info codes.
+                PrintErrorMessage
             }
         }
         else
         {
             if(cmdpts[i]==cmd_cd)
             {
+                if((cmdpts.size()-1)-i>1)
+                {
+                    #ifdef __linux
+                    printf("\033[0m[\033[31mError\033[0m]Too much arguments.\n");
+                    #elif defined(_WIN32)||defined(_WIN64)
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+                    printf("[");
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED);
+                    printf("Error");
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+                    printf("]");
+                    puts("Too much arguments.");
+                    #endif
+                }
                 #ifdef __linux
                 wstring check_file_name=cmdpts[i];
                 check_file_name+=L".__DIRECTORY_EXIST_CHECK__";
                 wfstream dirchk;
                 dirchk.open(check_file_name.c_str(),ios_base::app);
                 #elif defined(_WIN32)||defined(_WIN64)
-
-
-
+                int folderattribute=GetFileAttributesW(cmdpts[i].c_str());
+                if(folderattribute!=FILE_ATTRIBUTE_DIRECTORY)
+                {
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+                    printf("[");
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED);
+                    printf("Error");
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+                    wstring error_message=L"]'";
+                    error_message+=cmdpts[i];
+                    error_message+=L"' not a directory or directory is not exist.";
+                    wprintf(error_message.c_str());
+                    puts("");
+                }
                 #endif
             }
         }

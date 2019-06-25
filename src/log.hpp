@@ -1,7 +1,7 @@
 #ifndef LOG_HPP
 #define LOG_HPP
 #include <stdio.h>
-constexpr char *LOG_FILENAME="objsh.log";
+const char *LOG_FILENAME="objsh.log";
 void ClearLogFile(void)
 {
     FILE *logfile_fp=fopen(LOG_FILENAME,"w");

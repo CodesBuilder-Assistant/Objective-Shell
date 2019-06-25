@@ -119,5 +119,6 @@ int main(int argc,char *argv[])
             if(_findnext(ret_int_ptr,current_info)==-1)
                 break;
         }
+        printf("");
     }
 }
