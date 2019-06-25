@@ -333,6 +333,7 @@ void ShowRandomContents(void)
     		printf("\r");
         }
         #endif
+        printf("\b[                ]");
         puts("\nError loading file.");
     }
 }
