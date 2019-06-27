@@ -22,5 +22,3 @@ configure_environment_yum:
 configure_environment_pacman:
 	sudo pacman -Sf gcc
 	sudo pacman -Sf g++
-configure_environment_windows:
-	@echo Please read the guide:https://github.com/CodesBuilder/Objective-Shell/blob/master/docs/envconf_guide/windows.md

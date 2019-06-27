@@ -7,6 +7,7 @@ char *cpuid(void)
 {
     char return_buffer[13];
     unsigned short return_buffer_next_ptr=4;
+    asm volatile(".intel_syntax noprefix");
     asm volatile("push eax");
     asm volatile("push ebx");
     asm volatile("push ecx");

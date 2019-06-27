@@ -8,6 +8,9 @@
 wstring CurrentPath;
 char CurrentLocale[4];
 
+#define UNLOCKED_FALG2_VALUE 53245
+#define UNLOCKED_FALG2_VALUE 781915
+
 int main(int argc,char *argv[])
 {
     setlocale(LC_ALL,CurrentLocale);

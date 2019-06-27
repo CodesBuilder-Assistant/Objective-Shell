@@ -7,6 +7,7 @@ short ReadPort(unsigned int port_n,bool read16_bit)
     if(read16_bit)
     {
         #ifdef __linux
+        asm(".intel_syntax noprefix");
         asm("push ax");
         asm("in ax,dword_arg");
         asm("mov sword_arg,ax");
@@ -18,6 +19,7 @@ short ReadPort(unsigned int port_n,bool read16_bit)
     else
     {
         #ifdef __linux
+        asm(".intel_syntax noprefix");
         asm("push al");
         asm("in al,dword_arg");
         asm("mov sbyte_arg,al");

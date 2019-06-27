@@ -334,7 +334,15 @@ void ShowRandomContents(void)
         }
         #endif
         printf("\b[                ]");
-        puts("\nError loading file.");
+        #if defined(_WIN32)||defined(_WIN64)
+        CONSOLE_CURSOR_INFO curinfo;
+        GetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE),&curinfo);
+        curinfo.bVisible=false;
+	    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE),&curinfo);
+        #elif defined(__linux)
+        printf("\033[?25l");
+        #endif
+        puts("\n\aError loading file.");
     }
 }
 void ASCIITable(void)
@@ -354,14 +362,26 @@ void BugReport(void)
     #endif
     printf("To report bugs of Objective Shell,please visit:\n");
     #ifdef __linux
-    puts("\033[4;32mhttps://github.com/CodesBuilder/Objective-Shell/issues\033[0m")
+    puts("\033[4;32mhttps://github.com/CodesBuilder/Objective-Shell/issues\033[0m");
+    printf("\033[?25l");
     #elif defined(_WIN32)||defined(_WIN64)
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_GREEN|COMMON_LVB_UNDERSCORE);
     puts("https://github.com/CodesBuilder/Objective-Shell/issues");
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
-    #endif
+    CONSOLE_CURSOR_INFO curinfo;
+    GetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE),&curinfo);
+    curinfo.bVisible=false;
+	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE),&curinfo);
+	#endif
     puts("Press enter to back...");
     getchar();
     rewind(stdin);
+    #ifdef __linux
+    printf("\033[?25h");
+    #elif defined(_WIN32)||defined(_WIN64)
+    curinfo.bVisible=true;
+	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE),&curinfo);
+    #endif
 }
+void
 #endif

@@ -18,22 +18,19 @@ void alert(wchar_t *alert_message,wchar_t *alert_title,char alert_type)
     switch(alert_type)
     {
         case ALERT_INFO:
-            MessageBoxW(NULL,alert_title,alert_message,MB_OK|MB_ICONINFORMATION);
+            MessageBoxW(NULL,alert_message,alert_title,MB_OK|MB_ICONINFORMATION);
             break;
         case ALERT_ERROR:
-            MessageBoxW(NULL,alert_title,alert_message,MB_OK|MB_ICONERROR);
+            MessageBoxW(NULL,alert_message,alert_title,MB_OK|MB_ICONERROR);
             break;
         case ALERT_WARNING:
-            MessageBoxW(NULL,alert_title,alert_message,MB_OK|MB_ICONWARNING);
+            MessageBoxW(NULL,alert_message,alert_title,MB_OK|MB_ICONWARNING);
             break;
         default:
-            MessageBoxW(NULL,alert_title,alert_message,MB_OK);
+            MessageBoxW(NULL,alert_message,alert_title,MB_OK);
             break;
     }
     #elif defined(__linux)
-    printf("\033[107;2;37m");
-
-    for(int i=0;i<wcslen(alert_message)+2;i++)
     #endif
 }
 #endif
