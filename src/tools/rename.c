@@ -16,7 +16,7 @@ int main(int argc,char *argv[])
     char *srcname=NULL,*tarname=NULL;
     bool IsDirectory=false;
     if(argc>1)
-        for(int i=0;i<argc;i++)
+        for(register int i=0;i<argc;i++)
             if(argv[i]=="-h")
             {
                 puts("Syntax:rename [options] [<original file name> <target file name>]...");

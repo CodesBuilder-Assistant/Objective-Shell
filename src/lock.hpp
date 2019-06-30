@@ -33,7 +33,7 @@ char *EncryptPassword(char *lk_passwd)
     if(strlen(lk_passwd)+1>20)
         return NULL;
     char return_passwd[20];
-    for(short i=0;i<strlen(lk_passwd)+1;i++)
+    for(register short i=0;i<strlen(lk_passwd)+1;i++)
     {
         switch(lk_passwd[i])
         {
@@ -207,18 +207,26 @@ char *EncryptPassword(char *lk_passwd)
                 break;
         }
     }
-    for(short i=0;i<strlen(lk_passwd)+1;i++)
+    for(register short i=0;i<strlen(lk_passwd)+1;i++)
+    {
         ~lk_passwd[i];
+        lk_passwd[i]+=5;
+        ~lk_passwd[i];
+    }
     return lk_passwd;
 }
 char *DecryptPassword(char *lk_passwd)
 {
     if(strlen(lk_passwd)+1>20)
         return NULL;
-    for(short i=0;i<strlen(lk_passwd)+1;i++)
+    for(register short i=0;i<strlen(lk_passwd)+1;i++)
+    {
         ~lk_passwd[i];
+        lk_passwd[i]-=5;
+        ~lk_passwd[i];
+    }
     char return_passwd[20];
-    for(short i=0;i<strlen(lk_passwd)+1;i++)
+    for(register short i=0;i<strlen(lk_passwd)+1;i++)
     {
         switch(lk_passwd[i])
         {
@@ -394,23 +402,21 @@ char *DecryptPassword(char *lk_passwd)
     }
     return lk_passwd;
 }
-void GenerateKey(void)
+void CreateKey(void)
 {
     srand(127);
-    for(int i=0;i<512;i++)
+    for(register int i=0;i<512;i++)
     {
-        regenerate_unit:
+        recreate_unit:
         lkkey[i]=rand();
         if(lkkey[i]=='\0')
-            goto regenerate_unit;
+            goto recreate_unit;
     }
 }
-void GetPassword(void)
+void ReadPassword(void)
 {
-    FILE *passwd_fp_a;
-    FILE *passwd_fp_b;
-    FILE *passwd_fp_c;
-    if((passwd_fp_a=fopen("pswd.bin","r"))==NULL)
+    FILE *passwd_fp;
+    if((passwd_fp=fopen("pswd.bin","rb"))==NULL)
         return;
     #ifdef __linux
     struct stat fsize_stat;
@@ -418,11 +424,34 @@ void GetPassword(void)
     if(fsize_stat.st_size<512)
         return;
     #elif defined(_WIN32)||defined(_WIN64)
-    fseek(passwd_fp_a,0L,SEEK_END);
-    if(ftell(passwd_fp_a)<512)
+    fseek(passwd_fp,0L,SEEK_END);
+    if(ftell(passwd_fp)<512)
         return;
-    fseek(passwd_fp_a,0L,SEEK_SET);
+    fseek(passwd_fp,0L,368);
+    char passwd_length;
+    char *read_passwd;
+    fread(&passwd_length,1,1,passwd_fp);
+    read_passwd=new char[passwd_length];
+    fread(read_passwd,sizeof(char),(size_t)passwd_length,passwd_fp);
+    for(register int i=0;i<passwd_length;i++)
+        lkpasswd+=read_passwd[i];
     #endif
+}
+void WritePassword(char *password)
+{
+    srand(127);
+    FILE *passwd_fp;
+    char useless_data;
+    passwd_fp=fopen("pswd.bin","wb");
+    for(register int i=0;i<368;i++)
+    {
+        create_useless_data:
+        useless_data=rand();
+        if(useless_data=='\0')
+            goto create_useless_data;
+        fwrite(&useless_data,sizeof(char),1,passwd_fp);
+    }
+    fwrite(&password,(strlen(password)+1)*sizeof(char),1,passwd_fp);
 }
 bool IsUnlocked(void)
 {
@@ -431,7 +460,7 @@ bool IsUnlocked(void)
     {
         int fgetc_tmp;
         char lkfile_chk_buf[256];
-        for(int i=0;i<256;i++)
+        for(register int i=0;i<256;i++)
         {
             if((fgetc_tmp=fgetc(lock_file_check_fp))!=EOF)
                 lkfile_chk_buf[i]=(char)fgetc_tmp;

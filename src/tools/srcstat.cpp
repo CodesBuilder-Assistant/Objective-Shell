@@ -68,7 +68,7 @@ int main(int argc,char *argv[])
 {
     if(argc>1)
     {
-        for(int i=0;i<argc;i++)
+        for(register int i=0;i<argc;i++)
             if(argv[i]=="-h")
             {
                 puts("syntax:srcstat [options] [directory] ...");
@@ -82,13 +82,13 @@ int main(int argc,char *argv[])
             }
         return 0;
     }
-    _finddata_t *current_info;
+    _finddata_t current_info;
     unsigned long long srcline_sum=0;
     unsigned long long fsize_sum=0;
     intptr_t ret_int_ptr;
-    for(int i=0;i<7;i++)
+    for(register int i=0;i<7;i++)
     {
-        if((ret_int_ptr=_findfirst(cpp[i],current_info))==-1)
+        if((ret_int_ptr=_findfirst(cpp[i],&current_info))==-1)
             continue;
         while(true)
         {
@@ -97,7 +97,7 @@ int main(int argc,char *argv[])
             _stat(current_info->name,current_file_stat);
             fsize_sum+=current_file_stat->st_size;
             #endif
-            FILE *current_file_ptr=fopen(current_info->name,"r");
+            FILE *current_file_ptr=fopen(current_info.name,"r");
             #if defined(_WIN32)||defined(_WIN64)
             fseek(current_file_ptr,0L,SEEK_END);
             fsize_sum+=ftell(current_file_ptr);
@@ -116,7 +116,7 @@ int main(int argc,char *argv[])
                         break;
             #endif
             fclose(current_file_ptr);
-            if(_findnext(ret_int_ptr,current_info)==-1)
+            if(_findnext(ret_int_ptr,&current_info)==-1)
                 break;
         }
     }

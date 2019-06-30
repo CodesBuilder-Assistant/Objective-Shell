@@ -15,7 +15,7 @@ class function
 {
     private:
         size_t start_offset;
-        const wchar_t *function_name;
+        string *function_name;
         argument *args;
         function(void)
         {

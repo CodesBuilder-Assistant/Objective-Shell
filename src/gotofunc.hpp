@@ -103,7 +103,7 @@ void ShowRandomContents(void)
         }
         puts("Loading...");
         #if defined(_WIN32)||defined(_WIN64)
-        for(int i=0;i<64;i++)
+        for(register int i=0;i<64;i++)
         {
             printf("\b[                ]");
 		    Sleep(100);
@@ -218,7 +218,7 @@ void ShowRandomContents(void)
     		printf("\r");
         }
         #elif defined(__linux)
-        for(int i=0;i<64;i++)
+        for(register int i=0;i<64;i++)
         {
             printf("\b[                ]");
 		    Sleep(100);

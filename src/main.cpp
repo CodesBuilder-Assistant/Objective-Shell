@@ -7,12 +7,17 @@
 
 wstring CurrentPath;
 char CurrentLocale[4];
+wchar_t *initial_path_buf=new wchar_t[1024];
 
 #define UNLOCKED_FALG2_VALUE 53245
 #define UNLOCKED_FALG2_VALUE 781915
 
 int main(int argc,char *argv[])
 {
+    memset(initial_path_buf,'\0',sizeof(wchar_t)*1024);
+    GetCurrentDirectoryW(1024,initial_path_buf);
+    CurrentPath=initial_path_buf;
+    delete[] initial_path_buf;
     setlocale(LC_ALL,CurrentLocale);
     #if defined(_WIN32)||defined(_WIN64)
     SetConsoleCP(CP_UTF8);
@@ -22,7 +27,7 @@ int main(int argc,char *argv[])
     #endif
     if(argc>1)
     {
-        for(int i=0;i<argc;i++)
+        for(register int i=0;i<argc;i++)
             if(argv[i]=="help")
             {
                 puts("Objective Shell");

@@ -46,7 +46,9 @@ void ShowVersionInfo(void)
             break;
         case secret_test:
             puts(" Secret Test");
-            puts("This test version of Objective Shell is not a public version");
+            puts("This test version of Objective Shell is a secret version");
+            puts("If you hare this version without permission,");
+            puts("You will be add to the blacklist");
             break;
         default:
             puts(" ?");
@@ -58,7 +60,7 @@ void ShowVersionInfo(void)
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED);
             printf("Error");
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
-            printf("]Error version type,please recompile this version.");
+            printf("]Error version type,please recompile this version");
             #endif
     }
     #ifdef __linux
@@ -68,7 +70,7 @@ void ShowVersionInfo(void)
     #elif defined(_WIN64)
     puts("OS:Windows 64-bit");
     #endif
-    printf("Build Date&Time:%s %s\n",__DATE__,__TIME__);
+    printf("Build Date&Time:%s %s(UTC+8)\n",__DATE__,__TIME__);
     printf("To get more information,please visit:");
     #ifdef __linux
     printf("\033[94;1;4m")
@@ -81,5 +83,7 @@ void ShowVersionInfo(void)
     #elif defined(_WIN32)||defined(_WIN64)
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
     #endif
+    if(version_type==secret_test)
+        puts("Shhh...let's not leak our hard work");
 }
 #endif

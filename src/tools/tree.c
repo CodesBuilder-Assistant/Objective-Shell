@@ -9,7 +9,7 @@ int main(int argc,char *argv[])
 {
     if(argv>1)
     {
-        for(int i=0;i<argc;i++)
+        for(register int i=0;i<argc;i++)
         {
             if(_access(argv[i],0)==-1)
             {
@@ -26,7 +26,7 @@ int main(int argc,char *argv[])
                 continue;
                 #endif
             }
-            
+
         }
     }
     return 0;

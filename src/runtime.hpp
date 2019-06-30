@@ -27,14 +27,6 @@ using namespace std;
 #elif defined(_WIN32)||defined(_WIN64)
 #include <windows.h>
 #endif
-
-bool IsInvalidIdentifier(wstring identifier)
-{
-    for(int i=0;i<identifier.length();i++)
-        if((identifier[i]<'A'||identifier[i]>'Z')&&(identifier[i]<'a'||identifier[i]>'z')&&identifier[i]!='_'||identifier[0]<='0'&&identifier[0]>='9')
-            return false;
-    return true;
-}
 struct _operator
 {
     wchar_t operator_char;
@@ -248,8 +240,12 @@ enum errmsg_types_and_colors
     ERRMSG_NOTE
 };
 
-void PrintErrorMessage(char *error_message,unsigned short msg_type_color,char *errmsg)
+unsigned int line=1;
+unsigned int column=1;
+
+void PrintErrorMessage(char *error_message,unsigned short msg_type_color,char *errmsg_type)
 {
+    printf("Line:%d Column:%d",line,column);
     #ifdef __linux
     printf("\033[0m");
     #elif defined(_WIN32)||defined(_WIN64)
@@ -265,24 +261,43 @@ void PrintErrorMessage(char *error_message,unsigned short msg_type_color,char *e
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_GREEN);
             break;
         case BLUE:
-            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_BLUE);
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_GREEN|FOREGROUND_BLUE);
             break;
-
+        case YELLOW:
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN);
+            break;
+        case PURPLE:
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_BLUE);
+            break;
+        case CYAN:
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_GREEN|FOREGROUND_BLUE|FOREGROUND_INTENSITY);
     }
+}
+
+bool IsInvalidIdentifier(wstring identifier)
+{
+    for(register int i=0;i<identifier.size();i++)
+        if(identifier[i]>=L'0'&&identifier[i]<=L'9'&&i==0)
+            return false;
+        else if(identifier[i]<L'A'||(identifier[i]>L'z'))
+            return false;
+        else if(identifier[i]>L'Z'&&identifier[i]<L'a'&&identifier[i]!=L'_')
+            return false;
+    return true;
 }
 
 short ExecCommand(wstring one_line_of_command)
 {
-    /* Separation parameters. */
+    static unsigned short need_end_count=0;
     bool IsOperator=false;
     vector<wstring>cmdpts;
     wstring CurrentString;
-    for(int i=0;i<one_line_of_command.length();i++)
+    for(register int i=0;i<one_line_of_command.length();i++)
     {
         if(IsOperator)
-            for(int i=0;i<one_line_of_command.length();i++)
+            for(register int i=0;i<one_line_of_command.length();i++)
             {
-                for(int j=0;j<valid_spec_char.length();j++)
+                for(register int j=0;j<valid_spec_char.length();j++)
                     if(one_line_of_command[i]!=valid_spec_char[j])
                     {
                         IsOperator=false;
@@ -296,8 +311,8 @@ short ExecCommand(wstring one_line_of_command)
             }
         else
         {
-            for(int i=0;i<one_line_of_command.length();i++)
-                for(int j=0;j<valid_spec_char.length();j++)
+            for(register int i=0;i<one_line_of_command.length();i++)
+                for(register int j=0;j<valid_spec_char.length();j++)
                     if(one_line_of_command[i]==valid_spec_char[i])
                     {
                         IsOperator=true;
@@ -315,52 +330,17 @@ short ExecCommand(wstring one_line_of_command)
     {
         if(cmdpts[i]==keyword_boolean)
         {
+            if(i+1==cmdpts.size()-1)
+                PrintErrorMessage("Variable name not detected",RED,"Error");
             if(IsInvalidIdentifier(cmdpts[i+1]))
             {
                 //TODO:Add the print error info codes.
-                PrintErrorMessage
+                PrintErrorMessage("Invalid identidier",RED,"Error");
             }
         }
         else
         {
-            if(cmdpts[i]==cmd_cd)
-            {
-                if((cmdpts.size()-1)-i>1)
-                {
-                    #ifdef __linux
-                    printf("\033[0m[\033[31mError\033[0m]Too much arguments.\n");
-                    #elif defined(_WIN32)||defined(_WIN64)
-                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
-                    printf("[");
-                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED);
-                    printf("Error");
-                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
-                    printf("]");
-                    puts("Too much arguments.");
-                    #endif
-                }
-                #ifdef __linux
-                wstring check_file_name=cmdpts[i];
-                check_file_name+=L".__DIRECTORY_EXIST_CHECK__";
-                wfstream dirchk;
-                dirchk.open(check_file_name.c_str(),ios_base::app);
-                #elif defined(_WIN32)||defined(_WIN64)
-                int folderattribute=GetFileAttributesW(cmdpts[i].c_str());
-                if(folderattribute!=FILE_ATTRIBUTE_DIRECTORY)
-                {
-                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
-                    printf("[");
-                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED);
-                    printf("Error");
-                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
-                    wstring error_message=L"]'";
-                    error_message+=cmdpts[i];
-                    error_message+=L"' not a directory or directory is not exist.";
-                    wprintf(error_message.c_str());
-                    puts("");
-                }
-                #endif
-            }
+
         }
     }
 }

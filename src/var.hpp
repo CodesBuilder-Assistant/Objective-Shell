@@ -1,6 +1,7 @@
 #ifndef VAR_HPP
 #define VAR_HPP
-#include <deque>
+#include <list>
+#include <string>
 using namespace std;
 class TypeAutoCastNotEnabled
 {
@@ -11,6 +12,7 @@ template<class var_type>class var
         frined var::operator =;
         var_type data;
         bool auto_cast;
+        string var_name;
     public:
         var(void)
         {
@@ -50,5 +52,18 @@ template<class var_type>class var
 
         }
 };
-deque<var<void *>>var_list;
+template<class data_type>class env_var
+{
+    private:
+        data_type *datas;
+        unsigned short data_length;
+    public:
+        env_var(void)
+        {
+            this->datas=new data_type[1];
+            this->datas[0]=NULL;
+            this->data_length++;
+        }
+};
+list<var<void *>>var_list;
 #endif

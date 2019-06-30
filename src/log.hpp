@@ -19,4 +19,18 @@ void WriteLogInfo(char *i_type,char *log_msg)
     fprintf(logfile_fp,"[%s]%s\n",i_type,log_msg);
     fclose(logfile_fp);
 }
+
+void OutputAllLog(void)
+{
+    FILE *logfile_fp;
+    if((logfile_fp=fopen(LOG_FILENAME,"r"))==NULL)
+    {
+        fclose(logfile_fp);
+        return;
+    }
+    char current_log[256];
+    while(fgets(current_log,256,logfile_fp)!=(char *)EOF)
+        puts(current_log);
+    fclose(logfile_fp);
+}
 #endif

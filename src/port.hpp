@@ -1,32 +1,59 @@
 #ifndef PORT_HPP
 #define PORT_HPP
-#include "asmarg.hpp"
-short ReadPort(unsigned int port_n,bool read16_bit)
+#if defined(_WIN32)||defined(_WIN64)
+#include <windows.h>
+#elif defined(__linux)
+#include
+#endif
+class port
 {
-    dword_arg=port_n;
-    if(read16_bit)
-    {
-        #ifdef __linux
-        asm(".intel_syntax noprefix");
-        asm("push ax");
-        asm("in ax,dword_arg");
-        asm("mov sword_arg,ax");
-        asm("pop ax");
-        return sword_arg;
-        #elif defined(_WIN32)||defined(_WIN64)
-        #endif
-    }
-    else
-    {
-        #ifdef __linux
-        asm(".intel_syntax noprefix");
-        asm("push al");
-        asm("in al,dword_arg");
-        asm("mov sbyte_arg,al");
-        asm("pop al");
-        return sbyte_arg;
-        #elif defined(_WIN32)||defined(_WIN64)
-        #endif
-    }
-}
+    private:
+        int port_number;
+        int original_data;
+        bool mapped;
+    public:
+        port(void)
+        {
+            this->port_number=-1;
+            this->original_data=0;
+            this->mapped=false;
+        }
+        port(unsigned int port_number_)
+        {
+            this->port_number=reinterpret_cast<unsigned int>(port_number_);
+            this->original_data=0;
+            this->mapped=false;
+        }
+        port(unsigned int port_number_,int initial_data)
+        {
+            this->port_number=reinterpret_cast<unsigned int>(port_number_);
+            this->out(initial_data);
+            this->original_data=0;
+            this->mapped=false;
+        }
+        int in(void)
+        {
+            if(this->port_number==-1)
+                return -1;
+        }
+        void out(int out_data)
+        {
+            if(this->port_number==-1)
+                return;
+        }
+        bool mapping(int mapping_data)
+        {
+            if(this->port_number==-1)
+                return false;
+            this->original_data=this->in();
+            this->out(mapping_data);
+        }
+        bool unmapping(void)
+        {
+            if(this->port_number==-1||!this->mapped)
+                return false;
+            this->out(this->original_data);
+            this->mapped=false;
+        }
+};
 #endif
