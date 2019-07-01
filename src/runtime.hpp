@@ -6,6 +6,8 @@
 #include "register.hpp"
 #include "interrupt.hpp"
 #include "gotofunc.hpp"
+#include "ver.hpp"
+#include "lock.hpp"
 #include <string>
 #include <thread>
 #include <stdio.h>
@@ -252,6 +254,8 @@ void PrintErrorMessage(char *error_message,unsigned short msg_type_color,char *e
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
     #endif
     printf("[");
+    #ifdef __linux
+    #elif defined(_WIN32)||defined(_WIN64)
     switch(msg_type_color)
     {
         case RED:
@@ -272,6 +276,7 @@ void PrintErrorMessage(char *error_message,unsigned short msg_type_color,char *e
         case CYAN:
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_GREEN|FOREGROUND_BLUE|FOREGROUND_INTENSITY);
     }
+    #endif
 }
 
 bool IsInvalidIdentifier(wstring identifier)
