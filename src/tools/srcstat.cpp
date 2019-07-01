@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <string>
 #if defined(_WIN32)||defined(_WIN64)
-#include <io.h>
 #include <windows.h>
 #elif defined(__linux)
 #include <sys/io.h>
@@ -40,8 +39,7 @@ char *json[]={"*.json"};
 char *less[]={"*.less"};
 char *vue[]={"*.vue"};
 char *haskell[]={"*.hs"};
-char *vb[]={"*.vb"};
-char *vbs[]={"*.vbs"};
+char *vb[]={"*.vb",".vbs"};
 char *jsx[]={"*.jsx"};
 char *csharp[]={"*.cs"};
 char *kotlin[]={"*.kt"};
@@ -62,62 +60,24 @@ char *patch[]={"*.patch"};
 char *log[]={"*.log"};
 char *jinja[]={"*.jinja"};
 char *xml[]={"*.xml"};
-char *sources_list[]={"sources.list"};
 
 int main(int argc,char *argv[])
 {
-    if(argc>1)
-    {
-        for(register int i=0;i<argc;i++)
-            if(argv[i]=="-h")
-            {
-                puts("syntax:srcstat [options] [directory] ...");
-                puts("options:");
-                puts("-h                    Show this list");
-                puts("-i [language] ...     Ignore a programming language");
-                puts("-s [language] ...     Set a statistic programming languages");
-                puts("-l [name] [filename]  Set a programming language's setting");
-                puts("-lf [LF characters]   Set file line feed characters");
-                puts("-f [format]           Set statistics output format");
-            }
-        return 0;
-    }
-    _finddata_t current_info;
-    unsigned long long srcline_sum=0;
-    unsigned long long fsize_sum=0;
-    intptr_t ret_int_ptr;
-    for(register int i=0;i<7;i++)
-    {
-        if((ret_int_ptr=_findfirst(cpp[i],&current_info))==-1)
-            continue;
-        while(true)
-        {
-            #ifdef __linux
-            struct _stat *current_file_stat;
-            _stat(current_info->name,current_file_stat);
-            fsize_sum+=current_file_stat->st_size;
-            #endif
-            FILE *current_file_ptr=fopen(current_info.name,"r");
-            #if defined(_WIN32)||defined(_WIN64)
-            fseek(current_file_ptr,0L,SEEK_END);
-            fsize_sum+=ftell(current_file_ptr);
-            #endif
-            int current_char;
-            #ifdef __linux
-            while((current_char=fgetc(current_file_ptr))!=EOF)
-                if(current_char=='\n')
-                    srcline_sum++;
-            #elif defined(_WIN32)||defined(_WIN64)
-            while((current_char=fgetc(current_file_ptr))!=EOF)
-                if(current_char=='\r')
-                    if((current_char=getc(current_file_ptr))=='\n')
-                        srcline_sum++;
-                    else if(current_char==EOF)
-                        break;
-            #endif
-            fclose(current_file_ptr);
-            if(_findnext(ret_int_ptr,&current_info)==-1)
-                break;
-        }
-    }
+    #ifdef __linux
+    printf("\033[94m");
+    #elif defined(_WIN32)||defined(_WIN64)
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_BLUE|FOREGROUND_INTENSITY)
+    #endif
+    puts("Objective Shell Sources Statistical Tool");
+    #ifdef __linux
+    printf("\033[33m");
+    #elif defined(_WIN32)||defined(_WIN64)
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN);
+    #endif
+    puts("Copyright(C)2019 CodesBuilder");
+    #ifdef __linux
+    #elif defined(_WIN32)||defined(_WIN64)
+    HANDLE finddata;
+    finddata=FindFIrstFile();
+    #endif
 }

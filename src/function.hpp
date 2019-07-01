@@ -5,6 +5,7 @@
 #if defined(_WIN32)||defined(_WIN64)
 #include <windows.h>
 #endif
+#include <string>
 #include "type.hpp"
 typedef struct
 {
@@ -15,7 +16,7 @@ class function
 {
     private:
         size_t start_offset;
-        string *function_name;
+        string function_name;
         argument *args;
         function(void)
         {

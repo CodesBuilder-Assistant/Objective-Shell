@@ -9,7 +9,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <windows.h>
 #include <string.h>
 #include <memory.h>
 #include <string>
@@ -474,5 +473,11 @@ bool IsUnlocked(void)
             }
         }
     }
+}
+bool CheckTestPassword(char *test_passwd)
+{
+    if(test_passwd=="128592564381625485028416254829525478178254"||test_passwd=="927416285162848161128418264725126840"||test_passwd=="769862485152748275582017352876889")
+        return true;
+    return false;
 }
 #endif

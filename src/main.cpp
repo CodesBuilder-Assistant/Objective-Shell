@@ -14,10 +14,67 @@ wchar_t *initial_path_buf=new wchar_t[1024];
 
 int main(int argc,char *argv[])
 {
-    memset(initial_path_buf,'\0',sizeof(wchar_t)*1024);
-    GetCurrentDirectoryW(1024,initial_path_buf);
-    CurrentPath=initial_path_buf;
-    delete[] initial_path_buf;
+    if(version_type==secret_test)
+    {
+        FILE *lock_flag_file_check;
+        #ifdef __linux
+        if((lock_flag_file_check=fopen("/etc/oslock.bi_","r"))!=NULL)
+        {
+            fclose(lock_flag_file_check);
+            puts("\033[0m[\033[31mError\033[0m]Objective Shell has been disabled");
+            return 0;
+        }
+        #elif defined(_WIN32)||defined(_WIN64)
+        if((lock_flag_file_check=fopen("oslck.bi_","r"))!=NULL)
+        {
+            fclose(lock_flag_file_check);
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+            printf("[");
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED);
+            printf("Error");
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+            puts("]Objective Shell has been disabled");
+            return 0;
+        }
+        #endif
+        fclose(lock_flag_file_check);
+        char test_passwd[128];
+        bool first=true;
+        printf("Please enter the test password to start Objective Shell:");
+        unsigned short errcount=0;
+        do
+        {
+            if(errcount==3)
+            {
+                #ifdef __linux
+                puts("\033[0m[\033[31mError\033[0m]Objective Shell has been locked.You can't use it later.");
+                #elif defined(_WIN32)||defined(_WIN64)
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+                printf("[");
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED);
+                printf("Error");
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+                printf("]Objective Shell has been disabled,You can't use it later");
+                #endif
+                return 0;
+            }
+            if(!first)
+            {
+                #ifdef __linux
+                puts("\033[0m[\033[31mError\033[0m]Password wrong.");
+                #elif defined(_WIN32)||defined(_WIN64)
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+                printf("[");
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED);
+                printf("Error");
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+                printf("]Password wrong.");
+                #endif
+            }
+            fgets(test_passwd,128,stdin);
+            first=false;
+        }while(!CheckTestPassword(test_passwd));
+    }
     setlocale(LC_ALL,CurrentLocale);
     #if defined(_WIN32)||defined(_WIN64)
     SetConsoleCP(CP_UTF8);
@@ -48,12 +105,17 @@ int main(int argc,char *argv[])
     {
         wstring user_input;
         #ifdef __linux
+        printf("\033[92m");
         #elif defined(_WIN32)||defined(_WIN64)
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_GREEN|FOREGROUND_INTENSITY);
         #endif
         wcout<<CurrentPath;
         wcin.getline(user_input);
+        #ifdef __linux
+        printf("\033[0m");
+        #elif defined(_WIN32)||defined(_WIN64)
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_GREEN|FOREGROUND_BLUE|FOREGROUND_RED);
+        #endif
         ExecCommand(user_input);
     }
 }
