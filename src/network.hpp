@@ -23,16 +23,6 @@ unsigned short GetLinkLicenseType(wchar_t *target_url)
     else if(license_name==L"ftp")
         return UL_FTP;
 }
-unsigned short GetLinkLicenseType(wstring target_url)
-{
-    wstring license_name;
-    for(register int i=0;i<target_url.size()&&target_url[i]!=':';i++)
-        license_name+=target_url[i];
-    if(license_name==L"http"||license_name==L"https")
-        return UL_HTTP;
-    else if(license_name==L"ftp")
-        return UL_FTP;
-}
 enum network_error_code
 {
     ERROR_LICENSE=0x15,
