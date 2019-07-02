@@ -9,6 +9,14 @@
 #include "ver.hpp"
 #include "lock.hpp"
 #include "alert.hpp"
+#include "dir.hpp"
+#include "port.hpp"
+#include "network.hpp"
+#include "locales.hpp"
+#include "cpu.hpp"
+#include "class.hpp"
+#include "stack.hpp"
+#include "system.hpp"
 #include <string>
 #include <thread>
 #include <stdio.h>
@@ -38,8 +46,6 @@ struct _operator
 };
 /* Operators */
 wstring valid_spec_char=L"r";
-
-#define ERROR_TOO_MANY_TYPES "Too many types."
 
 bool error_actived=false;
 string error_info;
@@ -357,7 +363,7 @@ short ExecCommand(wstring one_line_of_command)
             else
                 puts("\033[0m[\033[31mError\033[0m]No such directory");
             #elif defined(_WIN32)||defined(_WIN64)
-            
+
             #endif
             i+=1;
         }
@@ -375,6 +381,12 @@ short ExecCommand(wstring one_line_of_command)
             for(i+=1;i<cmdpts.size();i++)
             {
                 #ifdef __linux
+                printf("\033[94m");
+                #elif defined(_WIN32)||defined(_WIN64)
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_BLUE|FOREGROUND_INTENSITY);
+                #endif
+                wprintf(L"%ls\n\n",cmdpts[i].c_str());
+                #ifdef __linux
                 if(boost::filesystem::exists(cmdpts[i]))
                 {
                     boost::filesystem::wfstream current_file;
@@ -387,7 +399,32 @@ short ExecCommand(wstring one_line_of_command)
                         wprintf(L"%lc",current_char_buf);
                     }
                 }
+                else
+                {
+                    puts("\033[0m[\033[31mError\033[0m]File not found");
+                    continue;
+                }
                 #elif defined(_WIN32)||defined(_WIN64)
+                HANDLE file_handle;
+                if((file_handle=CreateFileW(cmdpts[i].c_str(),GENERIC_READ,NULL,NULL,OPEN_EXISTING,NULL,NULL))==INVALID_HANDLE_VALUE)
+                {
+                    CloseHandle(file_handle);
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+                    printf("[");
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED);
+                    printf("Error");
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+                    puts("]File not found");
+                }
+                wchar_t rdfile_ret;
+                DWORD rdbyte_count;
+                while(true)
+                {
+                    ReadFile(file_handle,&rdfile_ret,sizeof(wchar_t),&rdbyte_count,NULL);
+                    if(rdbyte_count==0)
+                        break;
+                    wprintf(L"%lc",rdfile_ret);
+                }
                 #endif
             }
         }
@@ -399,11 +436,16 @@ short ExecCommand(wstring one_line_of_command)
         else if(cmdpts[i]==cmd_dir)
         {
             if(i==cmdpts.size()-1)
-                
+                dir(L"*");
+            else
+            {
+                for(i+=1;i<cmdpts.size();i++)
+                    dir(cmdpts[i].c_str());
+            }
         }
         else
         {
-            
+
         }
     }
 }
