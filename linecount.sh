@@ -1,1 +1,1 @@
-find . -name "*.h" -or -name -or -name "*.c" -or -name "*.hpp" -or -name "*.cpp" -or -name "*.asm" -or -name "*.inc" |xargs grep -v "^$"|wc --lines
+find -name "*.h" -or -name "*.c" -or -name "*.hpp" -or -name "*.cpp" -or -name "*.asm" -or -name "*.inc" |xargs grep -v "^$"|wc --lines

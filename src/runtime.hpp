@@ -8,6 +8,7 @@
 #include "gotofunc.hpp"
 #include "ver.hpp"
 #include "lock.hpp"
+#include "alert.hpp"
 #include <string>
 #include <thread>
 #include <stdio.h>
@@ -26,6 +27,7 @@
 using namespace std;
 #ifdef __linux
 #include <unistd.h>
+#include <boost/filesystem.hpp>
 #elif defined(_WIN32)||defined(_WIN64)
 #include <windows.h>
 #endif
@@ -343,9 +345,65 @@ short ExecCommand(wstring one_line_of_command)
                 PrintErrorMessage("Invalid identidier",RED,"Error");
             }
         }
+        else if(cmdpts[i]==cmd_cd)
+        {
+            if(i==cmdpts.size()-1)
+                continue;
+            else if(i>cmdpts.size())
+                puts("\033[0m[\033[31mError\033[0m]Too much arguments");
+            #ifdef __linux
+            if(boost::filesystem::exists(cmdpts[i+1]))
+                CurrentPath=cmdpts[i+1];
+            else
+                puts("\033[0m[\033[31mError\033[0m]No such directory");
+            #elif defined(_WIN32)||defined(_WIN64)
+            
+            #endif
+            i+=1;
+        }
+        else if(cmdpts[i]==cmd_alert)
+        {
+            if(cmdpts[i+1]!=L"(")
+                puts("\033[0m[\033[31mError\033[0m]Couldn't find operator '('");
+            if(cmdpts[i+6]!=L")")
+                puts("\033[0m[\033[31mError\033[0m]Couldn't find operator ')'");
+            unsigned short _alert_type;
+            alert(cmdpts[i+2].c_str(),cmdpts[i+3].c_str());
+        }
+        else if(cmdpts[i]==cmd_pvf)
+        {
+            for(i+=1;i<cmdpts.size();i++)
+            {
+                #ifdef __linux
+                if(boost::filesystem::exists(cmdpts[i]))
+                {
+                    boost::filesystem::wfstream current_file;
+                    wchar_t current_char_buf;
+                    current_file.open(cmdpts[i]);
+                    while((current_file.read(&current_char_buf,sizeof(wchar_t))))
+                    {
+                        if(current_file.eof())
+                            break;
+                        wprintf(L"%lc",current_char_buf);
+                    }
+                }
+                #elif defined(_WIN32)||defined(_WIN64)
+                #endif
+            }
+        }
+        else if(cmdpts[i]==cmd_echo)
+        {
+            for(i+=1;i>cmdpts.size();i++)
+                wprintf(L"%ls\n",cmdpts[i].c_str);
+        }
+        else if(cmdpts[i]==cmd_dir)
+        {
+            if(i==cmdpts.size()-1)
+                
+        }
         else
         {
-
+            
         }
     }
 }

@@ -12,24 +12,10 @@ enum alert_type
     ALERT_WARNING,
     ALERT_NORMAL
 };
-void alert(wchar_t *alert_message,wchar_t *alert_title,char alert_type)
+void alert(const wchar_t *alert_message,const wchar_t *alert_title)
 {
     #if defined(_WIN32)||defined(_WIN64)
-    switch(alert_type)
-    {
-        case ALERT_INFO:
-            MessageBoxW(NULL,alert_message,alert_title,MB_OK|MB_ICONINFORMATION);
-            break;
-        case ALERT_ERROR:
-            MessageBoxW(NULL,alert_message,alert_title,MB_OK|MB_ICONERROR);
-            break;
-        case ALERT_WARNING:
-            MessageBoxW(NULL,alert_message,alert_title,MB_OK|MB_ICONWARNING);
-            break;
-        default:
-            MessageBoxW(NULL,alert_message,alert_title,MB_OK);
-            break;
-    }
+    MessageBoxW(NULL,alert_message,alert_title,MB_OKC|MB_ICONINFORMATION);
     #elif defined(__linux)
     #endif
 }
