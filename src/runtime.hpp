@@ -12,11 +12,14 @@
 #include "dir.hpp"
 #include "port.hpp"
 #include "network.hpp"
-#include "locales.hpp"
+#include "locale.hpp"
 #include "cpu.hpp"
 #include "class.hpp"
 #include "stack.hpp"
 #include "system.hpp"
+#include "startup.hpp"
+#include "log.hpp"
+#include "locale.hpp"
 #include <string>
 #include <thread>
 #include <stdio.h>

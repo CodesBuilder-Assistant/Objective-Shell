@@ -1,9 +1,9 @@
-#ifndef LOCALES_HPP
-#define LOCALES_HPP
-#include <stdio.h>
+#ifndef LOCALE_HPP
+#define LOCALE_HPP
 #if defined(_WIN32)||defined(_WIN64)
 #include <windows.h>
 #endif
+#include <stdio.h>
 char *GetLocale(void)
 {
     FILE *locale_conf_fp;
@@ -52,6 +52,26 @@ char *GetLocale(void)
     char ret_buffer[6];
     fread(&ret_buffer,5,1,locale_conf_fp);
     fclose(locale_conf_fp);
+    if(ret_buffer=="en-us"||\
+        ret_buffer=="zh-cn"||\
+        ret_buffer=="zh-hk"||\
+        ret_buffer=="zh-tw"||\
+        ret_buffer=="zh-mo"||\
+        ret_buffer=="en-hk")
     return ret_buffer;
+    else
+    {
+        #ifdef __linux
+        puts("\033[30m[\033[31mError\033[0m]Invalid locale config,loaded default setting");
+        #elif defined(_WIN32)||defined(_WIN64)
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+        printf("[");
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED);
+        printf("Error");
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+        puts("]Invalid locale config,loaded default setting");
+        #endif
+        return "en-us";
+    }
 }
 #endif

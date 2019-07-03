@@ -87,8 +87,24 @@ int main(int argc,char *argv[])
         for(register int i=0;i<argc;i++)
             if(argv[i]=="help")
             {
+                #ifdef __linux
+                printf("\033[92m");
+                #elif defined(_WIN32)||defined(_WIN64)
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_GREEN|FOREGROUND_INTENSITY);
+                #endif
                 puts("Objective Shell");
-                puts("Syntax:objsh [options] [script] [args]");
+                #ifdef __linux
+                printf("\033[93m")
+                #elif defined(_WIN32)||defined(_WIN64)
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_INTENSITY);
+                #endif
+                puts("Copyright(C)2019 CodesBuilder");
+                #ifdef __linux
+                printf("\033[0m");
+                #elif defined(_WIN32)||defined(_WIN64)
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+                #endif
+                puts("Syntax:objshell [options] [script] [args]");
                 puts("Options:");
                 puts("-v            Show version info");
                 puts("-h/--help     Show this list");
@@ -100,6 +116,7 @@ int main(int argc,char *argv[])
                 puts("-var [name]   Pre-define a variable");
                 puts("-array [name] Pre-define an array");
                 puts("-macro [name] Pre-define a macro");
+                puts("-key [key]    Check the key when Objective Shell startup(secret test only)");
             }
             else if(argv[i]=="-v")
             {
