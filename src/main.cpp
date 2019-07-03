@@ -9,7 +9,7 @@ wstring CurrentPath;
 char CurrentLocale[4];
 wchar_t *initial_path_buf=new wchar_t[1024];
 
-#define UNLOCKED_FALG2_VALUE 53245
+#define UNLOCKED_FALG1_VALUE 53245
 #define UNLOCKED_FALG2_VALUE 781915
 
 int main(int argc,char *argv[])
@@ -98,7 +98,13 @@ int main(int argc,char *argv[])
                 puts("-pe [command] Pre-execute a command");
                 puts("-s            Show setting interface");
                 puts("-var [name]   Pre-define a variable");
-                puts("-array [name] Pre-define an array.");
+                puts("-array [name] Pre-define an array");
+                puts("-macro [name] Pre-define a macro");
+            }
+            else if(argv[i]=="-v")
+            {
+                ShowVersionInfo();
+                return 0;
             }
     }
     while(true)
@@ -110,7 +116,6 @@ int main(int argc,char *argv[])
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_GREEN|FOREGROUND_INTENSITY);
         #endif
         wcout<<CurrentPath;
-        wcin.getline(user_input);
         #ifdef __linux
         printf("\033[0m");
         #elif defined(_WIN32)||defined(_WIN64)
