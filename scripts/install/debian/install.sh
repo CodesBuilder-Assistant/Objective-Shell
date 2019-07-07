@@ -1,7 +1,8 @@
 #!/bin/bash
+echo "Give root user password:"
 su root
 if [ $? -eq 0 ]
-    echo "\033[0m[\033[31mError\033[0m]Switch to root user failed"
+    echo -e "\033[0m[\033[31mError\033[0m]Switch to root user failed"
     exit
 fi
 #ver=
