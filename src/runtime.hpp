@@ -42,11 +42,6 @@ using namespace std;
 #elif defined(_WIN32)||defined(_WIN64)
 #include <windows.h>
 #endif
-struct _operator
-{
-    wchar_t operator_char;
-    unsigned int after_part_number;
-};
 /* Operators */
 wstring valid_spec_char=L"r";
 
