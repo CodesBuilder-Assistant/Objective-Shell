@@ -43,9 +43,6 @@ using namespace std;
 #include <windows.h>
 #endif
 /* Operators */
-wstring valid_spec_char=L"r";
-
-bool error_actived=false;
 string error_info;
 wstring werror_info;
 
