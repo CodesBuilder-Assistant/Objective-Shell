@@ -4,6 +4,17 @@
 #include <windows.h>
 #endif
 #include <stdio.h>
+bool SetLocale(char *locale_code)
+{
+    FILE *locale_conf_fp;
+    #ifdef __linux
+    locale_conf_fp=fopen("/etc/objshell/locale.bin","w");
+    #elif defined(_WIN32)||defined(_WIN64)
+    locale_conf_fp=fopen("locale.bin","w");
+    #endif
+    fprintf(locale_conf_fp,locale_code);
+    return true;
+}
 char *GetLocale(void)
 {
     FILE *locale_conf_fp;
@@ -28,7 +39,7 @@ char *GetLocale(void)
     }
     #endif
     fseek(locale_conf_fp,0L,SEEK_END);
-    if(ftell(locale_conf_fp)!=4)
+    if(ftell(locale_conf_fp)>4)
     {
         #ifdef __linux
         puts("\033[0m[\033[31mError\033[0m]Locale config file damaged,please reinstall Objective Shell or fix it");
