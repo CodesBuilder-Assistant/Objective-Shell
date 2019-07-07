@@ -1,7 +1,8 @@
 #!/bin/bash
 su root
-if [$? -eq 0 ]
+if [ $? -eq 0 ]
     echo "\033[0m[\033[31mError\033[0m]Switch to root user failed"
+    exit
 fi
 #ver=
 filename=objshell-current.deb
