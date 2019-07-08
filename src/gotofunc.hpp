@@ -7,6 +7,7 @@
 #include <string>
 #if defined(_WIN32)||defined(_WIN64)
 #include <windows.h>
+#include <conio.h>
 #elif defined(__linux)
 #include <unistd.h>
 #endif
@@ -382,5 +383,46 @@ void BugReport(void)
     curinfo.bVisible=true;
 	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE),&curinfo);
     #endif
+}
+void ShowSettingInterface(void)
+{
+	int user_kbhit;
+	#ifdef __linux
+	printf("\033[2J\033[0m");
+	#elif defined(_WIN32)||defined(_WIN64)
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+	system("cls");
+	bool press_enter=false;
+	unsigned char selected_option=0;
+	while(true)
+	{
+		puts("Objective Shell settings");
+		switch(selected_option)
+		{
+			case 0:
+			default:
+				printf("[");
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED);
+				printf("Error");
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+				puts("]A invalid selected option detected,interrupted process");
+				Sleep(100);
+				exit(0);
+		}
+		user_kbhit=getch();
+		if(press_enter)
+		{
+			press_enter=false;
+
+		}
+		switch(user_kbhit)
+		{
+			case VK_RETURN:
+				press_enter=true;
+				break;
+		}
+		system("cls");
+	}
+	#endif
 }
 #endif

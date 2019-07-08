@@ -142,6 +142,7 @@ const wchar_t *cmd_cd=L"cd";
 const wchar_t *cmd_dir=L"dir";
 const wchar_t *cmd_sort=L"sort";
 const wchar_t *cmd_alert=L"alert";
+const wchar_t *cmd_reset=L"reset";
 
 const wchar_t operator_add=L'+';
 const wchar_t operator_sub=L'-';
