@@ -283,15 +283,28 @@ void PrintErrorMessage(char *error_message,unsigned short msg_type_color,char *e
     #endif
 }
 
+bool IsOperator(wstring strobj)
+{
+    for(register int i=0;i<strobj.length();i++)
+        if(strobj[i]!=L'+'&&\
+        strobj[i]!=L'-'&&\
+        strobj[i]!=L'*'&&\
+        strobj[i]!=L'/'&&\
+        strobj[i]!=L'$'&&\
+        strobj[i]!=L'!'&&\
+        strobj[i]!=L'='&&\
+        strobj[i]!=L':'&&\
+        strobj[i]!=L'?'&&\
+        strobj[i]!=L'<'&&\
+        strobj[i]!=L'>')
+            return true;
+    return false;
+}
+
 bool IsInvalidIdentifier(wstring identifier)
 {
     for(register int i=0;i<identifier.size();i++)
-        if(identifier[i]>=L'0'&&identifier[i]<=L'9'&&i==0)
-            return false;
-        else if(identifier[i]<L'A'||(identifier[i]>L'z'))
-            return false;
-        else if(identifier[i]>L'Z'&&identifier[i]<L'a'&&identifier[i]!=L'_')
-            return false;
+        
     return true;
 }
 
@@ -303,36 +316,7 @@ short ExecCommand(wstring one_line_of_command)
     wstring CurrentString;
     for(register int i=0;i<one_line_of_command.length();i++)
     {
-        if(IsOperator)
-            for(register int i=0;i<one_line_of_command.length();i++)
-            {
-                for(register int j=0;j<valid_spec_char.length();j++)
-                    if(one_line_of_command[i]!=valid_spec_char[j])
-                    {
-                        IsOperator=false;
-                        cmdpts.push_back(CurrentString);
-                        CurrentString.clear();
-                        break;
-                    }
-                if(!IsOperator)
-                    continue;
-                CurrentString+=one_line_of_command[i];
-            }
-        else
-        {
-            for(register int i=0;i<one_line_of_command.length();i++)
-                for(register int j=0;j<valid_spec_char.length();j++)
-                    if(one_line_of_command[i]==valid_spec_char[i])
-                    {
-                        IsOperator=true;
-                        cmdpts.push_back(CurrentString);
-                        CurrentString.clear();
-                        break;
-                    }
-                if(IsOperator)
-                    continue;
-                CurrentString+=one_line_of_command[i];
-        }
+        
     }
     /* Main process */
     for(unsigned int i=0;i<cmdpts.size();i++)
@@ -438,6 +422,14 @@ short ExecCommand(wstring one_line_of_command)
                 for(i+=1;i<cmdpts.size();i++)
                     dir(cmdpts[i].c_str());
             }
+        }
+        else if(cmdpts[i]==cmd_reset)
+        {
+            #ifdef __linux
+            
+            #elif deifned(_WIN32)||defined(_WIN64)
+            
+            #endif
         }
         else
         {
