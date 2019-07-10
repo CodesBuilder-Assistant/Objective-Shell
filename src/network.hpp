@@ -5,7 +5,7 @@
 #include <string>
 #if defined(_WIN32)||defined(_WIN64)
 #include <windows.h>
-#elif defined(__linux)
+#elif defined(__linux__)
 #endif
 using namespace std;
 enum url_licenses
@@ -30,7 +30,7 @@ enum network_error_code
 };
 unsigned short DownloadFile(wchar_t *filename,wchar_t *file_url)
 {
-    #ifdef __linux
+    #ifdef __linux__
     #elif defined(_WIN32)||defined(_WIN64)
     WSADATA wsadat_struct;
     WSAStartup(MAKEWORD(2,2),&wsadat_struct);

@@ -1,4 +1,4 @@
-#ifdef __linux
+#ifdef __linux__
 #include <unistd.h>
 #elif defined(_WIN32)||defined(_WIN64)
 #include <windows.h>
@@ -7,7 +7,7 @@
 #include <stdlib.h>
 void CrashMessage(void)
 {
-    #ifdef __linux
+    #ifdef __linux__
     puts("\033[0m[\033[31mError\033[0m]We are sorry,but Objective Shell has been crashed\nSelect an option to continue");
     char opt_buffer[5];
     select:
@@ -30,7 +30,7 @@ void CrashMessage(void)
 }
 int main(void)
 {
-    #ifdef __linux
+    #ifdef __linux__
     printf("\033[0m[\033[32mOK\033[0m]Started Objective Shell status check program\n");
     #elif defined(_WIN32)||defined(_WIN64)
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);

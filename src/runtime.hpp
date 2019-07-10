@@ -29,14 +29,14 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
-#ifdef __linux
+#ifdef __linux__
 #include <sys/io.h>
 #elif defined(_WIN32)||defined(_WIN64)
 #include <io.h>
 #endif
 #include <wchar.h>
 using namespace std;
-#ifdef __linux
+#ifdef __linux__
 #include <unistd.h>
 #include <boost/filesystem.hpp>
 #elif defined(_WIN32)||defined(_WIN64)
@@ -252,13 +252,13 @@ unsigned int column=1;
 void PrintErrorMessage(char *error_message,unsigned short msg_type_color,char *errmsg_type)
 {
     printf("Line:%d Column:%d",line,column);
-    #ifdef __linux
+    #ifdef __linux__
     printf("\033[0m");
     #elif defined(_WIN32)||defined(_WIN64)
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
     #endif
     printf("[");
-    #ifdef __linux
+    #ifdef __linux__
     #elif defined(_WIN32)||defined(_WIN64)
     switch(msg_type_color)
     {
@@ -348,7 +348,7 @@ short ExecCommand(wstring one_line_of_command)
                 continue;
             else if(i>cmdpts.size())
                 puts("\033[0m[\033[31mError\033[0m]Too much arguments");
-            #ifdef __linux
+            #ifdef __linux__
             if(boost::filesystem::exists(cmdpts[i+1]))
                 CurrentPath=cmdpts[i+1];
             else
@@ -371,13 +371,13 @@ short ExecCommand(wstring one_line_of_command)
         {
             for(i+=1;i<cmdpts.size();i++)
             {
-                #ifdef __linux
+                #ifdef __linux__
                 printf("\033[94m");
                 #elif defined(_WIN32)||defined(_WIN64)
                 SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_BLUE|FOREGROUND_INTENSITY);
                 #endif
                 wprintf(L"%ls\n\n",cmdpts[i].c_str());
-                #ifdef __linux
+                #ifdef __linux__
                 if(boost::filesystem::exists(cmdpts[i]))
                 {
                     boost::filesystem::wfstream current_file;
@@ -438,7 +438,7 @@ short ExecCommand(wstring one_line_of_command)
         {
             if(i+1==cmdpts.size())
             {
-                #ifdef __linux
+                #ifdef __linux__
                 puts("\033[0m[\033[31mError\033[0m]Too much arguments");
                 #elif defined(_WIN32)||defined(_WIN64)
                 SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
@@ -450,7 +450,7 @@ short ExecCommand(wstring one_line_of_command)
                 #endif
                 break;
             }
-            #ifdef __linux
+            #ifdef __linux__
             if(execv("objshell",(char *const *)"reseted_by_old_objshell_terminal")==-1)
                 puts("\033[0m[\033[31mError\033[0m]Reset Objective Shell failed");
             #elif deifned(_WIN32)||defined(_WIN64)
@@ -466,7 +466,7 @@ short ExecCommand(wstring one_line_of_command)
                 args+=L" ";
                 args+=cmdpts[i];
             }
-            #ifdef __linux
+            #ifdef __linux__
             #elif defined(_WIN32)||defined(_WIN64)
             #endif
         }

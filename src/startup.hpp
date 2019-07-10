@@ -2,7 +2,7 @@
 #define STARTUP_HPP
 #if defined(_WIN32)||defined(_WIN64)
 #include <windows.h>
-#elif defined(__linux)
+#elif defined(__linux__)
 #include <unistd.h>
 #endif
 void PaintStartupAnimation(void)

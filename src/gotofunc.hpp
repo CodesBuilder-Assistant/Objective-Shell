@@ -8,7 +8,7 @@
 #if defined(_WIN32)||defined(_WIN64)
 #include <windows.h>
 #include <conio.h>
-#elif defined(__linux)
+#elif defined(__linux__)
 #include <unistd.h>
 #endif
 void ShowRandomContents(void)
@@ -20,61 +20,61 @@ void ShowRandomContents(void)
         #if defined(_WIN32)||defined(_WIN64)
         system("cls");
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
-        #elif defined(__linux)
+        #elif defined(__linux__)
         printf("\033[2J\033[0m");
         #endif
         printf("C:>");
         #if defined(_WIN32)||defined(_WIN64)
         Sleep(2250);
-        #elif defined(__linux)
+        #elif defined(__linux__)
         sleep(3);
         #endif
         printf("ob");
-        #ifdef __linux
+        #ifdef __linux__
         sleep(1);
         #elif defined(_WIN32)||defined(_WIN64)
         Sleep(60);
         #endif
         #if defined(_WIN32)||defined(_WIN64)
         system("cls");
-        #elif defined(__linux)
+        #elif defined(__linux__)
         printf("\033[2J");
         #endif
         printf("C:>ob");
-        #ifdef __linux
+        #ifdef __linux__
         sleep(1);
         #elif defined(_WIN32)||defined(_WIN64)
         Sleep(60);
         #endif
         #if defined(_WIN32)||defined(_WIN64)
         system("cls");
-        #elif defined(__linux)
+        #elif defined(__linux__)
         printf("\033[2J");
         #endif
         printf("C:>objs");
-        #ifdef __linux
+        #ifdef __linux__
         sleep(1);
         #elif defined(_WIN32)||defined(_WIN64)
         Sleep(60);
         #endif
         #if defined(_WIN32)||defined(_WIN64)
         system("cls");
-        #elif defined(__linux)
+        #elif defined(__linux__)
         printf("\033[2J");
         #endif
         printf("C:>objshe");
-        #ifdef __linux
+        #ifdef __linux__
         sleep(1);
         #elif defined(_WIN32)||defined(_WIN64)
         Sleep(60);
         #endif
         #if defined(_WIN32)||defined(_WIN64)
         system("cls");
-        #elif defined(__linux)
+        #elif defined(__linux__)
         printf("\033[2J");
         #endif
         printf("C:>objshell");
-        #ifdef __linux
+        #ifdef __linux__
         sleep(1);
         #elif defined(_WIN32)||defined(_WIN64)
         Sleep(60);
@@ -82,7 +82,7 @@ void ShowRandomContents(void)
         puts("");
         #if defined(_WIN32)||defined(_WIN64)
         system("cls");
-        #elif defined(__linux)
+        #elif defined(__linux__)
         printf("\033[2J");
         #endif
         return;
@@ -218,7 +218,7 @@ void ShowRandomContents(void)
 	    	Sleep(100);
     		printf("\r");
         }
-        #elif defined(__linux)
+        #elif defined(__linux__)
         for(register int i=0;i<64;i++)
         {
             printf("\b[                ]");
@@ -340,7 +340,7 @@ void ShowRandomContents(void)
         GetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE),&curinfo);
         curinfo.bVisible=false;
 	    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE),&curinfo);
-        #elif defined(__linux)
+        #elif defined(__linux__)
         printf("\033[?25l");
         #endif
         puts("\n\aError loading file.");
@@ -356,13 +356,13 @@ void ASCIITable(void)
 }
 void BugReport(void)
 {
-    #ifdef __linux
+    #ifdef __linux__
     printf("\033[2J");
     #elif defined(_WIN32)||defined(_WIN64)
     system("cls");
     #endif
     printf("To report bugs of Objective Shell,please visit:\n");
-    #ifdef __linux
+    #ifdef __linux__
     puts("\033[4;32mhttps://github.com/CodesBuilder/Objective-Shell/issues\033[0m");
     printf("\033[?25l");
     #elif defined(_WIN32)||defined(_WIN64)
@@ -377,7 +377,7 @@ void BugReport(void)
     puts("Press enter to back...");
     getchar();
     rewind(stdin);
-    #ifdef __linux
+    #ifdef __linux__
     printf("\033[?25h");
     #elif defined(_WIN32)||defined(_WIN64)
     curinfo.bVisible=true;
@@ -387,7 +387,7 @@ void BugReport(void)
 void ShowSettingInterface(void)
 {
 	int user_kbhit;
-	#ifdef __linux
+	#ifdef __linux__
 	printf("\033[2J\033[0m");
 	#elif defined(_WIN32)||defined(_WIN64)
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);

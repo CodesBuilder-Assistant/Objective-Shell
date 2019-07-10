@@ -2,7 +2,7 @@
 #define PORT_HPP
 #if defined(_WIN32)||defined(_WIN64)
 #include <windows.h>
-#elif defined(__linux)
+#elif defined(__linux__)
 #include
 #endif
 class port

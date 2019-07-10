@@ -1,6 +1,6 @@
 #ifndef DIR_HPP
 #define DIR_HPP
-#ifdef __linux
+#ifdef __linux__
 #include <sys/io.h>
 #elif defined(_WIN32)||defined(_WIN64)
 #include <windows.h>
@@ -12,7 +12,7 @@
 using namespace std;
 void dir(const wchar_t *search_file_name)
 {
-    #ifdef __linux
+    #ifdef __linux__
     #elif defined(_WIN32)||defined(_WIN64)
     WIN32_FIND_DATAW finddata;
     HANDLE finddata_handle;

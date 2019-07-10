@@ -52,7 +52,7 @@ void ShowVersionInfo(void)
             break;
         default:
             puts(" ?");
-            #ifdef __linux
+            #ifdef __linux__
             printf("\033[0m[\033[31mError\033[0m]Error version type,please recompile this version.");
             #elif defined(_WIN32)||defined(_WIN64)
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
@@ -63,7 +63,7 @@ void ShowVersionInfo(void)
             printf("]Error version type,please recompile this version");
             #endif
     }
-    #ifdef __linux
+    #ifdef __linux__
     puts("OS:Linux");
     #elif defined(_WIN32)
     puts("OS:Windows 32-bit");
@@ -72,13 +72,13 @@ void ShowVersionInfo(void)
     #endif
     printf("Build Date&Time:%s %s(UTC+8)\n",__DATE__,__TIME__);
     printf("To get more information,please visit:");
-    #ifdef __linux
+    #ifdef __linux__
     printf("\033[94;1;4m")
     #elif defined(_WIN32)||defined(_WIN64)
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),COMMON_LVB_UNDERSCORE|FOREGROUND_BLUE|FOREGROUND_INTENSITY);
     #endif
     puts("codesbuilder.github.io/objshell/updlog");
-    #ifdef __linux
+    #ifdef __linux__
     printf("\033[0m");
     #elif defined(_WIN32)||defined(_WIN64)
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);

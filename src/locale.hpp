@@ -7,7 +7,7 @@
 bool SetLocale(char *locale_code)
 {
     FILE *locale_conf_fp;
-    #ifdef __linux
+    #ifdef __linux__
     locale_conf_fp=fopen("/etc/objshell/locale.bin","w");
     #elif defined(_WIN32)||defined(_WIN64)
     locale_conf_fp=fopen("locale.bin","w");
@@ -18,7 +18,7 @@ bool SetLocale(char *locale_code)
 char *GetLocale(void)
 {
     FILE *locale_conf_fp;
-    #ifdef __linux
+    #ifdef __linux__
     if((locale_conf_fp=fopen("/etc/objshell/locale.bin","r"))==NULL)
     {
         fclose(locale_conf_fp);
@@ -41,7 +41,7 @@ char *GetLocale(void)
     fseek(locale_conf_fp,0L,SEEK_END);
     if(ftell(locale_conf_fp)>4)
     {
-        #ifdef __linux
+        #ifdef __linux__
         puts("\033[0m[\033[31mError\033[0m]Locale config file damaged,please reinstall Objective Shell or fix it");
         puts("[\033[94mNote\033[0m]Loaded default setting");
         #elif defined(_WIN32)||defined(_WIN64)
@@ -72,7 +72,7 @@ char *GetLocale(void)
     return ret_buffer;
     else
     {
-        #ifdef __linux
+        #ifdef __linux__
         puts("\033[30m[\033[31mError\033[0m]Invalid locale config,loaded default setting");
         #elif defined(_WIN32)||defined(_WIN64)
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);

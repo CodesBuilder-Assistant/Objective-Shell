@@ -2,7 +2,7 @@
 #define ALERT_HPP
 #if defined(_WIN32)||defined(_WIN64)
 #include <windows.h>
-#elif defined(__linux)
+#elif defined(__linux__)
 #include <wchar.h>
 #endif
 enum alert_type
@@ -16,7 +16,7 @@ void alert(const wchar_t *alert_message,const wchar_t *alert_title)
 {
     #if defined(_WIN32)||defined(_WIN64)
     MessageBoxW(NULL,alert_message,alert_title,MB_OKC|MB_ICONINFORMATION);
-    #elif defined(__linux)
+    #elif defined(__linux__)
     #endif
 }
 #endif

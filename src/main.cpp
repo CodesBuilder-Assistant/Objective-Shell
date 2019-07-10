@@ -17,7 +17,7 @@ int main(int argc,char *argv[])
     if(version_type==secret_test)
     {
         FILE *lock_flag_file_check;
-        #ifdef __linux
+        #ifdef __linux__
         if((lock_flag_file_check=fopen("/etc/oslock.bi_","r"))!=NULL)
         {
             fclose(lock_flag_file_check);
@@ -46,7 +46,7 @@ int main(int argc,char *argv[])
         {
             if(errcount==3)
             {
-                #ifdef __linux
+                #ifdef __linux__
                 puts("\033[0m[\033[31mError\033[0m]Objective Shell has been locked.You can't use it later.");
                 #elif defined(_WIN32)||defined(_WIN64)
                 SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
@@ -60,7 +60,7 @@ int main(int argc,char *argv[])
             }
             if(!first)
             {
-                #ifdef __linux
+                #ifdef __linux__
                 puts("\033[0m[\033[31mError\033[0m]Password wrong.");
                 #elif defined(_WIN32)||defined(_WIN64)
                 SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
@@ -87,19 +87,19 @@ int main(int argc,char *argv[])
         for(register int i=0;i<argc;i++)
             if(argv[i]=="help")
             {
-                #ifdef __linux
+                #ifdef __linux__
                 printf("\033[92m");
                 #elif defined(_WIN32)||defined(_WIN64)
                 SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_GREEN|FOREGROUND_INTENSITY);
                 #endif
                 puts("Objective Shell");
-                #ifdef __linux
+                #ifdef __linux__
                 printf("\033[93m");
                 #elif defined(_WIN32)||defined(_WIN64)
                 SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_INTENSITY);
                 #endif
                 puts("Copyright(C)2019 CodesBuilder");
-                #ifdef __linux
+                #ifdef __linux__
                 printf("\033[0m");
                 #elif defined(_WIN32)||defined(_WIN64)
                 SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
@@ -125,7 +125,7 @@ int main(int argc,char *argv[])
             }
             else if(argv[i]=="reseted_by_old_objshell_terminal")
             {
-                #ifdef __linux
+                #ifdef __linux__
                 puts("\033[0m[\033[32mOK\033[0m]Reseted Objective Shell");
                 puts("Good Luck!");
                 #elif defined(_WIN32)||defined(_WIN64)
@@ -142,13 +142,13 @@ int main(int argc,char *argv[])
     while(true)
     {
         wstring user_input;
-        #ifdef __linux
+        #ifdef __linux__
         printf("\033[92m");
         #elif defined(_WIN32)||defined(_WIN64)
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_GREEN|FOREGROUND_INTENSITY);
         #endif
         wcout<<L"objshell|"<<CurrentPath<<">";
-        #ifdef __linux
+        #ifdef __linux__
         printf("\033[0m");
         #elif defined(_WIN32)||defined(_WIN64)
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_GREEN|FOREGROUND_BLUE|FOREGROUND_RED);

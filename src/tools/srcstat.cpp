@@ -2,7 +2,7 @@
 #include <string>
 #if defined(_WIN32)||defined(_WIN64)
 #include <windows.h>
-#elif defined(__linux)
+#elif defined(__linux__)
 #include <sys/io.h>
 #include <sys/stat.h>
 #endif
@@ -68,20 +68,20 @@ wstring current_file_name;
 
 int main(int argc,char *argv[])
 {
-    #ifdef __linux
+    #ifdef __linux__
     printf("\033[94m");
     #elif defined(_WIN32)||defined(_WIN64)
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_BLUE|FOREGROUND_INTENSITY);
     #endif
     puts("Objective Shell Sources Statistical Tool");
-    #ifdef __linux
+    #ifdef __linux__
     printf("\033[33m");
     #elif defined(_WIN32)||defined(_WIN64)
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN);
     #endif
     puts("Copyright(C)2019 CodesBuilder");
-    #ifdef __linux
-    #ifdef __linux
+    #ifdef __linux__
+    #ifdef __linux__
     printf("\033[0m");
     #elif defined(_WIN32)||defined(_WIN64)
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
@@ -102,7 +102,7 @@ int main(int argc,char *argv[])
             continue;
         }
     }
-    #ifdef __linux
+    #ifdef __linux__
     printf("\033[94m");
     #elif defined(_WIN32)||defined(_WIN64)
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_BLUE|FOREGROUND_INTENSITY);

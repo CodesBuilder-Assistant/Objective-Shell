@@ -13,7 +13,7 @@
 #include <memory.h>
 #include <string>
 
-#ifdef __linux
+#ifdef __linux__
 #include <unistd.h>
 #include <sys/stat.h>
 #elif defined(_WIN32)||defined(_WIN64)
@@ -417,7 +417,7 @@ void ReadPassword(void)
     FILE *passwd_fp;
     if((passwd_fp=fopen("pswd.bin","rb"))==NULL)
         return;
-    #ifdef __linux
+    #ifdef __linux__
     struct stat fsize_stat;
     stat("pswd.bin",&fsize_stat);
     if(fsize_stat.st_size<512)
@@ -465,7 +465,7 @@ bool IsUnlocked(void)
                 lkfile_chk_buf[i]=(char)fgetc_tmp;
             else
             {
-                #ifdef __linux
+                #ifdef __linux__
                 puts("\033[0m[\033[31mError\033[0m]Objective Shell has been locked,please enter the correct password to slove this problem.");
                 #elif defined(_WIN32)||defined(_WIN64)
                 MessageBoxA(NULL,"Objective Shell has been locked,please enter\nthe correct password to slove this problem.","Error",MB_OK|MB_ICONERROR);
