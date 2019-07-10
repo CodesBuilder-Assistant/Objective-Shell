@@ -127,22 +127,22 @@ const wchar_t *keyword_unmap=L"unmap";
 
 const wchar_t *cmd_echo=L"echo";
 const wchar_t *cmd_sleep=L"sleep";
-const wchar_t *cmd_pause=L"pause";
-const wchar_t *cmd_input=L"input";
-const wchar_t *cmd_getline=L"getline";
-const wchar_t *cmd_mkdir=L"mkdir";
-const wchar_t *cmd_rmdir=L"rmdir";
+const wchar_t *cmd_wait=L"wait";
+const wchar_t *cmd_scan=L"scan";
+const wchar_t *cmd_gl=L"gl";
+const wchar_t *cmd_md=L"md";
+const wchar_t *cmd_rd=L"rd";
 const wchar_t *cmd_del=L"del";
 const wchar_t *cmd_mkfile=L"mkfile";
 const wchar_t *cmd_cpuid=L"cpuid";
 const wchar_t *cmd_help=L"help";
-const wchar_t *cmd_pvf=L"pvf";
-const wchar_t *cmd_diff=L"diff";
+const wchar_t *cmd_vfc=L"vfc";
 const wchar_t *cmd_cd=L"cd";
 const wchar_t *cmd_dir=L"dir";
 const wchar_t *cmd_sort=L"sort";
 const wchar_t *cmd_alert=L"alert";
 const wchar_t *cmd_reset=L"reset";
+const wchar_t *cmd_exec=L"exec";
 
 const wchar_t operator_add=L'+';
 const wchar_t operator_sub=L'-';
@@ -296,9 +296,20 @@ bool IsOperator(wstring strobj)
         strobj[i]!=L':'&&\
         strobj[i]!=L'?'&&\
         strobj[i]!=L'<'&&\
-        strobj[i]!=L'>')
-            return true;
-    return false;
+        strobj[i]!=L'>'&&\
+        strobj[i]!=L'%'&&\
+        strobj[i]!=L'^'&&\
+        strobj[i]!=L'~'&&\
+        strobj[i]!=L'['&&\
+        strobj[i]!=L']'&&\
+        strobj[i]!=L'('&&\
+        strobj[i]!=L')'&&\
+        strobj[i]!=L'.'&&\
+        strobj[i]!=L','&&\
+        strobj[i]!=L'{'&&\
+        strobj[i]!=L'}')
+            return false;
+    return true;
 }
 
 bool IsInvalidIdentifier(wstring identifier)
@@ -311,7 +322,7 @@ bool IsInvalidIdentifier(wstring identifier)
 short ExecCommand(wstring one_line_of_command)
 {
     static unsigned short need_end_count=0;
-    bool IsOperator=false;
+    bool is_operator=false,instr=false;
     vector<wstring>cmdpts;
     wstring CurrentString;
     for(register int i=0;i<one_line_of_command.length();i++)
@@ -356,7 +367,7 @@ short ExecCommand(wstring one_line_of_command)
             unsigned short _alert_type;
             alert(cmdpts[i+2].c_str(),cmdpts[i+3].c_str());
         }
-        else if(cmdpts[i]==cmd_pvf)
+        else if(cmdpts[i]==cmd_vfc)
         {
             for(i+=1;i<cmdpts.size();i++)
             {
@@ -425,15 +436,39 @@ short ExecCommand(wstring one_line_of_command)
         }
         else if(cmdpts[i]==cmd_reset)
         {
+            if(i+1==cmdpts.size())
+            {
+                #ifdef __linux
+                puts("\033[0m[\033[31mError\033[0m]Too much arguments");
+                #elif defined(_WIN32)||defined(_WIN64)
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+                printf("[");
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED);
+                printf("Error");
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+                puts("]Too much arguments");
+                #endif
+                break;
+            }
             #ifdef __linux
-            
+            if(execv("objshell",(char *const *)"reseted_by_old_objshell_terminal")==-1)
+                puts("\033[0m[\033[31mError\033[0m]Reset Objective Shell failed");
             #elif deifned(_WIN32)||defined(_WIN64)
             
             #endif
         }
         else
         {
-
+            int filename_unit=i;
+            wstring args=cmdpts[i+1];
+            for(i+=1;i<cmdpts.size();i++)
+            {
+                args+=L" ";
+                args+=cmdpts[i];
+            }
+            #ifdef __linux
+            #elif defined(_WIN32)||defined(_WIN64)
+            #endif
         }
     }
 }

@@ -1,15 +1,23 @@
 #include <stdio.h>
 #include <wchar.h>
 #include <locale.h>
-#include <termios.h>
 #include <stdbool.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <linux/input.h>
+
 enum languages
 {
     en_us,
     zh_hans,
     zh_hant
 };
-struct termios terminal_old,terminal_current;
+struct input_event kbhit_event;
+void download_program(void)
+{
+    int socket_fd=socket(AF_INET,SOCK_STREAM,0);
+
+}
 int main(int argc,char *argv[])
 {
     bool auto_install=false;
@@ -42,8 +50,6 @@ int main(int argc,char *argv[])
     setlocale(LC_ALL,"");
     puts("\033[0m[\033[32mOK\033[0m]Locale detected");
     printf("\033[2J");
-    tcgetattr(0,&terminal_old);
-    
     int key;
     unsigned short selected=0;
     while(1)
@@ -68,7 +74,4 @@ int main(int argc,char *argv[])
         
         printf("\033[2J");
     }
-    
-    tcsetattr(0,TCSANOW,&terminal_old);
-    tcsetattr(0,TCSANOW,&terminal_current);
 }

@@ -94,7 +94,7 @@ int main(int argc,char *argv[])
                 #endif
                 puts("Objective Shell");
                 #ifdef __linux
-                printf("\033[93m")
+                printf("\033[93m");
                 #elif defined(_WIN32)||defined(_WIN64)
                 SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_INTENSITY);
                 #endif
@@ -123,6 +123,21 @@ int main(int argc,char *argv[])
                 ShowVersionInfo();
                 return 0;
             }
+            else if(argv[i]=="reseted_by_old_objshell_terminal")
+            {
+                #ifdef __linux
+                puts("\033[0m[\033[32mOK\033[0m]Reseted Objective Shell");
+                puts("Good Luck!");
+                #elif defined(_WIN32)||defined(_WIN64)
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+                printf("[");
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_GREEN);
+                printf("OK");
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+                puts("]Reseted Objective Shell");
+                puts("Good Luck!");
+                #endif
+            }
     }
     while(true)
     {
@@ -132,7 +147,7 @@ int main(int argc,char *argv[])
         #elif defined(_WIN32)||defined(_WIN64)
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_GREEN|FOREGROUND_INTENSITY);
         #endif
-        wcout<<CurrentPath;
+        wcout<<L"objshell|"<<CurrentPath<<">";
         #ifdef __linux
         printf("\033[0m");
         #elif defined(_WIN32)||defined(_WIN64)
