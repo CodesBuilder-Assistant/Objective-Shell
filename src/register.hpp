@@ -39,7 +39,6 @@ unsigned short _ax,_bx,_cx,_dx;
 unsigned char _ah,_al,_bh,_bl,_ch,_cl,_dh,_dl;
 void __fastcall regset_32bit(unsigned int data,unsigned short reg_id)
 {
-    asm volatile(".intel_syntax noprefix");
     switch(reg_id)
     {
         case EAX:

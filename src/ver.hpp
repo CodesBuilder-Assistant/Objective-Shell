@@ -5,7 +5,7 @@
 #include <memory.h>
 #include <time.h>
 #if defined(_WIN32)||defined(_WIN64)
-#include <windows.h>
+#include <Windows.h>
 #endif
 
 enum ver_type

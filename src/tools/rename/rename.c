@@ -4,7 +4,7 @@
 #ifdef __linux__
 #include <dirent.h>
 #elif defined(_WIN32)||defined(_WIN64)
-#include <windows.h>
+#include <Windows.h>
 #endif
 #if defined(_WIN32)||defined(_WIN64)
 char *invalid_name={"con","com1","com2","com3","com4","com5","com6","com7","com8","com9","aux",\

@@ -3,7 +3,7 @@
 #ifdef __linux__
 #include <sys/io.h>
 #elif defined(_WIN32)||defined(_WIN64)
-#include <windows.h>
+#include <Windows.h>
 #endif
 #include <wchar.h>
 #include <stdio.h>
@@ -12,8 +12,7 @@
 using namespace std;
 void dir(const wchar_t *search_file_name)
 {
-    #ifdef __linux__
-    #elif defined(_WIN32)||defined(_WIN64)
+    #if defined(_WIN32)||defined(_WIN64)
     WIN32_FIND_DATAW finddata;
     HANDLE finddata_handle;
     if((finddata_handle=FindFirstFileW(search_file_name,&finddata))==INVALID_HANDLE_VALUE)
@@ -40,6 +39,8 @@ void dir(const wchar_t *search_file_name)
         last_filename=finddata.cFileName;
         FindNextFileW(finddata_handle,&finddata);
     }
+    #elif defined(__linux__)
+
     #endif
 }
 #endif

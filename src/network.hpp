@@ -4,7 +4,7 @@
 #include <wchar.h>
 #include <string>
 #if defined(_WIN32)||defined(_WIN64)
-#include <windows.h>
+#include <Windows.h>
 #elif defined(__linux__)
 #endif
 using namespace std;

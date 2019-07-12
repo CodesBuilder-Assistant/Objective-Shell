@@ -1,5 +1,20 @@
 #ifndef RUNTIME_HPP
 #define RUNTIME_HPP
+#if defined(_WIN32)||defined(_WIN64)
+#include <Windows.h>
+#elif defined(__linux__)
+#include <unistd.h>
+#include <boost/filesystem.hpp>
+#endif
+#include <string>
+#include <thread>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <new>
+#include <iostream>
+#include <vector>
+#include <fstream>
 #include "stack.hpp"
 #include "var.hpp"
 #include "algorithm.hpp"
@@ -13,22 +28,12 @@
 #include "port.hpp"
 #include "network.hpp"
 #include "locale.hpp"
-#include "cpu.hpp"
 #include "class.hpp"
 #include "stack.hpp"
 #include "system.hpp"
 #include "startup.hpp"
 #include "log.hpp"
 #include "locale.hpp"
-#include <string>
-#include <thread>
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <new>
-#include <iostream>
-#include <vector>
-#include <fstream>
 #ifdef __linux__
 #include <sys/io.h>
 #elif defined(_WIN32)||defined(_WIN64)
@@ -36,31 +41,12 @@
 #endif
 #include <wchar.h>
 using namespace std;
-#ifdef __linux__
-#include <unistd.h>
-#include <boost/filesystem.hpp>
-#elif defined(_WIN32)||defined(_WIN64)
-#include <windows.h>
-#endif
 /* Operators */
 string error_info;
 wstring werror_info;
 
-long long value_return=NULL;
-unsigned long long exvalue_return=NULL;
-char *str_return=NULL;
-wchar_t *wstr_return=NULL;
 
-/*
-* Range of values:
-* int:–2147483648-4294967295
-* short:–32768-65535
-* long:–9223372036854775808-18446744073709551615
-* byte:-128-256
-* boolean:0-1
-* var:auto
-* The interpreter will auto set the variable is signed or unsigned.
-*/
+
 const wchar_t *keyword_int=L"int";
 const wchar_t *keyword_short=L"short";
 const wchar_t *keyword_long=L"long";
@@ -315,7 +301,7 @@ bool IsOperator(wstring strobj)
 bool IsInvalidIdentifier(wstring identifier)
 {
     for(register int i=0;i<identifier.size();i++)
-        
+
     return true;
 }
 
@@ -327,7 +313,7 @@ short ExecCommand(wstring one_line_of_command)
     wstring CurrentString;
     for(register int i=0;i<one_line_of_command.length();i++)
     {
-        
+
     }
     /* Main process */
     for(unsigned int i=0;i<cmdpts.size();i++)
@@ -453,8 +439,8 @@ short ExecCommand(wstring one_line_of_command)
             #ifdef __linux__
             if(execv("objshell",(char *const *)"reseted_by_old_objshell_terminal")==-1)
                 puts("\033[0m[\033[31mError\033[0m]Reset Objective Shell failed");
-            #elif deifned(_WIN32)||defined(_WIN64)
-            
+            #elif defined(_WIN32)||defined(_WIN64)
+
             #endif
         }
         else

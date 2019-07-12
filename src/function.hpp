@@ -3,10 +3,12 @@
 #include <stdio.h>
 #include <wchar.h>
 #if defined(_WIN32)||defined(_WIN64)
-#include <windows.h>
+#include <Windows.h>
 #endif
 #include <string>
+#include <vector>
 #include "type.hpp"
+using namespace std;
 typedef struct
 {
     unsigned short type_id;
@@ -16,8 +18,8 @@ class function
 {
     private:
         size_t start_offset;
-        string function_name;
-        argument *args;
+        wstring function_name;
+        vector<wchar_t *> args;
         function(void)
         {
         };
@@ -25,8 +27,25 @@ class function
         function(size_t __start_offset,wchar_t *func_name)
         {
             this->start_offset=__start_offset;
-            this->function_name=new wchar_t[wcslen(func_name)+1];
             this->function_name=func_name;
+        }
+        //Explame:
+        //funtcion func(0,L"explame",L"arg_a,arg_b,arg_c");
+        function(size_t __start_offset,wchar_t *func_name,wchar_t *args)
+        {
+            this->start_offset=__start_offset;
+            this->function_name=func_name;
+            wstring arg_name;
+            for(int i=0;i<wcslen(args);i++)
+            {
+                if(args[i]==L',')
+                {
+                    this->args.push_back(arg_name.c_str);
+                    arg_name.clear();
+                }
+                else
+                    arg_name+=args[i];
+            }
         }
         size_t offset(void)
         {
@@ -34,7 +53,6 @@ class function
         }
         ~function(void)
         {
-            delete[] this->function_name;
         }
 };
 #endif

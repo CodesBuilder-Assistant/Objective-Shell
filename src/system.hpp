@@ -4,7 +4,7 @@
 #include <sys/reboot.h>
 #include <signal.h>
 #elif defined(_WIN32)||defined(_WIN64)
-#include <windows.h>
+#include <Windows.h>
 #endif
 #include <stdlib.h>
 void shutdown(void)

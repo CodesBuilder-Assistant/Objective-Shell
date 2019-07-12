@@ -1,7 +1,7 @@
 #ifdef __linux__
 #include <unistd.h>
 #elif defined(_WIN32)||defined(_WIN64)
-#include <windows.h>
+#include <Windows.h>
 #endif
 #include <stdio.h>
 #include <stdlib.h>

@@ -9,11 +9,10 @@ class TypeAutoCastNotEnabled
 template<class var_type>class var
 {
     private:
-        frined var::operator =;
-        var_type data;
         bool auto_cast;
         string var_name;
     public:
+        var_type data;
         var(void)
         {
             this->data=(var_type)0;
@@ -29,40 +28,52 @@ template<class var_type>class var
             this->data=reinterpret_cast<data_type>(initial_data);
             this->auto_cast=true;
         }
-        template<class data_type>void operator =(data_type target_data)
+        /*
+        * Range of values:
+        * int:–2147483648-4294967295
+        * short:–32768-65535
+        * long:–9223372036854775808-18446744073709551615
+        * byte:-128-256
+        * boolean:0-1
+        * var:auto
+        */
+        template<class data_type>var operator =(data_type value)
         {
-            if(!this->auto_cast)
+            var<int> tmp_class;
+            tmp_class.auto_cast=this->auto_cast;
+            tmp_class.data=this->data;
+            tmp_class.var_name=this->name;
+            if(!tmp_class.auto_cast)
             {
-                throw TypeAutoCastNotEnabled();
-                return;
+                tmp_class.data_type=(typeid(this->data_type)value);
+                return tmp_class;
             }
-            this->data=reinterpret_cast<data_type>(target_data);
-        }
-        template<class data_type>void operator =(var<data_type> target_data)
-        {
-            if(this->auto_cast)
+            if(value>INT_MAX)
             {
-                throw TypeAutoCastNotEnabled();
-                return;
+                if(value>INT64_MAX)
+                    tmp_class->data=reinterpret_cast<unsigned long long>((unsigned long long)value)
+                else
+                    tmp_class->data=reinterpret_cast<long long>((long long)value);
             }
-            this->data=reinterpret_cast<data_type>(target_data.data);
-        }
-        template<class data_type>void operator >(data_type target_data)
-        {
-
-        }
-};
-template<class data_type>class env_var
-{
-    private:
-        data_type *datas;
-        unsigned short data_length;
-    public:
-        env_var(void)
-        {
-            this->datas=new data_type[1];
-            this->datas[0]=NULL;
-            this->data_length++;
+            else if(value>INT16_MAX)
+            {
+                if(value>INT16_MAX*2+1)
+                    tmp_class=reinterpret_cast<int>((int)value);
+                else
+                    tmp_class=reinterpret_cast<unsigned short>((unsigned short)value);
+            }
+            else if(value>INT8_MAX)
+            {
+                if(value>INT8_MAX*2+1)
+                    tmp_class=reinterpret_cast<short>((short)value);
+                else
+                    tmp_class=reinterpret_cast<unsigned char>((unsigned char)value);
+            }
+            else if(value>1)
+                tmp_class=reinterpret_cast<char>((char)value);
+            else
+                tmp_class=reinterpret_cast<bool>(value);
+            return tmp_class;
         }
 };
 list<var<void *>>var_list;

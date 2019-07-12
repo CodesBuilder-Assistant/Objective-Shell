@@ -1,7 +1,7 @@
 #ifndef ALERT_HPP
 #define ALERT_HPP
 #if defined(_WIN32)||defined(_WIN64)
-#include <windows.h>
+#include <Windows.h>
 #elif defined(__linux__)
 #include <wchar.h>
 #endif

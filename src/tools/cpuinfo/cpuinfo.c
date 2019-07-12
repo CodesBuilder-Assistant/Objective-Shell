@@ -1,33 +1,31 @@
+#include "cpuid.h"
 #include <stdio.h>
-#ifdef __linux__
-#include <sys/io.h>
-#elif defined(_WIN32)||defined(_WIN64)
-#include <io.h>
-#include <windows.h>
+#include <stdlib.h>
+#if defined(_WIN32)||defined(_WIN64)
+#include <Windows.h>
 #endif
 int main(int argc,char *argv[])
 {
-    if(argv>1)
+    if(argc>1)
     {
-        for(register int i=0;i<argc;i++)
-        {
-            if(_access(argv[i],0)==-1)
+        for(int i=0;i<argc;i++)
+            if(argv[i]=="")
             {
-                #ifdef __linux__
-                printf("\033[0m[\033[31mError\033[0m]Directory '%d' does not exist",argv[i]);
+
+            }
+            else
+            {
+                #ifdef __linux
+                printf("\033[0m[\033[31mError\033[0m]Invalid option '%s'",argv[i]);
                 #elif defined(_WIN32)||defined(_WIN64)
                 SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
                 printf("[");
                 SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED);
                 printf("Error");
                 SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
-                printf("]");
-                printf("Directory '%d' does not exist",argv[i]);
-                continue;
+                printf("]Invalid option '%s'",argv[i]);
                 #endif
+                exit(1);
             }
-
-        }
     }
-    return 0;
 }

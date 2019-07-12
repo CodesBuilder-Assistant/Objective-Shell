@@ -1,7 +1,7 @@
 #ifndef STARTUP_HPP
 #define STARTUP_HPP
 #if defined(_WIN32)||defined(_WIN64)
-#include <windows.h>
+#include <Windows.h>
 #elif defined(__linux__)
 #include <unistd.h>
 #endif
