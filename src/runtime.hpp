@@ -15,6 +15,7 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include <wchar.h>
 #include "stack.hpp"
 #include "var.hpp"
 #include "algorithm.hpp"
@@ -39,13 +40,7 @@
 #elif defined(_WIN32)||defined(_WIN64)
 #include <io.h>
 #endif
-#include <wchar.h>
 using namespace std;
-/* Operators */
-string error_info;
-wstring werror_info;
-
-
 
 const wchar_t *keyword_int=L"int";
 const wchar_t *keyword_short=L"short";
