@@ -9,29 +9,28 @@
 #include <vector>
 #include "type.hpp"
 using namespace std;
-typedef struct
-{
-    unsigned short type_id;
-    wchar_t *arg_name;
-}argument;
 class function
 {
     private:
         size_t start_offset;
         wstring function_name;
+        wstring function_type;
         vector<wchar_t *> args;
+        bool disabled;
         function(void)
         {
         };
     public:
-        function(size_t __start_offset,wchar_t *func_name)
+        function(size_t __start_offset,wchar_t *func_name,wchar_t *func_type)
         {
             this->start_offset=__start_offset;
             this->function_name=func_name;
+            this->disabled=false;
+            this->function_type=func_type;
         }
         //Explame:
         //funtcion func(0,L"explame",L"arg_a,arg_b,arg_c");
-        function(size_t __start_offset,wchar_t *func_name,wchar_t *args)
+        function(size_t __start_offset,wchar_t *func_name,wchar_t *args,wchar_t *func_type)
         {
             this->start_offset=__start_offset;
             this->function_name=func_name;
@@ -46,13 +45,27 @@ class function
                 else
                     arg_name+=args[i];
             }
+            this->disabled=false;
+            this->function_type=func_type;
         }
         size_t offset(void)
         {
             return this->start_offset;
         }
-        ~function(void)
+        void undef(void)
         {
+            this->disabled=true;
+            this->function_name.clear();
+            this->start_offset=NULL;
+            this->args.clear();
+        }
+        void disable(void)
+        {
+            this->disabled=true;
+        }
+        void gotofunc(FILE **fp)
+        {
+            fseek(*fp,0L,this->start_offset);
         }
 };
 #endif

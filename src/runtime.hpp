@@ -438,7 +438,7 @@ short ExecCommand(wstring one_line_of_command)
             }
             #ifdef __linux__
             if(execv("objshell",(char *const *)"reseted_by_old_objshell_terminal")==-1)
-                puts("\033[0m[\033[31mError\033[0m]Reset Objective Shell failed");
+                puts("\033[0m[\033[31mError\033[0m]Reset failed");
             #elif defined(_WIN32)||defined(_WIN64)
 
             #endif
