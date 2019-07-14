@@ -5,6 +5,8 @@
 #include "runtime.hpp"
 #include <locale>
 
+#define _CRT_SECURE_NO_WARNINGS
+
 wstring CurrentPath;
 char CurrentLocale[4];
 wchar_t *initial_path_buf=new wchar_t[1024];

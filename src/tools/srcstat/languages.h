@@ -3,7 +3,7 @@
 wchar_t *cpp[]={L"*.c",L"*.cpp",L"*.cc",L"*.cxx",L"*.h",L"*.hpp",L"*.hxx",L"*.hh"};
 wchar_t *assembly[]={L"*.asm",L"*.s",L"*.inc"};
 wchar_t *objc[]={L"*.m",L"*.mm",L"*.h"};
-wchar_t *shell[]={L"*.sh",L"*.bash",L"*.zsh",L".bashrc"};
+wchar_t *shell[]={L"*.sh",L"*.bash",L"*.zsh",L"*.bashrc",L"*.csh",L"*.tcsh"};
 wchar_t *js[]={L"*.js"};
 wchar_t *ts[]={L"*.ts"};
 wchar_t *makefile[]={L"Makefile",L"GNUmakefile",L"*.mk"};
@@ -21,7 +21,7 @@ wchar_t *batchfile[]={L"*.bat",L"*.cmd"};
 wchar_t *ruby[]={L"*.rb",L"*.ru"};
 wchar_t *rust[]={L"*.rs"};
 wchar_t *restructure_text[]={L"*.rst"};
-wchar_t *ini[]={L"*.ini",L"*.cfg",L"*.conf",L"*.config"};
+wchar_t *config[]={L"*.ini",L"*.cfg",L"*.conf",L"*.config"};
 wchar_t *go[]={L"*.go"};
 wchar_t *ada[]={L"*.ada"};
 wchar_t *powershell[]={L"*.ps1"};
@@ -53,4 +53,5 @@ wchar_t *patch[]={L"*.patch"};
 wchar_t *log[]={L"*.log"};
 wchar_t *jinja[]={L"*.jinja"};
 wchar_t *xml[]={L"*.xml"};
+wchar_t *lex[]={L"*.l"};
 #endif

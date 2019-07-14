@@ -35,11 +35,6 @@
 #include "startup.hpp"
 #include "log.hpp"
 #include "locale.hpp"
-#ifdef __linux__
-#include <sys/io.h>
-#elif defined(_WIN32)||defined(_WIN64)
-#include <io.h>
-#endif
 using namespace std;
 
 const wchar_t *keyword_int=L"int";
@@ -346,7 +341,7 @@ short ExecCommand(wstring one_line_of_command)
             if(cmdpts[i+6]!=L")")
                 puts("\033[0m[\033[31mError\033[0m]Couldn't find operator ')'");
             unsigned short _alert_type;
-            alert(cmdpts[i+2].c_str(),cmdpts[i+3].c_str());
+            xalert(cmdpts[i+2].c_str(),cmdpts[i+3].c_str());
         }
         else if(cmdpts[i]==cmd_vfc)
         {
