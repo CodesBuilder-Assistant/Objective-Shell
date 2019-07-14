@@ -1,6 +1,5 @@
 #ifndef LANGUAGES_H
 #define LANGUAGES_H
-#include <wchar.h>
 wchar_t *cpp[]={L"*.c",L"*.cpp",L"*.cc",L"*.cxx",L"*.h",L"*.hpp",L"*.hxx",L"*.hh"};
 wchar_t *assembly[]={L"*.asm",L"*.s",L"*.inc"};
 wchar_t *objc[]={L"*.m",L"*.mm",L"*.h"};
