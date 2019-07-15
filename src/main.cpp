@@ -1,5 +1,5 @@
 /*
-* Copyright(C)2019 CodesBuilder
+* (C)2019 CodesBuilder
 * This software publish under the GPL
 */
 #include "runtime.hpp"
@@ -100,7 +100,7 @@ int main(int argc,char *argv[])
                 #elif defined(_WIN32)||defined(_WIN64)
                 SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_INTENSITY);
                 #endif
-                puts("Copyright(C)2019 CodesBuilder");
+                puts("(C)2019 CodesBuilder");
                 #ifdef __linux__
                 printf("\033[0m");
                 #elif defined(_WIN32)||defined(_WIN64)

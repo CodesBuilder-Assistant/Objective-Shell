@@ -2,17 +2,21 @@
 #define FINDFILE_HPP
 #include <vector>
 #include <string>
+#include <wchar.h>
 #ifdef __linux
 #include <boost/filesystem.hpp>
 #elif defined(_WIN32)||defined(_WIN64)
 #include <Windows.h>
 #endif
-using namespace std;
+
+#define FILE_LIST 0
+#define DIRECTORY_LIST 1
+
 class file_list
 {
     private:
-        vector<wchar_t *>files;
-        vector<wchar_t *>directories;
+        std::vector<wchar_t *>files;
+        std::vector<wchar_t *>directories;
     public:
         file_list(void)
         {
@@ -26,7 +30,7 @@ class file_list
                 return;
             //Skip the useless file name.
             FindNextFileW(find_handle,&finddata);
-            wstring last_filename;
+            std::wstring last_filename;
             while(finddata.cFileName!=last_filename.c_str())
             {
                 int file_attrib=GetFileAttributesW(finddata.cFileName);
@@ -38,6 +42,19 @@ class file_list
                 FindNextFileW(find_handle,&finddata);
             }
             #elif defined(__linux__)
+            boost::filesystem::directory_iterator end;
+            for(boost::filesystem::directory_iterator _i_;_i_!=end;_i_++)
+            {
+                boost::filesystem::path file_name=_i_->path().extension();
+                wstring tmp_wfilename="a";
+                for(int i=findname.size();i>=0;i--)
+                    for(int j=i;j<i;)
+                    {
+                        
+                    }
+                boost::filesystem::path find_name=;
+                boost::filesystem::extension()
+            }
             #endif
         }
         void refresh(wchar_t *findname,bool clear)
@@ -97,6 +114,34 @@ class file_list
                 return true;
             else
                 return false;
+        }
+        std::vector<wchar_t *> filelist(void)
+        {
+            return this->files;
+        }
+        std::vector<wchar_t *> dirlist(void)
+        {
+            return this->directories;
+        }
+        wchar_t *get_filename(unsigned int unit_number)
+        {
+            if(unit_number>=this->files.size())
+                return L'\0';
+            return this->files[unit_number];
+        }
+        wchar_t *get_dirname(unsigned int unit_number)
+        {
+            if(unit_number>=this->directories.size())
+                return L'\0';
+            return this->directories[unit_number];
+        }
+        unsigned int file_count(void)
+        {
+            return this->files.size();
+        }
+        unsigned int dir_count(void)
+        {
+            return this->directories.size();
         }
 };
 #endif
