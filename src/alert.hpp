@@ -56,7 +56,7 @@ void alert(const wchar_t *alert_message,unsigned short alert_type)
             printf("  OK  ");
             break;
         case ALERT_NORMAL:
-            printf("[Message")
+            printf("[Message");
     }
     #endif
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);

@@ -1,3 +1,11 @@
+/*
+ * languages.h:Define statistic targets.
+ * Copyright(C)2019 CodesBuilder<2602783536@qq.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as
+ * published by the Free Software Foundation.
+ */
 #ifndef LANGUAGES_H
 #define LANGUAGES_H
 wchar_t *cpp[]={L"*.c",L"*.cpp",L"*.cc",L"*.cxx",L"*.h",L"*.hpp",L"*.hxx",L"*.hh"};
@@ -15,7 +23,8 @@ wchar_t *html[]={L"*.html",L"*.htm",L"*.xhtml"};
 wchar_t *python[]={L"*.py"};
 wchar_t *php[]={L"*.php"};
 wchar_t *jsp[]={L"*.jsp"};
-wchar_t *asp[]={L"*.asp",L"*.aspx"};
+wchar_t *asp[]={L"*.asp"};
+wchar_t *aspx[]={L"*.aspx"};
 wchar_t *action_script[]={L"*.as"};
 wchar_t *batchfile[]={L"*.bat",L"*.cmd"};
 wchar_t *ruby[]={L"*.rb",L"*.ru"};

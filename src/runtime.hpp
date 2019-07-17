@@ -35,6 +35,8 @@
 #include "startup.hpp"
 #include "log.hpp"
 #include "locale.hpp"
+#include "user.hpp"
+#include "hosts.hpp"
 using namespace std;
 
 const wchar_t *keyword_int=L"int";

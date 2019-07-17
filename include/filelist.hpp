@@ -45,15 +45,7 @@ class file_list
             boost::filesystem::directory_iterator end;
             for(boost::filesystem::directory_iterator _i_;_i_!=end;_i_++)
             {
-                boost::filesystem::path file_name=_i_->path().extension();
-                wstring tmp_wfilename="a";
-                for(int i=findname.size();i>=0;i--)
-                    for(int j=i;j<i;)
-                    {
-                        
-                    }
-                boost::filesystem::path find_name=;
-                boost::filesystem::extension()
+
             }
             #endif
         }
@@ -69,7 +61,6 @@ class file_list
             HANDLE find_handle=FindFirstFile(findname,&finddata);
             if(find_handle==INVALID_HANDLE_VALUE)
                 return;
-            //Skip last directory.
             FindNextFileW(find_handle,&finddata);
             wstring last_filename;
             while(finddata.cFileName!=last_filename.c_str())
