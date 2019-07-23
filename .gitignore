@@ -20,3 +20,5 @@
 *.a
 *.lib
 .vscode
+*.manifest
+*.obj

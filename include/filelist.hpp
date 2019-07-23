@@ -21,7 +21,7 @@ class file_list
         file_list(void)
         {
         }
-        file_list(wchar_t *findname)
+        file_list(const wchar_t *findname)
         {
             #if defined(_WIN32)||defined(_WIN64)
             WIN32_FIND_DATAW finddata;
@@ -49,7 +49,7 @@ class file_list
             }
             #endif
         }
-        void refresh(wchar_t *findname,bool clear)
+        void refresh(const wchar_t *findname,const bool clear)
         {
             if(clear)
             {
@@ -77,7 +77,7 @@ class file_list
             #elif defined(__linux__)
             #endif
         }
-        void refresh(wchar_t *findname)
+        void refresh(const wchar_t *findname)
         {
             this->refresh(findname,true);
         }
@@ -86,11 +86,11 @@ class file_list
             this->files.clear();
             this->directories.clear();
         }
-        void attach(wchar_t *findname)
+        void attach(const wchar_t *findname)
         {
             this->refresh(findname,false);
         }
-        void find(wchar_t *findname)
+        void find(const wchar_t *findname)
         {
             this->refresh(findname);
         }
