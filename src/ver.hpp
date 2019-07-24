@@ -16,16 +16,8 @@ enum ver_type
     secret_test
 };
 const unsigned short version_type=secret_test;
-#define CODENAME "INITIAL"
+#define CODENAME ""
 const unsigned int build=1;
-/*
-* Version Format:
-* 1.0.0.1 <Version Type>
-* | | | L Build Number
-* | | L Patch Version
-* | L Minor Version
-* L Main Version
-*/
 const char *VERSION="1.0.0";
 
 void ShowVersionInfo(void)

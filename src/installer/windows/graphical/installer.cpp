@@ -1,16 +1,5 @@
 #include <Windows.h>
 #include <string>
-#include <stdio.h>
-
-#define DEBUG
-
-HWND main_window;
-HWND instopt_install;
-HWND instopt_upgrade;
-FILE *install_log;
-
-#define BUTTON_INSTALL (HMENU)201
-#define BUTTON_UPGRADE (HMENU)202
 
 #pragma comment(lib,"User32.lib")
 #pragma comment(lib,"Gdi32.lib")
@@ -23,10 +12,26 @@ FILE *install_log;
 #pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #endif
 
+HWND main_window;
+HWND button_install;
+HWND button_upgrade;
+HWND instpath_input;
+HWND button_next;
+
+#define BACKGROUND_COLOR RGB(23,32,64)
+#define TEXT_COLOR RGB(20,50,182)
+
+#define BUTTON_INSTALL (HMENU)201
+#define BUTTON_UPGRADE (HMENU)202
+#define INPUT_INSTALL_PATH (HMENU)203
+#define BUTTON_NEXT (HMENU)204
+
 using namespace std;
 
 bool installing=false;
+bool refresh=false;
 wchar_t install_path[8192];
+HINSTANCE hinstance;
 
 enum states
 {
@@ -42,9 +47,6 @@ BYTE state=0;
 void CancelInstall(void)
 {
     wstring install_p=install_path;
-    #ifdef DEBUG
-    fputs("[EVENT]Canceled install\n",install_log);
-    #endif
 }
 
 LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -54,20 +56,19 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
         case WM_COMMAND:
             switch(LOWORD(wParam))
             {
-                case (UINT)BUTTON_INSTALL:
-                    state=SELECT_INSTALL_PATH;
+                case BUTTON_INSTALL:
+                    state++;
+                    refresh=true;
+                    DestroyWindow(button_install);
+                    DestroyWindow(button_upgrade);
                     UpdateWindow(main_window);
-                    DestroyWindow(instopt_install);
-                    DestroyWindow(instopt_upgrade);
-                    #ifdef DEBUG
-                    fputs("[EVENT]Clicked button 'instopt_install'\n",install_log);
-                    #endif
+                    instpath_input=CreateWindowW(L"EDIT",L"C:\\Program Files\\Objective Shell\\",WS_CHILD|WS_VISIBLE,10,100,400,20,hwnd,INPUT_INSTALL_PATH,hinstance,NULL);
+                    button_next=CreateWindowW(L"BUTTON",L"Next",WS_CHILD|WS_VISIBLE,375,300,40,20,hwnd,BUTTON_NEXT,hinstance,NULL);
                     break;
-                case (UINT)BUTTON_UPGRADE:
-                    MessageBoxW(NULL,L"This is the first version",L"Error",MB_OK|MB_ICONERROR);
-                    #ifdef DEBUG
-                    fputs("[EVENT]Clicked button 'instopt_upgrade'\n",install_log);
-                    #endif
+                case BUTTON_UPGRADE:
+                    MessageBoxW(NULL,L"This is the first version!",L"Error",MB_OK|MB_ICONERROR);
+                    break;
+                case BUTTON_NEXT:
                     break;
             }
             break;
@@ -79,47 +80,40 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
         case WM_PAINT:
             PAINTSTRUCT ps;
             HDC hdc;
-            hdc=BeginPaint(hwnd,&ps);
+            if(refresh)
+            {
+                hdc=GetDC(hwnd);
+                switch(state)
+                {
+                    case SELECT_INSTALL_PATH:
+                        for(int y=0;y<30;y++)
+                            for(int x=0;x<180;x++)
+                                SetPixel(hdc,x,y,BACKGROUND_COLOR);
+                        break;
+                }
+            }
+            else
+                hdc=BeginPaint(hwnd,&ps);
             switch(state)
             {
                 case FIRST_STEP:
-                    SetTextColor(hdc,RGB(20,50,182));
-                    #ifdef DEBUG
-                    fputs("[OK]Set text color\n",install_log);
-                    #endif
+                    SetTextColor(hdc,TEXT_COLOR);
                     SetBkMode(hdc,TRANSPARENT);
-                    #ifdef DEBUG
-                    fputs("[OK]Set text background to transparent\n",install_log);
-                    #endif
                     TextOutW(hdc,10,10,L"Objective Shell Installer",wcslen(L"Objective Shell Installer"));
-                    TextOutW(hdc,0,344,L"Copyright(C)2019 CodesBuilder",wcslen(L"Copyright(C)2019 CodesBuilder"));
-                    SetTextColor(hdc,RGB(255,255,255));
-                    #ifdef DEBUG
-                    fputs("[OK]Refreshed client,state:FIRST_STEP\n",install_log);
-                    #endif
+                    TextOutW(hdc,0,344,L"objshell 1.0.1",wcslen(L"objshell 1.0.1"));
                     break;
                 case SELECT_INSTALL_PATH:
-                    SetTextColor(hdc,RGB(20,50,182));
-                    #ifdef DEBUG
-                    fputs("[OK]Set text color\n",install_log);
-                    #endif
+                    SetTextColor(hdc,TEXT_COLOR);
                     SetBkMode(hdc,TRANSPARENT);
-                    #ifdef DEBUG
-                    fputs("[OK]Set text background to transparent\n",install_log);
-                    #endif
-                    TextOutW(hdc,10,10,L"Install Path:",wcslen(L"Install Path:"));
-                    SetTextColor(hdc,RGB(255,255,255));
-                    #ifdef DEBUG
-                    fputs("[OK]Refreshed client,state:SELECT_INSTALL_PATH\n",install_log);
-                    #endif
+                    TextOutW(hdc,10,80,L"Install Path:",wcslen(L"Install Path:"));
                     break;
+                default:
+                    MessageBoxW(hwnd,L"Invalid state detected",L"Error",MB_OK|MB_ICONWARNING);
+                    PostQuitMessage(1);
             }
             EndPaint(hwnd,&ps);
             break;
         case WM_CLOSE:
-            #ifdef DEBUG
-            fputs("[EVENT]Clicked close button\n",install_log);
-            #endif
             if(installing)
                 if(MessageBoxW(hwnd,L"Do you want to exit?",L"",MB_YESNO|MB_ICONQUESTION)==IDYES)
                 {
@@ -132,50 +126,28 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 }
 int WINAPI wWinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPWSTR lpCmdLine,int nShowCmd)
 {
-    #ifdef DEBUG
-    install_log=fopen("install.log","w");
-    fputs("[OK]Started Objective Shell Installer\n",install_log);
-    #endif
+    hinstance=hInstance;
     LPCWSTR mainclass_name=L"Objective Shell Installer";
     WNDCLASSW mainclass={};
     mainclass.lpszClassName=mainclass_name;
     mainclass.hInstance=hInstance;
     mainclass.lpfnWndProc=MainWindowProc;
-    mainclass.hbrBackground=CreateSolidBrush(RGB(23,32,64));
+    mainclass.hbrBackground=CreateSolidBrush(BACKGROUND_COLOR);
     RegisterClassW(&mainclass);
-    #ifdef DEBUG
-    fputs("[OK]Registed window class\n",install_log);
-    #endif
     main_window=CreateWindowW(mainclass_name,L"Objective Shell Installer",WS_OVERLAPPEDWINDOW,CW_USEDEFAULT,CW_USEDEFAULT,500,400,NULL,NULL,hInstance,NULL);
-    #ifdef DEBUG
-    fputs("[OK]Created main window\n",install_log);
-    #endif
-    instopt_install=CreateWindowW(L"BUTTON",L"Install",WS_CHILD|WS_VISIBLE,10,50,150,25,main_window,BUTTON_INSTALL,hInstance,NULL);
-    #ifdef DEBUG
-    fputs("[OK]Created button 'instopt_install'\n",install_log);
-    #endif
-    instopt_upgrade=CreateWindowW(L"BUTTON",L"Upgrade",WS_CHILD|WS_VISIBLE,10,80,150,25,main_window,BUTTON_UPGRADE,hInstance,NULL);
-    #ifdef DEBUG
-    fputs("[OK]Created button 'instopt_upgrade'\n",install_log);
-    #endif
+    button_install=CreateWindowW(L"BUTTON",L"Install",WS_CHILD|WS_VISIBLE,10,50,150,25,main_window,BUTTON_INSTALL,hInstance,NULL);
+    button_upgrade=CreateWindowW(L"BUTTON",L"Upgrade",WS_CHILD|WS_VISIBLE,10,80,150,25,main_window,BUTTON_UPGRADE,hInstance,NULL);
     if(main_window==NULL)
     {
         MessageBoxW(NULL,L"Create window failed!",L"Error",MB_OK|MB_ICONERROR);
         return 1;
     }
     ShowWindow(main_window,nShowCmd);
-    #ifdef DEBUG
-    fputs("[OK]Called ShowWindow\n",install_log);
-    #endif
     MSG msg={};
     while(GetMessage(&msg,NULL,0,0))
 	{
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
-    #ifdef DEBUG
-    fputs("[EXIT]Exited installer\n",install_log);
-    fclose(install_log);
-    #endif
     return 0;
 }
