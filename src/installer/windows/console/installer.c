@@ -1,8 +1,9 @@
-#include <stdio.h>
+﻿#include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <conio.h>
 #include <Windows.h>
+#include <locale.h>
 int main(int argc,char *argv[])
 {
     bool auto_install=false;
@@ -31,4 +32,6 @@ int main(int argc,char *argv[])
                 puts("-h/--help     Show this list");
             }
     }
+    setlocale(LC_ALL,"");
+    LANGID language_id=GetUserDefaultLangID();
 }

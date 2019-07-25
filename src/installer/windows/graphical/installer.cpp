@@ -1,25 +1,20 @@
 #include <Windows.h>
 #include <string>
+#include <thread>
+#include <latest_com.h>
 
 #pragma comment(lib,"User32.lib")
 #pragma comment(lib,"Gdi32.lib")
-
-#if defined _M_IX86
-#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'\"")
-#elif defined _M_X64
-#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='amd64' publicKeyToken='6595b64144ccf1df' language='*'\"")
-#else
-#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
-#endif
 
 HWND main_window;
 HWND button_install;
 HWND button_upgrade;
 HWND instpath_input;
 HWND button_next;
+UINT main_window_sz_x;
+UINT main_window_sz_y;
 
-#define BACKGROUND_COLOR RGB(23,32,64)
-#define TEXT_COLOR RGB(20,50,182)
+#define TEXT_COLOR RGB(65,130,170)
 
 #define BUTTON_INSTALL (HMENU)201
 #define BUTTON_UPGRADE (HMENU)202
@@ -49,6 +44,25 @@ void CancelInstall(void)
     wstring install_p=install_path;
 }
 
+void DrawGradientBackground(HDC hdc)
+{
+    BYTE BG_R=250;
+    BYTE BG_G=250;
+    BYTE BG_B=240;
+    UINT loop_cnt=0;
+    for(int y=0;y<400;y++,loop_cnt++)
+    {
+        for(int x=0;x<500;x++)
+            SetPixel(hdc,x,y,RGB(BG_R,BG_G,BG_B));
+        if(BG_R!=0)
+            BG_R-=2;
+        if(loop_cnt%2==0&&BG_G!=0)
+            BG_G--;
+        if(loop_cnt%5==0&&BG_B!=30)
+            BG_B--;
+    }
+}
+
 LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch(uMsg)
@@ -61,14 +75,20 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
                     refresh=true;
                     DestroyWindow(button_install);
                     DestroyWindow(button_upgrade);
-                    UpdateWindow(main_window);
                     instpath_input=CreateWindowW(L"EDIT",L"C:\\Program Files\\Objective Shell\\",WS_CHILD|WS_VISIBLE,10,100,400,20,hwnd,INPUT_INSTALL_PATH,hinstance,NULL);
                     button_next=CreateWindowW(L"BUTTON",L"Next",WS_CHILD|WS_VISIBLE,375,300,40,20,hwnd,BUTTON_NEXT,hinstance,NULL);
+                    UpdateWindow(main_window);
                     break;
                 case BUTTON_UPGRADE:
                     MessageBoxW(NULL,L"This is the first version!",L"Error",MB_OK|MB_ICONERROR);
                     break;
                 case BUTTON_NEXT:
+                    switch(state)
+                    {
+                        case SELECT_INSTALL_PATH:
+                            GetWindowTextW(instpath_input,install_path,8192);
+                            break;
+                    }
                     break;
             }
             break;
@@ -78,33 +98,23 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
         case WM_CREATE:
             break;
         case WM_PAINT:
+        {
             PAINTSTRUCT ps;
             HDC hdc;
             if(refresh)
-            {
                 hdc=GetDC(hwnd);
-                switch(state)
-                {
-                    case SELECT_INSTALL_PATH:
-                        for(int y=0;y<30;y++)
-                            for(int x=0;x<180;x++)
-                                SetPixel(hdc,x,y,BACKGROUND_COLOR);
-                        break;
-                }
-            }
             else
                 hdc=BeginPaint(hwnd,&ps);
+            DrawGradientBackground(hdc);
+            SetBkMode(hdc,TRANSPARENT);
+            SetTextColor(hdc,TEXT_COLOR);
             switch(state)
             {
                 case FIRST_STEP:
-                    SetTextColor(hdc,TEXT_COLOR);
-                    SetBkMode(hdc,TRANSPARENT);
                     TextOutW(hdc,10,10,L"Objective Shell Installer",wcslen(L"Objective Shell Installer"));
-                    TextOutW(hdc,0,344,L"objshell 1.0.1",wcslen(L"objshell 1.0.1"));
+                    TextOutW(hdc,0,344,L"objshell 1.0.0001",wcslen(L"objshell 1.0.0001"));
                     break;
-                case SELECT_INSTALL_PATH:
-                    SetTextColor(hdc,TEXT_COLOR);
-                    SetBkMode(hdc,TRANSPARENT);
+                case SELECT_INSTALL_PATH:SetTextColor(hdc,TEXT_COLOR);
                     TextOutW(hdc,10,80,L"Install Path:",wcslen(L"Install Path:"));
                     break;
                 default:
@@ -113,6 +123,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
             }
             EndPaint(hwnd,&ps);
             break;
+        }
         case WM_CLOSE:
             if(installing)
                 if(MessageBoxW(hwnd,L"Do you want to exit?",L"",MB_YESNO|MB_ICONQUESTION)==IDYES)
@@ -132,7 +143,6 @@ int WINAPI wWinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPWSTR lpCmdLine
     mainclass.lpszClassName=mainclass_name;
     mainclass.hInstance=hInstance;
     mainclass.lpfnWndProc=MainWindowProc;
-    mainclass.hbrBackground=CreateSolidBrush(BACKGROUND_COLOR);
     RegisterClassW(&mainclass);
     main_window=CreateWindowW(mainclass_name,L"Objective Shell Installer",WS_OVERLAPPEDWINDOW,CW_USEDEFAULT,CW_USEDEFAULT,500,400,NULL,NULL,hInstance,NULL);
     button_install=CreateWindowW(L"BUTTON",L"Install",WS_CHILD|WS_VISIBLE,10,50,150,25,main_window,BUTTON_INSTALL,hInstance,NULL);
