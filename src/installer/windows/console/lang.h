@@ -1,6 +1,17 @@
-﻿#ifndef LANG_C
+﻿#ifndef LANG_H
 #include <wchar.h>
 #include <memory.h>
+
+enum language_id
+{
+    EN_US=0,
+    ZH_HANS,
+    ZH_HANT,
+    AR,
+    LANGID_END
+};
+const wchar_t *language_select_show[]={L"English",L"简体中文",L"繁體中文",L"العربية"};
+
 const wchar_t installer_title_en_us[]=L"Objective Shell Installer";
 const wchar_t installer_title_zh_hans[]=L"Objective Shell安装程序";
 const wchar_t installer_title_zh_hant[]=L"Objective Shell安裝程式";
@@ -32,6 +43,9 @@ const wchar_t installation_completed_zh_hant[]=L"安裝完成";
 const wchar_t installation_failed_en_us[]=L"Installation Failed";
 const wchar_t installation_failed_zh_hans[]=L"安装失败";
 const wchar_t installation_failed_zh_hant[]=L"安裝失敗";
+const wchar_t errcode_en_us[]=L"Error Code:";
+const wchar_t errcode_zh_hans[]=L"错误代码:";
+const wchar_t errcode_zh_hant[]=L"錯誤代碼:";
 
 wchar_t *installer_title;
 wchar_t *select_install_path;

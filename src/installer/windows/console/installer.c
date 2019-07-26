@@ -4,10 +4,11 @@
 #include <conio.h>
 #include <Windows.h>
 #include <locale.h>
+#include "lang.h"
+bool installing=false;
 int main(int argc,char *argv[])
 {
     bool auto_install=false;
-    WORD language;
     if(argc>1)
     {
         for(int i=0;i<argc;i++)
@@ -32,6 +33,37 @@ int main(int argc,char *argv[])
                 puts("-h/--help     Show this list");
             }
     }
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+    system("cls");
     setlocale(LC_ALL,"");
-    LANGID language_id=GetUserDefaultLangID();
+    unsigned short language_id=0;
+    while(1)
+    {
+        puts("Select your language:\n");
+        for(int i=EN_US;i<LANGID_END;i++)
+        {
+            printf("[");
+            if(language_id==i)
+                printf("*]");
+            else
+                printf(" ]");
+            wprintf(L"%ls\n",language_select_show[i]);
+        }
+        switch(getch())
+        {
+            case VK_RETURN:
+                goto select_instpath;
+            case 72:
+                if(language_id!=0)
+                    language_id--;
+                break;
+            case 80:
+                if(language_id!=LANGID_END-1)
+                    language_id++;
+                break;
+        }
+        system("cls");
+    }
+    select_instpath:
+    return 0;
 }
