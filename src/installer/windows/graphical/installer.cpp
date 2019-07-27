@@ -15,6 +15,7 @@ HWND button_next;
 HWND button_settings;
 HWND button_setting_use_gradient_background;
 HWND button_back;
+HWND button_exit;
 
 UINT main_window_sz_x;
 UINT main_window_sz_y;
@@ -30,6 +31,7 @@ bool gradient_background=true;
 #define BUTTON_NEXT (HMENU)204
 #define BUTTON_SETTING (HMENU)205
 #define BUTTON_BACK (HMENU)206
+#define BUTTON_EXIT (HMENU)207
 
 bool installing=false;
 bool refresh=false;
@@ -51,6 +53,11 @@ BYTE state=0;
 void CancelInstall(void)
 {
     wstring install_p=install_path;
+}
+
+void CreateFrameWork(void)
+{
+
 }
 
 void DrawGradientBackground(HDC hdc)
@@ -79,7 +86,8 @@ void DrawSolidColorBackground(HDC hdc,COLORREF color)
             SetPixel(hdc,x,y,color);
 }
 
-LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+
+LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 {
     switch(uMsg)
     {
@@ -91,6 +99,8 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
                     refresh=true;
                     DestroyWindow(button_install);
                     DestroyWindow(button_upgrade);
+                    DestroyWindow(button_settings);
+                    DestroyWindow(button_exit);
                     instpath_input=CreateWindowW(L"EDIT",L"C:\\Program Files\\Objective Shell\\",WS_CHILD|WS_VISIBLE,10,100,400,20,hwnd,INPUT_INSTALL_PATH,hinstance,NULL);
                     button_next=CreateWindowW(L"BUTTON",L"Next",WS_CHILD|WS_VISIBLE,375,300,40,20,hwnd,BUTTON_NEXT,hinstance,NULL);
                     UpdateWindow(main_window);
@@ -103,6 +113,16 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
                     {
                         case SELECT_INSTALL_PATH:
                             GetWindowTextW(instpath_input,install_path,8192);
+                            WIN32_FIND_DATAW finddata;
+                            wchar_t *install_path_original=new wchar_t[wcslen(install_path)+1];
+                            wcscpy(install_path_original,install_path);
+                            if(install_path[wcslen(install_path)]!=L'\\')
+                                install_path[wcslen(install_path)+1]=L'\\';
+                            install_path[wcslen(install_path)+1]=L'*';
+                            HANDLE find_handle=FindFirstFileW(install_path,&finddata);
+                            if(find_handle==INVALID_HANDLE_VALUE)
+                                RemoveDirectoryW(install_path_original);
+                            delete[] install_path_original;
                             break;
                     }
                     break;
@@ -112,22 +132,27 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
                     DestroyWindow(button_install);
                     DestroyWindow(button_upgrade);
                     DestroyWindow(button_settings);
-                    button_back=CreateWindowW(L"BUTTON",L"<",WS_CHILD|WS_VISIBLE,1,18,20,20,hwnd,BUTTON_BACK,hinstance,NULL);
+                    DestroyWindow(button_exit);
+                    button_back=CreateWindowW(L"BUTTON",L"< Back",WS_CHILD|WS_VISIBLE,1,375,20,110,hwnd,BUTTON_BACK,hinstance,NULL);
                     UpdateWindow(main_window);
                     break;
                 case BUTTON_BACK:
                     switch(state)
                     {
                         case SETTINGS_INTERFACE:
-                            refresh=true;
-                            state=FIRST_STEP;
                             DestroyWindow(button_back);
                             button_install=CreateWindowW(L"BUTTON",L"Install",WS_CHILD|WS_VISIBLE,10,50,150,25,main_window,BUTTON_INSTALL,hinstance,NULL);
                             button_upgrade=CreateWindowW(L"BUTTON",L"Upgrade",WS_CHILD|WS_VISIBLE,10,80,150,25,main_window,BUTTON_UPGRADE,hinstance,NULL);
                             button_settings=CreateWindowW(L"BUTTON",L"Settings",WS_CHILD|WS_VISIBLE,10,110,150,25,main_window,BUTTON_SETTING,hinstance,NULL);
+                            button_exit=CreateWindowW(L"BUTTON",L"Exit",WS_CHILD|WS_VISIBLE,10,140,150,25,main_window,BUTTON_EXIT,hinstance,NULL);
+                            state=FIRST_STEP;
+                            refresh=true;
                             UpdateWindow(hwnd);
                             break;
                     }
+                    break;
+                case BUTTON_EXIT:
+                    PostQuitMessage(0);
             }
             break;
         case WM_DESTROY:
@@ -161,7 +186,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
             {
                 case FIRST_STEP:
                     TextOutW(hdc,10,10,L"Objective Shell Installer",wcslen(L"Objective Shell Installer"));
-                    TextOutW(hdc,0,344,L"objshell 1.0.0001",wcslen(L"objshell 1.0.0001"));
+                    TextOutW(hdc,0,385,L"objshell 1.0.0001",wcslen(L"objshell 1.0.0001"));
                     break;
                 case SELECT_INSTALL_PATH:
                     SetTextColor(hdc,TEXT_COLOR);
@@ -200,16 +225,17 @@ int WINAPI wWinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPWSTR lpCmdLine
     mainclass.lpfnWndProc=MainWindowProc;
     mainclass.hCursor=LoadCursorW(NULL,(LPCWSTR)IDC_ARROW);
     RegisterClassW(&mainclass);
-    main_window=CreateWindowW(mainclass_name,L"Objective Shell Installer",WS_OVERLAPPEDWINDOW,CW_USEDEFAULT,CW_USEDEFAULT,500,400,NULL,NULL,hInstance,NULL);
-    button_install=CreateWindowW(L"BUTTON",L"Install",WS_CHILD|WS_VISIBLE,10,50,150,25,main_window,BUTTON_INSTALL,hInstance,NULL);
-    button_upgrade=CreateWindowW(L"BUTTON",L"Upgrade",WS_CHILD|WS_VISIBLE,10,80,150,25,main_window,BUTTON_UPGRADE,hInstance,NULL);
-    button_settings=CreateWindowW(L"BUTTON",L"Settings",WS_CHILD|WS_VISIBLE,10,110,150,25,main_window,BUTTON_SETTING,hInstance,NULL);
+    main_window=CreateWindowW(mainclass_name,L"Objective Shell Installer",WS_CLIPCHILDREN,CW_USEDEFAULT,CW_USEDEFAULT,500,400,NULL,NULL,hInstance,NULL);
     if(main_window==NULL)
     {
         MessageBoxW(NULL,L"Create window failed!",L"Error",MB_OK|MB_ICONERROR);
         return 1;
     }
     ShowWindow(main_window,nShowCmd);
+    button_install=CreateWindowW(L"BUTTON",L"Install",WS_CHILD|WS_VISIBLE,10,50,150,25,main_window,BUTTON_INSTALL,hInstance,NULL);
+    button_upgrade=CreateWindowW(L"BUTTON",L"Upgrade",WS_CHILD|WS_VISIBLE,10,80,150,25,main_window,BUTTON_UPGRADE,hInstance,NULL);
+    button_settings=CreateWindowW(L"BUTTON",L"Settings",WS_CHILD|WS_VISIBLE,10,110,150,25,main_window,BUTTON_SETTING,hInstance,NULL);
+    button_exit=CreateWindowW(L"BUTTON",L"Exit",WS_CHILD|WS_VISIBLE,10,140,150,25,main_window,BUTTON_EXIT,hInstance,NULL);
     MSG msg={};
     while(GetMessage(&msg,NULL,0,0))
 	{
