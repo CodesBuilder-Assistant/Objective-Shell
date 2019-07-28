@@ -53,6 +53,7 @@ int main(int argc,char *argv[])
         {
             case VK_RETURN:
                 goto select_instpath;
+                break;
             case 72:
                 if(language_id!=0)
                     language_id--;
@@ -65,5 +66,15 @@ int main(int argc,char *argv[])
         system("cls");
     }
     select_instpath:
+    systen("cls");
+    printf("Install Path:");
+    wchar_t *install_path;
+    install_path=malloc(sizeof(wchar_t)*8192);
+    if(install_path==NULL)
+    {
+        system("cls");
+        puts("Error:Out of memory!");
+        return 0;
+    }
     return 0;
 }
