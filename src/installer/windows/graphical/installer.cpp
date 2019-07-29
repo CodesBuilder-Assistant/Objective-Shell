@@ -35,7 +35,7 @@ bool gradient_background=true;
 
 bool installing=false;
 bool refresh=false;
-wchar_t install_path[8192];
+wchar_t install_path[16384];
 HINSTANCE hinstance;
 
 enum states
@@ -112,7 +112,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     switch(state)
                     {
                         case SELECT_INSTALL_PATH:
-                            GetWindowTextW(instpath_input,install_path,8192);
+                            GetWindowTextW(instpath_input,install_path,16384);
                             WIN32_FIND_DATAW finddata;
                             wchar_t *install_path_original=new wchar_t[wcslen(install_path)+1];
                             wcscpy(install_path_original,install_path);

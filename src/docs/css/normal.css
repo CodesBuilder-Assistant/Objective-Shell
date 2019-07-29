@@ -1,0 +1,37 @@
+body
+{
+    background:linear-gradient(to right,white,#bbbbbb);
+    color:black;
+}
+a
+{
+    text-decoration:none;
+}
+#logo
+{
+    background:linear-gradient(to right,#25b3eb,#20c9ef);
+    background-clip:text;
+    color:transparent;
+    font-size:21px;
+}
+.navigation_bar
+{
+    background:linear-gradient(to right,black,grey);
+    background-clip:text;
+    color:transparent;
+    font-size:16px;
+}
+.normal
+{
+    color:black;
+}
+.warning
+{
+    color:white;
+    background:linear-gradient(to right,gold,#ddcc00);
+}
+.security_warning
+{
+    color:white;
+    background:linear-gradient(to right,yellow,blue);
+}

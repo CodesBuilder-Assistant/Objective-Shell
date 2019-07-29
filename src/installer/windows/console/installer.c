@@ -6,9 +6,29 @@
 #include <locale.h>
 #include "lang.h"
 bool installing=false;
+bool install_log=false;
+DWORD WINAPI InstallLogEnableThread(void)
+{
+    int key;
+    while(1)
+    {
+        key=_kbhit();
+        if(key!=0)
+        {
+            key=_getch();
+            if(key==VK_ESCAPE)
+            {
+                puts("Install log enabled");
+                install_log=true;
+                break;
+            }
+        }
+    }
+    return 0;
+}
+
 int main(int argc,char *argv[])
 {
-    bool auto_install=false;
     if(argc>1)
     {
         for(int i=0;i<argc;i++)
@@ -33,6 +53,10 @@ int main(int argc,char *argv[])
                 puts("-h/--help     Show this list");
             }
     }
+    puts("Press ESC to enable install log");
+    HANDLE install_log_enable_thread=CreateThread(NULL,NULL,InstallLogEnableThread,NULL,NULL,NULL);
+    Sleep(500);
+    CloseHandle(install_log_enable_thread);
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
     system("cls");
     setlocale(LC_ALL,"");
@@ -65,16 +89,48 @@ int main(int argc,char *argv[])
         }
         system("cls");
     }
+    switch(language_id)
+    {
+        case EN_US:
+            installer_title=installer_title_en_us;
+
+            break;
+    }
     select_instpath:
-    systen("cls");
+    system("cls");
     printf("Install Path:");
     wchar_t *install_path;
-    install_path=malloc(sizeof(wchar_t)*8192);
+    install_path=malloc(sizeof(wchar_t)*16384);
     if(install_path==NULL)
     {
         system("cls");
-        puts("Error:Out of memory!");
+        printf("[");
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED);
+        printf("Error");
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+        puts("]Out of memory!");
         return 0;
+    }
+    bool auto_install=false;
+    unsigned char key;
+    unsigned short buf_unit_current=0;
+    while((key=getch())!=VK_RETURN)
+    {
+        if(key>='!'&&key<='z')
+        {
+            install_path[buf_unit_current]=L'\0';
+            buf_unit_current++;
+            printf("%c",key);
+        }
+        else if(key==VK_BACK)
+        {
+            if(buf_unit_current!=0)
+            {
+                printf("\b \b");
+                install_path[buf_unit_current]=L"\0";
+                buf_unit_current--;
+            }
+        }
     }
     return 0;
 }

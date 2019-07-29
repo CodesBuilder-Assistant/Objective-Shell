@@ -7,10 +7,9 @@ enum language_id
     EN_US=0,
     ZH_HANS,
     ZH_HANT,
-    AR,
     LANGID_END
 };
-const wchar_t *language_select_show[]={L"English",L"简体中文",L"繁體中文",L"العربية"};
+const wchar_t *language_select_show[]={L"English",L"简体中文",L"繁體中文"};
 
 const wchar_t installer_title_en_us[]=L"Objective Shell Installer";
 const wchar_t installer_title_zh_hans[]=L"Objective Shell安装程序";
