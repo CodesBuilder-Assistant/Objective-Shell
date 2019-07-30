@@ -100,7 +100,7 @@ int main(int argc,char *argv[])
     system("cls");
     printf("Install Path:");
     wchar_t *install_path;
-    install_path=malloc(sizeof(wchar_t)*16384);
+    install_path=malloc(sizeof(wchar_t)*8193);
     if(install_path==NULL)
     {
         system("cls");
@@ -113,24 +113,8 @@ int main(int argc,char *argv[])
     }
     bool auto_install=false;
     unsigned char key;
-    unsigned short buf_unit_current=0;
-    while((key=getch())!=VK_RETURN)
-    {
-        if(key>='!'&&key<='z')
-        {
-            install_path[buf_unit_current]=L'\0';
-            buf_unit_current++;
-            printf("%c",key);
-        }
-        else if(key==VK_BACK)
-        {
-            if(buf_unit_current!=0)
-            {
-                printf("\b \b");
-                install_path[buf_unit_current]=L"\0";
-                buf_unit_current--;
-            }
-        }
-    }
+    unsigned short buf_unit_current=1;
+    fgetws(install_path,8192,stdin);
+
     return 0;
 }

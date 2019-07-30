@@ -22,3 +22,14 @@
 .vscode
 *.manifest
 *.obj
+*.pdf
+*.doc
+*.ppt
+*.docx
+*.pptx
+*.xls
+*.xlsx
+*.vcproj
+*.csproj
+*.jsproj
+.vscodeignore
