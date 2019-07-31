@@ -102,6 +102,15 @@ const wchar_t *keyword_inited=L"inited";
 const wchar_t *keyword_null=L"null";
 const wchar_t *keyword_map=L"map";
 const wchar_t *keyword_unmap=L"unmap";
+const wchar_t *keyword_alias=L"alias";
+const wchar_t *keyword_void=L"void";
+const wchar_t *keyword_typeid=L"typeid";
+const wchar_t *keyword_rule=L"rule";
+const wchar_t *keyword_generics=L"generics";
+const wchar_t *keyword_unique=L"unique";
+const wchar_t *keyword_override=L"override";
+const wchar_t *keyword_volatile=L"volatile";
+const wchar_t *keyword_assert=L"assert";
 
 const wchar_t *cmd_echo=L"echo";
 const wchar_t *cmd_sleep=L"sleep";

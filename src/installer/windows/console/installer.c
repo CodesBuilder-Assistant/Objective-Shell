@@ -27,6 +27,24 @@ DWORD WINAPI InstallLogEnableThread(void)
     return 0;
 }
 
+void destructor(void)
+{
+    free(installer_title);
+    free(select_install_path);
+    free(select_modules_to_install);
+    free(next);
+    free(back);
+    free(cancel);
+    free(ok);
+    free(yes);
+    free(no);
+    free(installing);
+    free(installation_completed);
+    free(installation_failed);
+    free(errcode);
+    free(invalid_install_path);
+}
+
 int main(int argc,char *argv[])
 {
     if(argc>1)
@@ -45,7 +63,7 @@ int main(int argc,char *argv[])
                 puts("  core        The core of Objective Shell(must install this module)");
                 puts("  boot        Objective Shell Boot Media");
                 puts("  lib         Objective Shell Library");
-                puts("  cp          Objective Shell Script Compiler");
+                puts("  sc          Objective Shell Script Compiler");
                 puts("  tk          Objective Shell Toolkit");
                 puts("  docs        Objective Shell Documents");
                 puts("  all         All modules(normal)");
@@ -60,14 +78,14 @@ int main(int argc,char *argv[])
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
     system("cls");
     setlocale(LC_ALL,"");
-    unsigned short language_id=0;
+    unsigned short selected=0;
     while(1)
     {
         puts("Select your language:\n");
         for(int i=EN_US;i<LANGID_END;i++)
         {
             printf("[");
-            if(language_id==i)
+            if(selected==i)
                 printf("*]");
             else
                 printf(" ]");
@@ -79,26 +97,51 @@ int main(int argc,char *argv[])
                 goto select_instpath;
                 break;
             case 72:
-                if(language_id!=0)
-                    language_id--;
+                if(selected!=0)
+                    selected--;
                 break;
             case 80:
-                if(language_id!=LANGID_END-1)
-                    language_id++;
+                if(selected!=LANGID_END-1)
+                    selected++;
                 break;
         }
         system("cls");
     }
-    switch(language_id)
+    switch(selected)
     {
         case EN_US:
+            installer_title=malloc(sizeof(installer_title_en_us));
             installer_title=installer_title_en_us;
-
+            select_install_path=malloc(sizeof(select_install_path_en_us));
+            select_install_path=select_install_path_en_us;
+            select_modules_to_install=malloc(sizeof(select_modules_to_install_en_us));
+            select_modules_to_install=select_modules_to_install_en_us;
+            next=malloc(sizeof(next_en_us));
+            next=next_en_us;
+            back=malloc(sizeof(back_en_us));
+            back=back_en_us;
+            cancel=malloc(sizeof(cancel_en_us));
+            cancel=cancel_en_us;
+            ok=malloc(sizeof(ok_en_us));
+            ok=ok_en_us;
+            yes=malloc(sizeof(yes_en_us));
+            yes=yes_en_us;
+            no=malloc(sizeof(no_en_us));
+            no=no_en_us;
+            installing=malloc(sizeof(installing_en_us));
+            installing=installing_en_us;
+            installation_completed=malloc(sizeof(installation_completed_en_us));
+            installation_completed=installation_completed_en_us;
+            installation_failed=malloc(sizeof(installation_failed_en_us));
+            errcode=malloc(sizeof(errcode_en_us));
+            errcode=errcode_en_us;
+            invalid_install_path=malloc(sizeof(invalid_install_path_en_us));
+            invalid_install_path=invalid_install_path_en_us;
             break;
     }
     select_instpath:
     system("cls");
-    printf("Install Path:");
+    wprintf(L"%ls",select_install_path);
     wchar_t *install_path;
     install_path=malloc(sizeof(wchar_t)*8193);
     if(install_path==NULL)
@@ -113,8 +156,35 @@ int main(int argc,char *argv[])
     }
     bool auto_install=false;
     unsigned char key;
-    unsigned short buf_unit_current=1;
+    unsigned short buf_unit_current;
+    get_install_directory:
+    buf_unit_current=0;
     fgetws(install_path,8192,stdin);
-
+    RemoveDirectoryW(install_path);
+    if(!CreateDirectoryW(install_path,NULL))
+    {
+        switch(GetLastError())
+        {
+            case CS_E_INVALID_PATH:
+                system("cls");
+                wprintf("%ls",invalid_install_path);
+                goto get_install_directory;
+        }
+    }
+    system("cls");
+    bool *install_options=malloc(16);
+    bool *module_tools=&install_options[0];
+    bool *module_extra_tools=&install_options[1];
+    bool *module_lib=&install_options[2];
+    bool *module_script_compiler=&install_options[3];
+    bool *module_tk=&install_options[4];
+    bool *module_docs=&install_options[5];
+    bool *module_
+    selected=0;
+    while(1)
+    {
+        wprintf("%ls\n",select_modules_to_install);
+        key=getch();
+    }
     return 0;
 }
