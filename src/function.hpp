@@ -35,7 +35,7 @@ class function
             this->start_offset=__start_offset;
             this->function_name=func_name;
             wstring arg_name;
-            for(int i=0;i<wcslen(args);i++)
+            for(register int i=0;i<wcslen(args);i++)
             {
                 if(args[i]==L',')
                 {

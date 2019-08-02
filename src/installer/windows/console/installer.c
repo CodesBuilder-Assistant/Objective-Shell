@@ -49,7 +49,7 @@ int main(int argc,char *argv[])
 {
     if(argc>1)
     {
-        for(int i=0;i<argc;i++)
+        for(register int i=0;i<argc;i++)
             if(argv[i]=="-h"||argv[i]=="--help")
             {
                 puts("Objective Shell Installer\n");
@@ -82,7 +82,7 @@ int main(int argc,char *argv[])
     while(1)
     {
         puts("Select your language:\n");
-        for(int i=EN_US;i<LANGID_END;i++)
+        for(register int i=EN_US;i<LANGID_END;i++)
         {
             printf("[");
             if(selected==i)

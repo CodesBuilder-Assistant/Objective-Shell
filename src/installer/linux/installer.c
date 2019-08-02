@@ -24,7 +24,7 @@ int main(int argc,char *argv[])
     unsigned short language;
     if(argc>1)
     {
-        for(int i=0;i<argc;i++)
+        for(register int i=0;i<argc;i++)
             if(argv[i]=="-h"||argv[i]=="--help")
             {
                 puts("Objective Shell Installer\n");
@@ -71,7 +71,7 @@ int main(int argc,char *argv[])
             wprintf(L"*]繁體中文\u000a");
         else
             wprintf(L" ]繁體中文\u000a");
-        
+
         printf("\033[2J");
     }
 }

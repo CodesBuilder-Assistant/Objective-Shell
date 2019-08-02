@@ -7,7 +7,7 @@
 #endif
 void echo(wchar_t *output_string,bool raw)
 {
-    for(int i=0;i<wcslen(output_string);i++)
+    for(register int i=0;i<wcslen(output_string);i++)
         if(output_string[i]==L'\0')
             return;
         else if(output_string[i]==L'\u00a7')
