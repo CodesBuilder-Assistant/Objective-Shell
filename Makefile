@@ -22,9 +22,9 @@ installer_windows:
 	@del installer.obj
 	@echo Done.
 clean_cmd:
-	@rmdir /s /q build
-	@mkdir build
-	@cd build
+	@rmdir /s /q out
+	@mkdir out
+	@cd out
 	@mkdir installer
 	@mkdir bootmedia
 	@mkdir docs

@@ -7,6 +7,7 @@ using namespace std;
 #pragma comment(lib,"User32.lib")
 #pragma comment(lib,"Gdi32.lib")
 
+HWND framework;
 HWND main_window;
 HWND button_install;
 HWND button_upgrade;
@@ -17,8 +18,8 @@ HWND button_setting_use_gradient_background;
 HWND button_back;
 HWND button_exit;
 
-UINT main_window_sz_x;
-UINT main_window_sz_y;
+unsigned short last_curx,last_cury;
+unsigned short window_x=CW_USEDEFAULT,window_y=CW_USEDEFAULT;
 
 bool transparent_effect=true;
 bool gradient_background=true;
@@ -55,26 +56,40 @@ void CancelInstall(void)
     wstring install_p=install_path;
 }
 
-void CreateFrameWork(void)
-{
-
-}
-
 void DrawGradientBackground(HDC hdc)
 {
     BYTE BG_R=180;
     BYTE BG_G=180;
     BYTE BG_B=240;
     UINT loop_cnt=0;
-    for(int y=0;y<400;y++,loop_cnt++)
+    for(int y=0;y<430;y++,loop_cnt++)
     {
-        for(int x=0;x<500;x++)
+        for(int x=0;x<530;x++)
             SetPixel(hdc,x,y,RGB(BG_R,BG_G,BG_B));
         if(BG_R!=0)
             BG_R-=2;
         if(loop_cnt%2==0&&BG_G!=0)
             BG_G--;
         if(loop_cnt%5==0&&BG_B!=30)
+            BG_B--;
+    }
+}
+
+void DrawFramework(HDC hdc)
+{
+    BYTE BG_R=100;
+    BYTE BG_G=100;
+    BYTE BG_B=170;
+    UINT loop_cnt=0;
+    for(int y=0;y<430;y++,loop_cnt++)
+    {
+        for(int x=0;x<530;x++)
+            SetPixel(hdc,x,y,RGB(BG_R,BG_G,BG_B));
+        if(loop_cnt%2==0&&BG_R!=10)
+            BG_R-=5;
+        if(loop_cnt%5==0&&BG_G!=20)
+            BG_G-=2;
+        if(loop_cnt%17==0&&BG_B!=130)
             BG_B--;
     }
 }
@@ -86,6 +101,65 @@ void DrawSolidColorBackground(HDC hdc,COLORREF color)
             SetPixel(hdc,x,y,color);
 }
 
+bool lbutton_push=false;
+
+LRESULT CALLBACK FrameworkProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
+{
+    switch(uMsg)
+    {
+        case WM_PAINT:
+            {
+                PAINTSTRUCT ps;
+                HDC hdc=BeginPaint(hwnd,&ps);
+                DrawFramework(hdc);
+                EndPaint(hwnd,&ps);
+                break;
+            }
+        case WM_LBUTTONDOWN:
+        {
+            if(!lbutton_push)
+            {
+                last_curx=LOWORD(lParam);
+                last_cury=HIWORD(lParam);
+            }
+            lbutton_push=true;
+            bool x_less=false,y_less=false;
+            WORD distance_x,distance_y;
+            if(last_curx>LOWORD(lParam))
+                distance_x=last_curx-LOWORD(lParam);
+            else
+            {
+                distance_x=LOWORD(lParam)-last_curx;
+                x_less=true;
+            }
+            last_curx=LOWORD(lParam);
+            if(last_cury>HIWORD(lParam))
+                distance_y=last_cury-HIWORD(lParam);
+            else
+            {
+                distance_y=HIWORD(lParam)-last_cury;
+                y_less=true;
+            }
+            last_cury=HIWORD(lParam);
+            if(x_less)
+                window_x+=distance_x;
+            else
+                window_x-=distance_x;
+            MoveWindow(hwnd,window_x,window_y,510,450,1);
+            if(y_less)
+                window_y+=distance_y;
+            else
+                window_y-=distance_y;
+            MoveWindow(hwnd,window_x,window_y,510,450,1);
+            break;
+        }
+        case WM_LBUTTONUP:
+            lbutton_push=false;
+        case WM_RBUTTONDBLCLK:
+            break;
+    }
+    return DefWindowProcW(hwnd,uMsg,wParam,lParam);
+}
 
 LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 {
@@ -133,7 +207,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     DestroyWindow(button_upgrade);
                     DestroyWindow(button_settings);
                     DestroyWindow(button_exit);
-                    button_back=CreateWindowW(L"BUTTON",L"< Back",WS_CHILD|WS_VISIBLE,1,375,20,110,hwnd,BUTTON_BACK,hinstance,NULL);
+                    button_back=CreateWindowW(L"BUTTON",L"< Back",WS_CHILD|WS_VISIBLE,2,375,20,110,hwnd,BUTTON_BACK,hinstance,NULL);
                     UpdateWindow(main_window);
                     break;
                 case BUTTON_BACK:
@@ -162,11 +236,6 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             break;
         case WM_PAINT:
         {
-            if(transparent_effect)
-            {
-                SetWindowLong(main_window,GWL_EXSTYLE,WS_EX_LAYERED|WS_EX_TOOLWINDOW);
-                SetLayeredWindowAttributes(main_window,NULL,235,LWA_ALPHA);
-            }
             PAINTSTRUCT ps;
             HDC hdc;
             if(refresh)
@@ -219,18 +288,27 @@ int WINAPI wWinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPWSTR lpCmdLine
 {
     hinstance=hInstance;
     LPCWSTR mainclass_name=L"Objective Shell Installer";
+    LPCWSTR fclass_name=L"Framework";
+    WNDCLASSW fclass={};
+    fclass.lpszClassName=fclass_name;
+    fclass.hInstance=hInstance;
+    fclass.lpfnWndProc=FrameworkProc;
+    fclass.hCursor=LoadCursorW(NULL,(LPCWSTR)IDC_ARROW);
+    RegisterClassW(&fclass);
     WNDCLASSW mainclass={};
     mainclass.lpszClassName=mainclass_name;
     mainclass.hInstance=hInstance;
     mainclass.lpfnWndProc=MainWindowProc;
     mainclass.hCursor=LoadCursorW(NULL,(LPCWSTR)IDC_ARROW);
     RegisterClassW(&mainclass);
-    main_window=CreateWindowW(mainclass_name,L"Objective Shell Installer",WS_CLIPCHILDREN,CW_USEDEFAULT,CW_USEDEFAULT,500,400,NULL,NULL,hInstance,NULL);
+    framework=CreateWindowW(fclass_name,L"",WS_CHILDWINDOW|WS_POPUP,GetSystemMetrics(SM_CXFULLSCREEN)/4,GetSystemMetrics(SM_CYFULLSCREEN)/4,510,450,NULL,NULL,hInstance,NULL);
+    main_window=CreateWindowW(mainclass_name,L"Objective Shell Installer",WS_CHILD|WS_VISIBLE,5,25,500,400,framework,NULL,hInstance,NULL);
     if(main_window==NULL)
     {
         MessageBoxW(NULL,L"Create window failed!",L"Error",MB_OK|MB_ICONERROR);
         return 1;
     }
+    ShowWindow(framework,nShowCmd);
     ShowWindow(main_window,nShowCmd);
     button_install=CreateWindowW(L"BUTTON",L"Install",WS_CHILD|WS_VISIBLE,10,50,150,25,main_window,BUTTON_INSTALL,hInstance,NULL);
     button_upgrade=CreateWindowW(L"BUTTON",L"Upgrade",WS_CHILD|WS_VISIBLE,10,80,150,25,main_window,BUTTON_UPGRADE,hInstance,NULL);

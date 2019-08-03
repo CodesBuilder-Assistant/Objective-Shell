@@ -5,7 +5,7 @@
 #include <Windows.h>
 #include <locale.h>
 #include "lang.h"
-bool installing=false;
+bool isinstalling=false;
 bool install_log=false;
 DWORD WINAPI InstallLogEnableThread(void)
 {
@@ -179,7 +179,6 @@ int main(int argc,char *argv[])
     bool *module_script_compiler=&install_options[3];
     bool *module_tk=&install_options[4];
     bool *module_docs=&install_options[5];
-    bool *module_
     selected=0;
     while(1)
     {
