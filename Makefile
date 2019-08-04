@@ -1,41 +1,28 @@
-help_compatibility:
-	@echo [Options]
-	@echo help:Show this list
-	@echo installer_windows:Build installer on Windows
-	@echo clean_cmd:Clear generated files with cmd
-	@echo clean_bash:Clear generated files with bash
-help_cmd:
-	@echo Options:
-	@echo help^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ Show this list
-	@echo installer_windows^ ^ ^ ^ ^ Build installer on Windows
-	@echo clean_cmd^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ Clear generated files with cmd
-	@echo clean_bash^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ Clear generated files with bash
-help_shell:
-	@echo -e "\033[0mOptions:"
-	@echo -e "\033[34mhelp                  Show this list"
-	@echo -e "\033[94minstaller_windows     Build installer on Windows"
-	@echo -e "\033[97mclean_cmd             Clean generated files with cmd"
-	@echo -e "\033[92mclean_bash            Clean generated files with bash"
-installer_windows:
-	@cl /Zc:wchar_t  /O2 src\installer\windows\console\installer.c /I include /Fe"out\installer\objshellinst"
-	@cl /Zc:wchar_t /GR /O2 src\installer\windows\graphical\installer.cpp /I include /Fe"out\installer\ObjectiveShell_Installer"
+# Makefile of Objective Shell project
+#
+vc=cl /nologo /Zc:wchar_t /O2 /I include /std:c++17
+vcpp=$(vc) /GR
+masm=ml /nologo /I include
+gcc=gcc /share /O2 -std=c11 -Idir include
+gpp=g++ /share /O2 -std=c++17
+installer_gcc:
+installer_vc:src\installer\windows\console\installer.c
+	@$(vc) src\installer\windows\console\installer.c /Fe"out\installer\install.exe"
+	@$(vcpp) /Fe"out\installer\Objective_Shell_Installer.exe"
 	@del installer.obj
-	@echo Done.
-clean_cmd:
+install_windows:
+	@out\installer\ObjectiveShell_Installer.exe
+clean:
+	@rm -rf out
+	@mkdir out
+	@cd out
+	@mkdir bootmedia
+	@mkdir docs
+	@mkdir installer
+cls:
 	@rmdir /s /q out
 	@mkdir out
 	@cd out
-	@mkdir installer
 	@mkdir bootmedia
 	@mkdir docs
-	@echo Done.
-clean_bash:
-	@rm -rf build
-	@mkdir build
-	@cd build
 	@mkdir installer
-	@mkdir bootmedia
-	@mkdir docs
-	@echo 'Done.'
-install_windows:
-	out\installer\ObjectiveShell_Installer.exe

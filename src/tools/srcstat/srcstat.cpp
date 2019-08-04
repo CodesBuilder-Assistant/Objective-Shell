@@ -13,15 +13,12 @@
 #elif defined(__linux__)
 #include <boost/filesystem.hpp>
 #endif
-#include <filelist.hpp>
 #include "languages.h"
 using namespace std;
 
 int main(int argc,char *argv[])
 {
     puts("Statisticing...");
-    file_list finddata(L"*.c");
-    finddata.attach(L"*.h");
 
     printf("C:");
 }

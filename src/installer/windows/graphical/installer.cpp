@@ -1,7 +1,7 @@
 ﻿#include <Windows.h>
 #include <string>
 #include <thread>
-#include <latest_com.h>
+#include <latest_control.h>
 using namespace std;
 
 #pragma comment(lib,"User32.lib")
@@ -51,12 +51,12 @@ enum states
 
 BYTE state=0;
 
-void CancelInstall(void)
+void CancelInstall(void) noexcept
 {
     wstring install_p=install_path;
 }
 
-void DrawGradientBackground(HDC hdc)
+void DrawGradientBackground(HDC hdc) noexcept
 {
     BYTE BG_R=180;
     BYTE BG_G=180;
@@ -75,7 +75,7 @@ void DrawGradientBackground(HDC hdc)
     }
 }
 
-void DrawFramework(HDC hdc)
+void DrawFramework(HDC hdc) noexcept
 {
     BYTE BG_R=100;
     BYTE BG_G=100;
@@ -94,7 +94,7 @@ void DrawFramework(HDC hdc)
     }
 }
 
-void DrawSolidColorBackground(HDC hdc,COLORREF color)
+void DrawSolidColorBackground(HDC hdc,COLORREF color) noexcept
 {
     for(int y=0;y<400;y++)
         for(int x=0;x<500;x++)
@@ -103,7 +103,7 @@ void DrawSolidColorBackground(HDC hdc,COLORREF color)
 
 bool lbutton_push=false;
 
-LRESULT CALLBACK FrameworkProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
+LRESULT CALLBACK FrameworkProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam) noexcept
 {
     switch(uMsg)
     {
@@ -161,7 +161,7 @@ LRESULT CALLBACK FrameworkProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
     return DefWindowProcW(hwnd,uMsg,wParam,lParam);
 }
 
-LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
+LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam) noexcept
 {
     switch(uMsg)
     {
