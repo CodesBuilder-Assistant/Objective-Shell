@@ -2,6 +2,7 @@
 #
 vc=cl /nologo /Zc:wchar_t /O2 /I include /std:c++17
 vcpp=$(vc) /GR
+cs=csc /nologo /target:winexe
 masm=ml /nologo /I include
 gcc=gcc /share /O2 -std=c11 -Idir include
 gpp=g++ /share /O2 -std=c++17

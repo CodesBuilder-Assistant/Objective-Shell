@@ -3,7 +3,7 @@
 typedef struct
 {
     bool block_dangerous_operations;
-    bool need_password;
-    bool overridable;
-};
+    bool startup_password;
+    bool active_user_system;
+}rule;
 #endif
