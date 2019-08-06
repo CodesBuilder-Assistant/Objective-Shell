@@ -16,6 +16,7 @@ HWND button_settings;
 HWND button_setting_use_gradient_background;
 HWND button_back;
 HWND button_exit;
+HWND button_about;
 
 bool gradient_background=true;
 
@@ -28,6 +29,7 @@ bool gradient_background=true;
 #define BUTTON_SETTING (HMENU)205
 #define BUTTON_BACK (HMENU)206
 #define BUTTON_EXIT (HMENU)207
+#define BUTTON_ABOUT (HMENU)208
 
 bool installing=false;
 bool refresh=false;
@@ -53,14 +55,18 @@ void CancelInstall(void) noexcept
 
 void DrawGradientBackground(HDC hdc) noexcept
 {
+    RECT client_rect;
+    GetClientRect(main_window,&client_rect);
     BYTE BG_R=180;
     BYTE BG_G=180;
     BYTE BG_B=240;
     UINT loop_cnt=0;
-    for(int y=0;y<430;y++,loop_cnt++)
+    for(int y=0;y<=client_rect.bottom;y++,loop_cnt++)
     {
-        for(int x=0;x<530;x++)
-            SetPixel(hdc,x,y,RGB(BG_R,BG_G,BG_B));
+        RECT draw_rect=client_rect;
+        draw_rect.top=y-1;
+        draw_rect.bottom=y;
+        FillRect(hdc,&draw_rect,CreateSolidBrush(RGB(BG_R,BG_G,BG_B)));
         if(BG_R!=0)
             BG_R-=2;
         if(loop_cnt%2==0&&BG_G!=0)
@@ -70,30 +76,11 @@ void DrawGradientBackground(HDC hdc) noexcept
     }
 }
 
-void DrawFramework(HDC hdc) noexcept
-{
-    BYTE BG_R=100;
-    BYTE BG_G=100;
-    BYTE BG_B=170;
-    UINT loop_cnt=0;
-    for(int y=0;y<430;y++,loop_cnt++)
-    {
-        for(int x=0;x<530;x++)
-            SetPixel(hdc,x,y,RGB(BG_R,BG_G,BG_B));
-        if(loop_cnt%2==0&&BG_R!=10)
-            BG_R-=5;
-        if(loop_cnt%5==0&&BG_G!=20)
-            BG_G-=2;
-        if(loop_cnt%17==0&&BG_B!=130)
-            BG_B--;
-    }
-}
-
 void DrawSolidColorBackground(HDC hdc,COLORREF color) noexcept
 {
-    for(int y=0;y<400;y++)
-        for(int x=0;x<500;x++)
-            SetPixel(hdc,x,y,color);
+    RECT client_rect;
+    GetClientRect(main_window,&client_rect);
+    FillRect(hdc,&client_rect,CreateSolidBrush(color));
 }
 
 LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam) noexcept
@@ -142,7 +129,8 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     DestroyWindow(button_upgrade);
                     DestroyWindow(button_settings);
                     DestroyWindow(button_exit);
-                    button_back=CreateWindowW(L"BUTTON",L"< Back",WS_CHILD|WS_VISIBLE,2,375,20,110,hwnd,BUTTON_BACK,hinstance,NULL);
+                    DestroyWindow(button_about);
+                    button_back=CreateWindowW(L"BUTTON",L"< Back",WS_CHILD|WS_VISIBLE,5,335,50,20,hwnd,BUTTON_BACK,hinstance,NULL);
                     UpdateWindow(main_window);
                     break;
                 case BUTTON_BACK:
@@ -153,12 +141,16 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                             button_install=CreateWindowW(L"BUTTON",L"Install",WS_CHILD|WS_VISIBLE,10,50,150,25,main_window,BUTTON_INSTALL,hinstance,NULL);
                             button_upgrade=CreateWindowW(L"BUTTON",L"Upgrade",WS_CHILD|WS_VISIBLE,10,80,150,25,main_window,BUTTON_UPGRADE,hinstance,NULL);
                             button_settings=CreateWindowW(L"BUTTON",L"Settings",WS_CHILD|WS_VISIBLE,10,110,150,25,main_window,BUTTON_SETTING,hinstance,NULL);
-                            button_exit=CreateWindowW(L"BUTTON",L"Exit",WS_CHILD|WS_VISIBLE,10,140,150,25,main_window,BUTTON_EXIT,hinstance,NULL);
+                            button_about=CreateWindowW(L"BUTTON",L"About",WS_CHILD|WS_VISIBLE,10,140,150,25,main_window,BUTTON_ABOUT,hinstance,NULL);
+                            button_exit=CreateWindowW(L"BUTTON",L"Exit",WS_CHILD|WS_VISIBLE,10,170,150,25,main_window,BUTTON_EXIT,hinstance,NULL);
                             state=FIRST_STEP;
                             refresh=true;
                             UpdateWindow(hwnd);
                             break;
                     }
+                    break;
+                case BUTTON_ABOUT:
+                    MessageBoxW(main_window,L"Objective Shell\nCopyright(C)2019 CodesBuilder\n\nVersion:1.0.0.0001\nCodename:(to be determined)\nFor testing purposes only",L"About Objective Shell",MB_OK|MB_ICONINFORMATION);
                     break;
                 case BUTTON_EXIT:
                     PostQuitMessage(0);
@@ -183,7 +175,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             if(gradient_background)
                 DrawGradientBackground(hdc);
             else
-                DrawSolidColorBackground(hdc,RGB(160,210,250));
+                DrawSolidColorBackground(hdc,RGB(50,50,250));
             SetBkMode(hdc,TRANSPARENT);
             SetTextColor(hdc,TEXT_COLOR);
             switch(state)
@@ -239,7 +231,8 @@ int WINAPI wWinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPWSTR lpCmdLine
     button_install=CreateWindowW(L"BUTTON",L"Install",WS_CHILD|WS_VISIBLE,10,50,150,25,main_window,BUTTON_INSTALL,hInstance,NULL);
     button_upgrade=CreateWindowW(L"BUTTON",L"Upgrade",WS_CHILD|WS_VISIBLE,10,80,150,25,main_window,BUTTON_UPGRADE,hInstance,NULL);
     button_settings=CreateWindowW(L"BUTTON",L"Settings",WS_CHILD|WS_VISIBLE,10,110,150,25,main_window,BUTTON_SETTING,hInstance,NULL);
-    button_exit=CreateWindowW(L"BUTTON",L"Exit",WS_CHILD|WS_VISIBLE,10,140,150,25,main_window,BUTTON_EXIT,hInstance,NULL);
+    button_about=CreateWindowW(L"BUTTON",L"About",WS_CHILD|WS_VISIBLE,10,140,150,25,main_window,BUTTON_ABOUT,hInstance,NULL);
+    button_exit=CreateWindowW(L"BUTTON",L"Exit",WS_CHILD|WS_VISIBLE,10,170,150,25,main_window,BUTTON_EXIT,hInstance,NULL);
     MSG msg={};
     while(GetMessage(&msg,NULL,0,0))
 	{
