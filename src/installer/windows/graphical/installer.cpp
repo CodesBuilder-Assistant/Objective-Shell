@@ -18,9 +18,15 @@ HWND button_back;
 HWND button_exit;
 HWND button_about;
 
+LOGFONTW title_font;
+LOGFONTW text_font;
+
+HFONT hfont;
+bool setfont_done=false;
+
 bool gradient_background=true;
 
-#define TEXT_COLOR RGB(65,130,170)
+#define TEXT_COLOR RGB(45,110,150)
 
 #define BUTTON_INSTALL (HMENU)201
 #define BUTTON_UPGRADE (HMENU)202
@@ -81,6 +87,15 @@ void DrawSolidColorBackground(HDC hdc,COLORREF color) noexcept
     RECT client_rect;
     GetClientRect(main_window,&client_rect);
     FillRect(hdc,&client_rect,CreateSolidBrush(color));
+}
+
+void DrawTestingVersionWatermark(HDC hdc)
+{
+    SelectObject(hdc,(HFONT)GetStockObject(SYSTEM_FONT));
+    RECT client_rect;
+    GetClientRect(main_window,&client_rect);
+    TextOutW(hdc,1,client_rect.bottom-15,L"For testing purposes only",wcslen(L"For testing purposes only"));
+    SelectObject(hdc,hfont);
 }
 
 LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam) noexcept
@@ -159,8 +174,6 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
         case WM_DESTROY:
             PostQuitMessage(0);
             break;
-        case WM_CREATE:
-            break;
         case WM_PAINT:
         {
             PAINTSTRUCT ps;
@@ -176,20 +189,49 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 DrawGradientBackground(hdc);
             else
                 DrawSolidColorBackground(hdc,RGB(50,50,250));
+            if(!setfont_done)
+            {
+                title_font={0};
+                title_font.lfCharSet=GB2312_CHARSET;
+                title_font.lfItalic=false;
+                title_font.lfHeight=20;
+                title_font.lfWidth=10;
+                title_font.lfEscapement=0;
+                title_font.lfWeight=FW_NORMAL;
+                title_font.lfUnderline=false;
+                title_font.lfStrikeOut=false;
+                title_font.lfQuality=PROOF_QUALITY;
+                lstrcpyW(title_font.lfFaceName,L"Unifont");
+                title_font.lfPitchAndFamily=FF_DONTCARE;
+                title_font.lfClipPrecision=CLIP_CHARACTER_PRECIS;
+                title_font.lfOutPrecision=OUT_CHARACTER_PRECIS;
+                text_font=title_font;
+                text_font.lfHeight=16;
+                text_font.lfWidth=8;
+                setfont_done=true;
+            }
+            hfont=CreateFontIndirectW(&title_font);
+            SelectObject(hdc,hfont);
             SetBkMode(hdc,TRANSPARENT);
             SetTextColor(hdc,TEXT_COLOR);
             switch(state)
             {
                 case FIRST_STEP:
                     TextOutW(hdc,10,10,L"Objective Shell Installer",wcslen(L"Objective Shell Installer"));
-                    TextOutW(hdc,0,385,L"objshell 1.0.0001",wcslen(L"objshell 1.0.0001"));
                     break;
                 case SELECT_INSTALL_PATH:
+                    TextOutW(hdc,10,10,L"Select Install Path",wcslen(L"Select Install Path"));
+                    DeleteObject(hfont);
+                    hfont=CreateFontIndirectW(&text_font);
+                    SelectObject(hdc,hfont);
                     SetTextColor(hdc,TEXT_COLOR);
                     TextOutW(hdc,10,80,L"Install Path:",wcslen(L"Install Path:"));
                     break;
                 case SETTINGS_INTERFACE:
                     TextOutW(hdc,22,20,L"Settings",wcslen(L"Settings"));
+                    DeleteObject(hfont);
+                    hfont=CreateFontIndirectW(&text_font);
+                    SelectObject(hdc,hfont);
                     TextOutW(hdc,22,50,L"Gradient Background",wcslen(L"Gradient Background"));
                     TextOutW(hdc,22,70,L"Transparent Effect",wcslen(L"Transparent Effect"));
                     break;
@@ -197,6 +239,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     MessageBoxW(hwnd,L"Invalid state detected",L"Error",MB_OK|MB_ICONWARNING);
                     PostQuitMessage(1);
             }
+            DeleteObject(hfont);
             EndPaint(hwnd,&ps);
             break;
         }
