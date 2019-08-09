@@ -94,7 +94,7 @@ int main(int argc,char *argv[])
         switch(getch())
         {
             case VK_RETURN:
-                goto select_instpath;
+                goto select_install_path;
                 break;
             case 72:
                 if(selected!=0)
@@ -139,7 +139,7 @@ int main(int argc,char *argv[])
             invalid_install_path=invalid_install_path_en_us;
             break;
     }
-    select_instpath:
+    select_install_path:
     system("cls");
     wprintf(L"%ls",select_install_path);
     wchar_t *install_path;
