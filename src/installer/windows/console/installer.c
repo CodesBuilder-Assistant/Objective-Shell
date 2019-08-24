@@ -45,12 +45,12 @@ void destructor(void)
     free(invalid_install_path);
 }
 
-int main(int argc,char *argv[])
+int main(int argc,wchar_t *argv[])
 {
     if(argc>1)
     {
         for(register int i=0;i<argc;i++)
-            if(argv[i]=="-h"||argv[i]=="--help")
+            if(argv[i]==L"-h"||argv[i]==L"--help")
             {
                 puts("Objective Shell Installer\n");
                 puts("Syntax:[Installer file name] <options>");
@@ -64,7 +64,7 @@ int main(int argc,char *argv[])
                 puts("  boot        Objective Shell Boot Media");
                 puts("  lib         Objective Shell Library");
                 puts("  sc          Objective Shell Script Compiler");
-                puts("  tk          Objective Shell Toolkit");
+                puts("  tools       Objective Shell Tools");
                 puts("  docs        Objective Shell Documents");
                 puts("  all         All modules(normal)");
                 puts("-u            Auto upgrade Objective Shell");

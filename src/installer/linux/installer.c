@@ -18,14 +18,14 @@ void download_program(void)
     int socket_fd=socket(AF_INET,SOCK_STREAM,0);
 
 }
-int main(int argc,char *argv[])
+int main(int argc,wchar_t *argv[])
 {
     bool auto_install=false;
     unsigned short language;
     if(argc>1)
     {
         for(register int i=0;i<argc;i++)
-            if(argv[i]=="-h"||argv[i]=="--help")
+            if(argv[i]==L"-h"||argv[i]==L"--help")
             {
                 puts("Objective Shell Installer\n");
                 puts("Syntax:[Installer file name] <options>");

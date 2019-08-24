@@ -7,15 +7,17 @@ cs=csc /nologo /target:winexe
 masm=ml /nologo /I include
 gcc=gcc /share /O2 -std=c11 -Idir include
 gpp=g++ /share /O2 -std=c++17
-res=cvtres /nologo
+res=rc
+link=link /nologo
 installer_gcc:
 
-installer_vc:src\installer\windows\console\installer.c src\installer\windows\graphical\installer.cpp
+installer_vc:src\installer\windows\console\installer.c src\installer\windows\graphical\installer.cpp src\installer\windows\graphical\res.rc
 	@-nmake cls
 	@-taskkill /f /im install.exe
 	@-taskkill /f /im Objective_Shell_Installer.exe
 	@$(vc) src\installer\windows\console\installer.c /Fe"out\installer\install.exe"
-	@$(vcpp) src\installer\windows\graphical\installer.cpp /Fe"out\installer\Objective_Shell_Installer.exe"
+	@$(vcpp) /c src\installer\windows\graphical\installer.cpp /Fe"out\installer\Objective_Shell_Installer.exe"
+	@$(res)
 	@-del *.obj
 installer_vc64:src\installer\windows\console\installer.c src\installer\windows\graphical\installer.cpp
 	@-nmake cls

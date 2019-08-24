@@ -14,7 +14,7 @@ template<class T>class d_array
         int last_find;
         bool have_init_data;
     public:
-        d_array(void) noexcept
+        d_array(void)
         {
             this->last_find=-1;
             this->have_init_data=false;
@@ -27,7 +27,7 @@ template<class T>class d_array
             this->last_find=-1;
             this->have_init_data=false;
         }
-        d_array(T init_data) noexcept
+        d_array(T init_data)
         {
             this->init=init_data;
             this->last_find=-1;
@@ -62,18 +62,18 @@ template<class T>class d_array
             this->array=new T[this->unit_count];
             memcpy(this->tmp,this->array,this->unit_count)
         }
-        int find(const T _find_) noexcept
+        int find(const T _find_)
         {
             for(register int i=0;i<unit_count)
                 if(_find_==this->array[i])
                     return i;
             throw cannot_find_data();
         }
-        void destroy(void) noexcept
+        void destroy(void)
         {
             delete this;
         }
-        ~d_array(void) noexcept
+        ~d_array(void)
         {
             delete[] this->array;
         }

@@ -1,15 +1,26 @@
 ﻿#include "lang.hpp"
+#include "res.h"
 #include <string>
 #include <latest_control.h>
+#include <Vfw.h>
+
 using namespace std;
 
 #pragma comment(lib,"User32.lib")
 #pragma comment(lib,"Gdi32.lib")
 
-UINT bg_r=120;
-UINT bg_g=120;
+UINT bg_r=100;
+UINT bg_g=110;
 UINT bg_b=255;
-ULONG64 loop_cnt=0;
+UINT text_r=255;
+UINT text_g=255;
+UINT text_b=255;
+UINT bg_loop_cnt=0;
+UINT fg_loop_cnt=0;
+UINT installation_progress_gloss_start=0;
+const UINT installation_progress_gloss_length=8;
+bool bg_reserve_gradient=false;
+bool fg_reserve_gradient=false;
 
 HWND main_window;
 HWND button_install;
@@ -19,6 +30,7 @@ HWND button_next;
 HWND button_back;
 HWND button_exit;
 HWND button_about;
+HWND feedback_window;
 
 LOGFONTW title_font;
 LOGFONTW text_font;
@@ -27,7 +39,9 @@ HFONT hfont;
 bool setfont_done=false;
 
 HANDLE colorful_bg_thread;
-bool reserve_gradient=false;
+HANDLE status_check_thread;
+
+LPCWSTR installation_progress=L" Select Install Path > ";
 
 #define TEXT_COLOR RGB(255,255,255)
 
@@ -39,61 +53,36 @@ bool reserve_gradient=false;
 #define BUTTON_EXIT (HMENU)206
 #define BUTTON_ABOUT (HMENU)207
 
+bool visual_effects=false;
 bool installing=false;
 bool refresh=false;
 wchar_t install_path[16384];
 HINSTANCE hinstance;
 
-enum stats
+enum statuses
 {
     FIRST_STEP=0,
     SELECT_INSTALL_PATH,
     SELECT_MODULES_TO_INSTALL,
     INSTALLING,
-    INSTALL_DONE,
+    INSTALL_DONE
 };
 
-BYTE state=0;
+BYTE status=0;
 
-void CancelInstall(void) noexcept
+void CancelInstall(void)
 {
     wstring install_p=install_path;
 }
 
-void DrawBackground(HDC hdc) noexcept
+void DrawGradientColorBackground(HDC hdc,UINT background_r,UINT background_g,UINT background_b)
 {
+    UINT r=background_r;
+    UINT g=background_g;
+    UINT b=background_b;
     RECT client_rect;
     GetClientRect(main_window,&client_rect);
-    BYTE BG_R=200;
-    BYTE BG_G=200;
-    BYTE BG_B=255;
-    UINT loop_cnt=0;
-    for(int y=0;y<=client_rect.bottom/2;y++,loop_cnt++)
-    {
-        RECT draw_rect=client_rect;
-        draw_rect.top=y-1;
-        draw_rect.bottom=y;
-        FillRect(hdc,&draw_rect,CreateSolidBrush(RGB(BG_R,BG_G,BG_B)));
-        if(BG_R!=0)
-            BG_R-=2;
-        if(loop_cnt%2==0&&BG_G!=0)
-            BG_G--;
-        if(loop_cnt%5==0&&BG_B!=30)
-            BG_B--;
-    }
-    for(int y=client_rect.bottom/2+1;y<=client_rect.bottom;y++,loop_cnt--)
-    {
-        RECT draw_rect=client_rect;
-        draw_rect.top=y-1;
-        draw_rect.bottom=y;
-        FillRect(hdc,&draw_rect,CreateSolidBrush(RGB(BG_R,BG_G,BG_B)));
-        if(BG_R!=0)
-            BG_R+=2;
-        if(loop_cnt%2==0)
-            BG_G++;
-        if(loop_cnt%5==0)
-            BG_B++;
-    }
+
 }
 
 void DrawSolidColorBackground(HDC hdc,COLORREF color)
@@ -103,28 +92,46 @@ void DrawSolidColorBackground(HDC hdc,COLORREF color)
     FillRect(hdc,&client_rect,CreateSolidBrush(color));
 }
 
-void DrawTestingVersionWatermark(HDC hdc)
+bool IsObjectiveShellInstallationDirectory(void)
 {
-    SelectObject(hdc,(HFONT)GetStockObject(SYSTEM_FONT));
-    RECT client_rect;
-    GetClientRect(main_window,&client_rect);
-    TextOutW(hdc,1,client_rect.bottom-15,L"For testing purposes only",wcslen(L"For testing purposes only"));
-    SelectObject(hdc,hfont);
+    wstring install_path_string=install_path;
+    wstring current_chkfile=install_path_string;
+    return true;
 }
 
 DWORD WINAPI DrawColorfulBackgroundThread(LPVOID lParam)
 {
-    while(1)
+    while(true)
     {
         RECT client_rect;
         GetClientRect(main_window,&client_rect);
         InvalidateRect(main_window,&client_rect,false);
-        Sleep(45);
+        Sleep(60);
     }
     return 0;
 }
 
-LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam) noexcept
+DWORD WINAPI StatusCheckThread(LPVOID lParam)
+{
+    while(true)
+        if(status>INSTALL_DONE)
+        {
+            MessageBoxW(NULL,L"Invalid status detected",L"Error",MB_OK|MB_ICONERROR);
+            exit(1);
+        }
+    return 0;
+}
+
+void IsVisualEffectEnabled(void)
+{
+    FILE *fp;
+    if((fp=fopen("X:\\oshinstallerve\\enabled","r"))!=NULL)
+        visual_effects=true;
+
+    fclose(fp);
+}
+
+LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 {
     switch(uMsg)
     {
@@ -132,42 +139,30 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             switch(LOWORD(wParam))
             {
                 case BUTTON_INSTALL:
-                    state++;
+                    status++;
                     refresh=true;
-                    RECT client_rect;
-                    GetClientRect(hwnd,&client_rect);
                     DestroyWindow(button_install);
                     DestroyWindow(button_upgrade);
                     DestroyWindow(button_exit);
                     DestroyWindow(button_about);
-                    install_path_input=CreateWindowW(L"EDIT",L"C:\\Program Files\\Objective Shell\\",WS_CHILD|WS_VISIBLE,10,100,400,20,hwnd,INPUT_INSTALL_PATH,hinstance,NULL);
-                    button_next=CreateWindowW(L"BUTTON",L"Next >",WS_CHILD|WS_VISIBLE,client_rect.left+2,client_rect.bottom+2,40,20,hwnd,BUTTON_NEXT,hinstance,NULL);
-                    button_back=CreateWindowW(L"BUTTON",L"< Back",WS_CHILD|WS_VISIBLE,client_rect.right-42,client_rect.bottom+2,40,20,hwnd,BUTTON_BACK,hinstance,NULL);
+                    install_path_input=CreateWindowW(L"EDIT",L"C:\\Program Files\\Objective Shell\\",WS_CHILD|WS_VISIBLE,10,100,370,20,hwnd,INPUT_INSTALL_PATH,hinstance,NULL);
+                    button_next=CreateWindowW(L"BUTTON",L"Next >",WS_CHILD|WS_VISIBLE,390,100,80,20,hwnd,BUTTON_NEXT,hinstance,NULL);
                     UpdateWindow(main_window);
                     break;
                 case BUTTON_UPGRADE:
                     MessageBoxW(NULL,L"This is the first version!",L"Error",MB_OK|MB_ICONERROR);
                     break;
                 case BUTTON_NEXT:
-                    switch(state)
+                    switch(status)
                     {
                         case SELECT_INSTALL_PATH:
                             GetWindowTextW(install_path_input,install_path,16384);
-                            WIN32_FIND_DATAW finddata;
-                            wchar_t *install_path_original=new wchar_t[wcslen(install_path)+1];
-                            wcscpy(install_path_original,install_path);
-                            if(install_path[wcslen(install_path)]!=L'\\')
-                                install_path[wcslen(install_path)+1]=L'\\';
-                            install_path[wcslen(install_path)+1]=L'*';
-                            HANDLE find_handle=FindFirstFileW(install_path,&finddata);
-                            if(find_handle==INVALID_HANDLE_VALUE)
-                                RemoveDirectoryW(install_path_original);
-                            delete[] install_path_original;
+
                             break;
                     }
                     break;
                 case BUTTON_BACK:
-                    switch(state)
+                    switch(status)
                     {
                         case SELECT_INSTALL_PATH:
                             DestroyWindow(button_back);
@@ -177,7 +172,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                             button_upgrade=CreateWindowW(L"BUTTON",L"Upgrade",WS_CHILD|WS_VISIBLE,10,80,150,25,main_window,BUTTON_UPGRADE,hinstance,NULL);
                             button_about=CreateWindowW(L"BUTTON",L"About",WS_CHILD|WS_VISIBLE,10,110,150,25,main_window,BUTTON_ABOUT,hinstance,NULL);
                             button_exit=CreateWindowW(L"BUTTON",L"Exit",WS_CHILD|WS_VISIBLE,10,140,150,25,main_window,BUTTON_EXIT,hinstance,NULL);
-                            state=FIRST_STEP;
+                            status=FIRST_STEP;
                             refresh=true;
                             UpdateWindow(hwnd);
                             break;
@@ -202,32 +197,6 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 hdc=GetDC(hwnd);
             else
                 hdc=BeginPaint(hwnd,&ps);
-            //DrawBackground(hdc);
-            if(loop_cnt==3)
-                reserve_gradient=false;
-            if(loop_cnt==255)
-                reserve_gradient=true;
-            if(!reserve_gradient)
-            {
-                if(bg_r!=50)
-                    bg_r-=2;
-                if(bg_g!=50&&loop_cnt%2==0)
-                    bg_g-=5;
-                if(bg_b!=120&&loop_cnt%3==0)
-                    bg_b--;
-                loop_cnt++;
-            }
-            else
-            {
-                if(bg_r!=170)
-                    bg_r+=2;
-                if(bg_g!=170&&loop_cnt%2==0)
-                    bg_g+=5;
-                if(bg_b!=220&&loop_cnt%3==0)
-                    bg_b++;
-                loop_cnt--;
-            }
-            DrawSolidColorBackground(hdc,RGB(bg_r,bg_g,bg_b));
             if(!setfont_done)
             {
                 title_font={0};
@@ -252,8 +221,61 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             hfont=CreateFontIndirectW(&title_font);
             SelectObject(hdc,hfont);
             SetBkMode(hdc,TRANSPARENT);
-            SetTextColor(hdc,TEXT_COLOR);
-            switch(state)
+            if(visual_effects)
+            {
+                DrawSolidColorBackground(hdc,RGB(bg_r,bg_g,bg_b));
+                if(bg_loop_cnt==3)
+                    bg_reserve_gradient=false;
+                if(bg_loop_cnt==255)
+                    bg_reserve_gradient=true;
+                if(!bg_reserve_gradient)
+                {
+                    if(bg_r!=50)
+                        bg_r-=2;
+                    if(bg_g!=50&&bg_loop_cnt%2==0)
+                        bg_g-=5;
+                    if(bg_b!=120&&bg_loop_cnt%3==0)
+                        bg_b--;
+                    bg_loop_cnt++;
+                }
+                else
+                {
+                    if(bg_r!=170)
+                        bg_r+=2;
+                    if(bg_g!=170&&bg_loop_cnt%2==0)
+                        bg_g+=5;
+                    if(bg_b!=220&&bg_loop_cnt%3==0)
+                        bg_b++;
+                    bg_loop_cnt--;
+                }
+                if(!bg_reserve_gradient)
+                {
+                    if(fg_loop_cnt%7==0&&text_r!=30)
+                        text_r-=2;
+                    if(fg_loop_cnt%3==0&&text_g!=20)
+                        text_g-=5;
+                    if(fg_loop_cnt%9==0&&text_b!=35)
+                        text_b-=5;
+                    fg_loop_cnt++;
+                }
+                else
+                {
+                    if(fg_loop_cnt%2==0&&text_r!=255)
+                        text_r+=2;
+                    if(fg_loop_cnt%3==0&&text_g!=255)
+                        text_g+=5;
+                    if(fg_loop_cnt%5==0&&text_b!=255)
+                        text_b+=5;
+                    fg_loop_cnt--;
+                }
+            }
+            else
+                DrawSolidColorBackground(hdc,RGB(64,127,255));
+            if(visual_effects)
+                SetTextColor(hdc,RGB(text_b,text_b,text_g));
+            else
+                SetTextColor(hdc,TEXT_COLOR);
+            switch(status)
             {
                 case FIRST_STEP:
                     TextOutW(hdc,10,10,L"Objective Shell Installer",wcslen(L"Objective Shell Installer"));
@@ -267,9 +289,6 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     SetTextColor(hdc,TEXT_COLOR);
                     TextOutW(hdc,10,80,L"Install Path:",wcslen(L"Install Path:"));
                     break;
-                default:
-                    MessageBoxW(hwnd,L"Invalid state detected",L"Error",MB_OK|MB_ICONWARNING);
-                    PostQuitMessage(1);
             }
             DeleteObject(hfont);
             if(refresh)
@@ -294,6 +313,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 }
 int WINAPI wWinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPWSTR lpCmdLine,int nShowCmd)
 {
+    IsVisualEffectEnabled();
     hinstance=hInstance;
     LPCWSTR mainclass_name=L"Objective Shell Installer";
     WNDCLASSW mainclass={};
@@ -301,6 +321,7 @@ int WINAPI wWinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPWSTR lpCmdLine
     mainclass.hInstance=hInstance;
     mainclass.lpfnWndProc=MainWindowProc;
     mainclass.hCursor=LoadCursorW(NULL,(LPCWSTR)IDC_ARROW);
+    mainclass.hIcon=LoadIconW(hInstance,IDI_LOGO);
     RegisterClassW(&mainclass);
     main_window=CreateWindowW(mainclass_name,L"Objective Shell Installer",WS_OVERLAPPEDWINDOW,5,25,500,400,NULL,NULL,hInstance,NULL);
     if(main_window==NULL)
@@ -313,7 +334,9 @@ int WINAPI wWinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPWSTR lpCmdLine
     button_upgrade=CreateWindowW(L"BUTTON",L"Upgrade",WS_CHILD|WS_VISIBLE,10,80,150,25,main_window,BUTTON_UPGRADE,hInstance,NULL);
     button_about=CreateWindowW(L"BUTTON",L"About",WS_CHILD|WS_VISIBLE,10,110,150,25,main_window,BUTTON_ABOUT,hInstance,NULL);
     button_exit=CreateWindowW(L"BUTTON",L"Exit",WS_CHILD|WS_VISIBLE,10,140,150,25,main_window,BUTTON_EXIT,hInstance,NULL);
-    colorful_bg_thread=CreateThread(NULL,0,DrawColorfulBackgroundThread,NULL,NULL,NULL);
+    if(visual_effects)
+        colorful_bg_thread=CreateThread(NULL,0,DrawColorfulBackgroundThread,NULL,NULL,NULL);
+    status_check_thread=CreateThread(NULL,0,StatusCheckThread,NULL,NULL,NULL);
     MSG msg={};
     while(GetMessage(&msg,NULL,0,0))
 	{
