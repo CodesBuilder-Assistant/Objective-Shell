@@ -3,11 +3,13 @@
 #include <string>
 #include <latest_control.h>
 #include <Vfw.h>
+#include <stdio.h>
 
-using namespace std;
+using std::wstring;
 
-#pragma comment(lib,"User32.lib")
-#pragma comment(lib,"Gdi32.lib")
+#pragma comment(lib,"user32.lib")
+#pragma comment(lib,"gdi32.lib")
+#pragma comment(lib,"msimg32.lib")
 
 UINT bg_r=100;
 UINT bg_g=110;
@@ -31,12 +33,6 @@ HWND button_back;
 HWND button_exit;
 HWND button_about;
 HWND feedback_window;
-
-LOGFONTW title_font;
-LOGFONTW text_font;
-
-HFONT hfont;
-bool setfont_done=false;
 
 HANDLE colorful_bg_thread;
 HANDLE status_check_thread;
@@ -70,19 +66,72 @@ enum statuses
 
 BYTE status=0;
 
+LOGFONTW CurrentFont;
+HFONT font;
+
+void SetFont(HDC hdc,UINT font_size,LPCWSTR font_name)
+{
+    DeleteObject(font);
+    CurrentFont.lfCharSet=DEFAULT_CHARSET;
+    CurrentFont.lfItalic=false;
+    CurrentFont.lfHeight=font_size;
+    CurrentFont.lfWidth=font_size/2;
+    CurrentFont.lfEscapement=0;
+    CurrentFont.lfWeight=FW_NORMAL;
+    CurrentFont.lfUnderline=false;
+    CurrentFont.lfStrikeOut=false;
+    CurrentFont.lfQuality=PROOF_QUALITY;
+    lstrcpyW(CurrentFont.lfFaceName,font_name);
+    CurrentFont.lfPitchAndFamily=FF_DONTCARE;
+    CurrentFont.lfClipPrecision=CLIP_CHARACTER_PRECIS;
+    CurrentFont.lfOutPrecision=OUT_CHARACTER_PRECIS;
+    font=CreateFontIndirectW(&CurrentFont);
+    SelectObject(hdc,font);
+}
+void DeleteFont(void)
+{
+    DeleteObject(font);
+}
+void FontOut(HDC hdc,UINT x,UINT y,UINT font_size,LPCWSTR font_name,LPCWSTR output_str)
+{
+    SetFont(hdc,font_size,font_name);
+    TextOutW(hdc,x,y,output_str,wcslen(output_str));
+    DeleteFont();
+}
+
 void CancelInstall(void)
 {
     wstring install_p=install_path;
 }
 
-void DrawGradientColorBackground(HDC hdc,UINT background_r,UINT background_g,UINT background_b)
+void DrawGradientColorBackground(HDC hdc,COLORREF c1,COLORREF c2)
 {
-    UINT r=background_r;
-    UINT g=background_g;
-    UINT b=background_b;
+    UINT r=GetRValue(c1);
+    UINT g=GetGValue(c1);
+    UINT b=GetBValue(c1);
+    UINT end_r=GetRValue(c2);
+    UINT end_g=GetGValue(c2);
+    UINT end_b=GetBValue(c2);
+    UINT distance_r=0;
+    UINT distance_g=0;
+    UINT distance_b=0;
     RECT client_rect;
     GetClientRect(main_window,&client_rect);
-
+    if(r<end_r)
+        distance_r=client_rect.top/(end_r-r);
+    else if(r>end_r)
+        distance_r=client_rect.top/(r-end_r);
+    if(g<end_g)
+        distance_g=client_rect.top/(end_g-g);
+    else if(g>end_g)
+        distance_g=client_rect.top/(g-end_g);
+    if(b<end_b)
+        distance_b=client_rect.top/(end_b-b);
+    else if(b>end_b)
+        distance_b=client_rect.top/(b-end_b);
+    for(UINT current_height=0;current_height<=client_rect.bottom;current_height++)
+    {
+    }
 }
 
 void DrawSolidColorBackground(HDC hdc,COLORREF color)
@@ -125,9 +174,8 @@ DWORD WINAPI StatusCheckThread(LPVOID lParam)
 void IsVisualEffectEnabled(void)
 {
     FILE *fp;
-    if((fp=fopen("X:\\oshinstallerve\\enabled","r"))!=NULL)
+    if((fp=fopen("./isvisualeffectenabled","r"))!=NULL)
         visual_effects=true;
-
     fclose(fp);
 }
 
@@ -197,33 +245,9 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 hdc=GetDC(hwnd);
             else
                 hdc=BeginPaint(hwnd,&ps);
-            if(!setfont_done)
-            {
-                title_font={0};
-                title_font.lfCharSet=GB2312_CHARSET;
-                title_font.lfItalic=false;
-                title_font.lfHeight=20;
-                title_font.lfWidth=10;
-                title_font.lfEscapement=0;
-                title_font.lfWeight=FW_NORMAL;
-                title_font.lfUnderline=false;
-                title_font.lfStrikeOut=false;
-                title_font.lfQuality=PROOF_QUALITY;
-                lstrcpyW(title_font.lfFaceName,L"Unifont");
-                title_font.lfPitchAndFamily=FF_DONTCARE;
-                title_font.lfClipPrecision=CLIP_CHARACTER_PRECIS;
-                title_font.lfOutPrecision=OUT_CHARACTER_PRECIS;
-                text_font=title_font;
-                text_font.lfHeight=16;
-                text_font.lfWidth=8;
-                setfont_done=true;
-            }
-            hfont=CreateFontIndirectW(&title_font);
-            SelectObject(hdc,hfont);
             SetBkMode(hdc,TRANSPARENT);
             if(visual_effects)
             {
-                DrawSolidColorBackground(hdc,RGB(bg_r,bg_g,bg_b));
                 if(bg_loop_cnt==3)
                     bg_reserve_gradient=false;
                 if(bg_loop_cnt==255)
@@ -270,7 +294,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 }
             }
             else
-                DrawSolidColorBackground(hdc,RGB(64,127,255));
+                DrawSolidColorBackground(hdc,RGB(10,127,255));
             if(visual_effects)
                 SetTextColor(hdc,RGB(text_b,text_b,text_g));
             else
@@ -278,19 +302,15 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             switch(status)
             {
                 case FIRST_STEP:
-                    TextOutW(hdc,10,10,L"Objective Shell Installer",wcslen(L"Objective Shell Installer"));
+                    FontOut(hdc,10,10,20,L"Courier New",L"Objective Shell Installer");
                     //SendMessage(button_install,WM_SETFONT,NULL,(LPARAM)hfont);
                     break;
                 case SELECT_INSTALL_PATH:
-                    TextOutW(hdc,10,10,L"Select Install Path",wcslen(L"Select Install Path"));
-                    DeleteObject(hfont);
-                    hfont=CreateFontIndirectW(&text_font);
-                    SelectObject(hdc,hfont);
+                    FontOut(hdc,10,10,20,L"Courier New",L"Select Install Path");
                     SetTextColor(hdc,TEXT_COLOR);
-                    TextOutW(hdc,10,80,L"Install Path:",wcslen(L"Install Path:"));
+                    FontOut(hdc,10,80,15,L"Courier New",L"Install Path:");
                     break;
             }
-            DeleteObject(hfont);
             if(refresh)
             {
                 ReleaseDC(hwnd,hdc);
@@ -313,7 +333,6 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 }
 int WINAPI wWinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPWSTR lpCmdLine,int nShowCmd)
 {
-    IsVisualEffectEnabled();
     hinstance=hInstance;
     LPCWSTR mainclass_name=L"Objective Shell Installer";
     WNDCLASSW mainclass={};
@@ -329,7 +348,9 @@ int WINAPI wWinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPWSTR lpCmdLine
         MessageBoxW(NULL,L"Create window failed!",L"Error",MB_OK|MB_ICONERROR);
         return 1;
     }
+    visual_effects=true;
     ShowWindow(main_window,nShowCmd);
+    //IsVisualEffectEnabled();
     button_install=CreateWindowW(L"BUTTON",L"Install",WS_CHILD|WS_VISIBLE,10,50,150,25,main_window,BUTTON_INSTALL,hInstance,NULL);
     button_upgrade=CreateWindowW(L"BUTTON",L"Upgrade",WS_CHILD|WS_VISIBLE,10,80,150,25,main_window,BUTTON_UPGRADE,hInstance,NULL);
     button_about=CreateWindowW(L"BUTTON",L"About",WS_CHILD|WS_VISIBLE,10,110,150,25,main_window,BUTTON_ABOUT,hInstance,NULL);
