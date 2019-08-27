@@ -104,36 +104,6 @@ void CancelInstall(void)
     wstring install_p=install_path;
 }
 
-void DrawGradientColorBackground(HDC hdc,COLORREF c1,COLORREF c2)
-{
-    UINT r=GetRValue(c1);
-    UINT g=GetGValue(c1);
-    UINT b=GetBValue(c1);
-    UINT end_r=GetRValue(c2);
-    UINT end_g=GetGValue(c2);
-    UINT end_b=GetBValue(c2);
-    UINT distance_r=0;
-    UINT distance_g=0;
-    UINT distance_b=0;
-    RECT client_rect;
-    GetClientRect(main_window,&client_rect);
-    if(r<end_r)
-        distance_r=client_rect.top/(end_r-r);
-    else if(r>end_r)
-        distance_r=client_rect.top/(r-end_r);
-    if(g<end_g)
-        distance_g=client_rect.top/(end_g-g);
-    else if(g>end_g)
-        distance_g=client_rect.top/(g-end_g);
-    if(b<end_b)
-        distance_b=client_rect.top/(end_b-b);
-    else if(b>end_b)
-        distance_b=client_rect.top/(b-end_b);
-    for(UINT current_height=0;current_height<=client_rect.bottom;current_height++)
-    {
-    }
-}
-
 void DrawSolidColorBackground(HDC hdc,COLORREF color)
 {
     RECT client_rect;
@@ -230,7 +200,8 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     MessageBoxW(main_window,L"Objective Shell\nCopyright(C)2019 CodesBuilder\n\nVersion:1.0.0.0001\nCodename:(to be determined)\nFor testing purposes only",L"About Objective Shell",MB_OK|MB_ICONINFORMATION);
                     break;
                 case BUTTON_EXIT:
-                    PostQuitMessage(0);
+                    SendMessageW(hwnd,WM_CLOSE,NULL,NULL);
+                    break;
             }
             break;
         case WM_DESTROY:
@@ -248,6 +219,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             SetBkMode(hdc,TRANSPARENT);
             if(visual_effects)
             {
+                DrawSolidColorBackground(hdc,RGB(bg_r,bg_g,bg_b));
                 if(bg_loop_cnt==3)
                     bg_reserve_gradient=false;
                 if(bg_loop_cnt==255)
@@ -320,12 +292,26 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 EndPaint(hwnd,&ps);
             break;
         }
+        case WM_CREATE:
+            if(visual_effects)
+            {
+                SetWindowLongW(hwnd,GWL_EXSTYLE,WS_EX_LAYERED);
+                SetLayeredWindowAttributes(hwnd,NULL,240,LWA_ALPHA);
+            }
+            break;
         case WM_CLOSE:
             if(installing)
                 if(MessageBoxW(hwnd,L"Do you want to exit?",L"",MB_YESNO|MB_ICONQUESTION)==IDYES)
                 {
                     CancelInstall();
                     DestroyWindow(hwnd);
+                }
+            if(visual_effects)
+                for(int i=239;i>=0;i--)
+                {
+                    for(volatile register ULONG64 i=0;i<600000;i++)
+                        i=i;
+                    SetLayeredWindowAttributes(hwnd,NULL,i,LWA_ALPHA);
                 }
             break;
     }
@@ -348,7 +334,7 @@ int WINAPI wWinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPWSTR lpCmdLine
         MessageBoxW(NULL,L"Create window failed!",L"Error",MB_OK|MB_ICONERROR);
         return 1;
     }
-    visual_effects=true;
+    //visual_effects=true;
     ShowWindow(main_window,nShowCmd);
     //IsVisualEffectEnabled();
     button_install=CreateWindowW(L"BUTTON",L"Install",WS_CHILD|WS_VISIBLE,10,50,150,25,main_window,BUTTON_INSTALL,hInstance,NULL);
