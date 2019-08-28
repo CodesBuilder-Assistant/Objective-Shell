@@ -58,6 +58,7 @@ HINSTANCE hinstance;
 enum statuses
 {
     FIRST_STEP=0,
+    READ_LICENSE,
     SELECT_INSTALL_PATH,
     SELECT_MODULES_TO_INSTALL,
     INSTALLING,
@@ -190,7 +191,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                             button_upgrade=CreateWindowW(L"BUTTON",L"Upgrade",WS_CHILD|WS_VISIBLE,10,80,150,25,main_window,BUTTON_UPGRADE,hinstance,NULL);
                             button_about=CreateWindowW(L"BUTTON",L"About",WS_CHILD|WS_VISIBLE,10,110,150,25,main_window,BUTTON_ABOUT,hinstance,NULL);
                             button_exit=CreateWindowW(L"BUTTON",L"Exit",WS_CHILD|WS_VISIBLE,10,140,150,25,main_window,BUTTON_EXIT,hinstance,NULL);
-                            status=FIRST_STEP;
+                            status=READ_LICENSE;
                             refresh=true;
                             UpdateWindow(hwnd);
                             break;
@@ -266,7 +267,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 }
             }
             else
-                DrawSolidColorBackground(hdc,RGB(10,127,255));
+                DrawSolidColorBackground(hdc,RGB(55,55,55));
             if(visual_effects)
                 SetTextColor(hdc,RGB(text_b,text_b,text_g));
             else
@@ -279,7 +280,6 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     break;
                 case SELECT_INSTALL_PATH:
                     FontOut(hdc,10,10,20,L"Courier New",L"Select Install Path");
-                    SetTextColor(hdc,TEXT_COLOR);
                     FontOut(hdc,10,80,15,L"Courier New",L"Install Path:");
                     break;
             }
@@ -296,10 +296,11 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             if(visual_effects)
             {
                 SetWindowLongW(hwnd,GWL_EXSTYLE,WS_EX_LAYERED);
-                SetLayeredWindowAttributes(hwnd,NULL,240,LWA_ALPHA);
+                SetLayeredWindowAttributes(hwnd,NULL,0,LWA_ALPHA);
             }
             break;
         case WM_CLOSE:
+        {
             if(installing)
                 if(MessageBoxW(hwnd,L"Do you want to exit?",L"",MB_YESNO|MB_ICONQUESTION)==IDYES)
                 {
@@ -307,18 +308,21 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     DestroyWindow(hwnd);
                 }
             if(visual_effects)
+            {
                 for(int i=239;i>=0;i--)
                 {
-                    for(volatile register ULONG64 i=0;i<600000;i++)
-                        i=i;
                     SetLayeredWindowAttributes(hwnd,NULL,i,LWA_ALPHA);
+                    Sleep(1);
                 }
+            }
             break;
+        }
     }
     return DefWindowProcW(hwnd,uMsg,wParam,lParam);
 }
 int WINAPI wWinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPWSTR lpCmdLine,int nShowCmd)
 {
+    visual_effects=true;
     hinstance=hInstance;
     LPCWSTR mainclass_name=L"Objective Shell Installer";
     WNDCLASSW mainclass={};
@@ -334,7 +338,6 @@ int WINAPI wWinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPWSTR lpCmdLine
         MessageBoxW(NULL,L"Create window failed!",L"Error",MB_OK|MB_ICONERROR);
         return 1;
     }
-    //visual_effects=true;
     ShowWindow(main_window,nShowCmd);
     //IsVisualEffectEnabled();
     button_install=CreateWindowW(L"BUTTON",L"Install",WS_CHILD|WS_VISIBLE,10,50,150,25,main_window,BUTTON_INSTALL,hInstance,NULL);
@@ -344,6 +347,12 @@ int WINAPI wWinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPWSTR lpCmdLine
     if(visual_effects)
         colorful_bg_thread=CreateThread(NULL,0,DrawColorfulBackgroundThread,NULL,NULL,NULL);
     status_check_thread=CreateThread(NULL,0,StatusCheckThread,NULL,NULL,NULL);
+    if(visual_effects)
+        for(int i=0;i<=240;i++)
+        {
+            SetLayeredWindowAttributes(main_window,NULL,i,LWA_ALPHA);
+            Sleep(1);
+        }
     MSG msg={};
     while(GetMessage(&msg,NULL,0,0))
 	{
