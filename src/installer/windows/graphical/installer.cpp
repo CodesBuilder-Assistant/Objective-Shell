@@ -112,6 +112,55 @@ void DrawSolidColorBackground(HDC hdc,COLORREF color)
     FillRect(hdc,&client_rect,CreateSolidBrush(color));
 }
 
+void DrawGradientBackground(HDC hdc,BYTE init_r,BYTE init_g,BYTE init_b)
+{
+    UINT current_r=init_r;
+    UINT current_g=init_g;
+    UINT current_b=init_b;
+    RECT client_rect;
+    GetClientRect(main_window,&client_rect);
+    bool reserve_r=false;
+    bool reserve_g=false;
+    bool reserve_b=false;
+    for(int y=client_rect.top;y<client_rect.bottom;y++)
+    {
+        RECT draw_rect=client_rect;
+        draw_rect.bottom=y+1;
+        draw_rect.top=y;
+        FillRect(hdc,&draw_rect,CreateSolidBrush(RGB(current_r,current_g,current_b)));
+        if(!reserve_r)
+            if(current_r==0)
+                reserve_r=true,current_r++;
+            else
+                current_r--;
+        else
+            if(current_r==255)
+                reserve_r=false,current_r--;
+            else
+                current_r++;
+        if(!reserve_g)
+            if(current_g==0)
+                reserve_g=true,current_g++;
+            else
+                current_g--;
+        else
+            if(current_g==255)
+                reserve_g=false,current_g--;
+            else
+                current_g++;
+        if(!reserve_b)
+            if(current_b==0)
+                reserve_b=true,current_b++;
+            else
+                current_b--;
+        else
+            if(current_b==255)
+                reserve_b=false,current_b--;
+            else
+                current_b++;
+    }
+}
+
 bool IsObjectiveShellInstallationDirectory(void)
 {
     wstring install_path_string=install_path;
@@ -126,7 +175,7 @@ DWORD WINAPI DrawColorfulBackgroundThread(LPVOID lParam)
         RECT client_rect;
         GetClientRect(main_window,&client_rect);
         InvalidateRect(main_window,&client_rect,false);
-        Sleep(60);
+        Sleep(70);
     }
     return 0;
 }
@@ -220,7 +269,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             SetBkMode(hdc,TRANSPARENT);
             if(visual_effects)
             {
-                DrawSolidColorBackground(hdc,RGB(bg_r,bg_g,bg_b));
+                DrawGradientBackground(hdc,bg_r,bg_g,bg_b);
                 if(bg_loop_cnt==3)
                     bg_reserve_gradient=false;
                 if(bg_loop_cnt==255)

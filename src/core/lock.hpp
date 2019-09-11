@@ -20,7 +20,7 @@
 #include <Windows.h>
 #endif
 
-using namespace std;
+using std::string;
 bool IsUnlockedFlag1=false;
 short IsUnlockedFlag2=-24;
 int IsUnlockedFlag3=6;

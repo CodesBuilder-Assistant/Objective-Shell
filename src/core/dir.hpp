@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <memory.h>
 #include <string>
-using namespace std;
+using std::wstring;
 void dir(const wchar_t *search_file_name)
 {
     #if defined(_WIN32)

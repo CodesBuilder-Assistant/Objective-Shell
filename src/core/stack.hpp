@@ -3,7 +3,7 @@
 #include <stack>
 #include <stdio.h>
 #include <string>
-using namespace std;
+using std::stack;
 extern wstring CurrentPath;
 stack<long long>value_stack;
 stack<unsigned long long>exvalue_stack;

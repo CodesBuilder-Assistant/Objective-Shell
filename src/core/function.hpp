@@ -8,7 +8,8 @@
 #include <string>
 #include <vector>
 #include "type.hpp"
-using namespace std;
+using std::wstring;
+using std::vector;
 class function
 {
     private:

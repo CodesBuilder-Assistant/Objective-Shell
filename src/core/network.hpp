@@ -7,7 +7,7 @@
 #include <Windows.h>
 #elif defined(__linux__)
 #endif
-using namespace std;
+using std::wstring;
 enum url_licenses
 {
     UL_HTTP=0X0b,

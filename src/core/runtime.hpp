@@ -35,7 +35,6 @@
 #include "locale.hpp"
 #include "user.hpp"
 #include "hosts.hpp"
-using namespace std;
 
 const wchar_t *keyword_int=L"int";
 const wchar_t *keyword_short=L"short";
@@ -118,6 +117,7 @@ const wchar_t *cmd_cd=L"cd";
 const wchar_t *cmd_dir=L"dir";
 const wchar_t *cmd_reset=L"reset";
 const wchar_t *cmd_exec=L"exec";
+const wchar_t *cmd_lsvar=L"lsvar";
 
 const wchar_t operator_add=L'+';
 const wchar_t operator_sub=L'-';

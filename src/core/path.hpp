@@ -2,7 +2,7 @@
 #define PATH_HPP
 #include <list>
 #include <stdarg.h>
-using namespace std;
+using std::list;
 class path
 {
     private:
