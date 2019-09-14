@@ -1,29 +1,33 @@
 ﻿#include "lang.hpp"
 #include "res.h"
 #include <string>
-#include <latest_control.h>
 #include <Vfw.h>
 #include <stdio.h>
+#include <math.h>
+#include <time.h>
+#include <windows/font.hpp>
+#include <windows/latest_control.h>
 
 using std::wstring;
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"gdi32.lib")
 #pragma comment(lib,"msimg32.lib")
+#pragma comment(lib,"winmm.lib")
 
+/* These variables used for visual effects */
 UINT bg_r=100;
-UINT bg_g=110;
-UINT bg_b=255;
+UINT bg_g=100;
+UINT bg_b=100;
 UINT text_r=255;
 UINT text_g=255;
 UINT text_b=255;
 UINT bg_loop_cnt=0;
 UINT fg_loop_cnt=0;
-UINT installation_progress_gloss_start=0;
-const UINT installation_progress_gloss_length=8;
 bool bg_reserve_gradient=false;
 bool fg_reserve_gradient=false;
 
+/* Windows and controls. */
 HWND main_window;
 HWND button_install;
 HWND button_upgrade;
@@ -34,26 +38,36 @@ HWND button_exit;
 HWND button_about;
 HWND feedback_window;
 
+/*
+* colorful_bg_thread:Make main window's background beautiful,but it will use a lot of system resources.
+* status_check_thread:Exit setup when status is a error value.
+*/
 HANDLE colorful_bg_thread;
 HANDLE status_check_thread;
-
-LPCWSTR installation_progress=L" Select Install Path > ";
+HANDLE background_music_thread;
 
 #define TEXT_COLOR RGB(255,255,255)
 
-#define BUTTON_INSTALL (HMENU)201
-#define BUTTON_UPGRADE (HMENU)202
-#define INPUT_INSTALL_PATH (HMENU)203
-#define BUTTON_NEXT (HMENU)204
-#define BUTTON_BACK (HMENU)205
-#define BUTTON_EXIT (HMENU)206
-#define BUTTON_ABOUT (HMENU)207
+/* Controls' return values */
+#define BUTTON_INSTALL 201
+#define BUTTON_UPGRADE 202
+#define INPUT_INSTALL_PATH 203
+#define BUTTON_NEXT 204
+#define BUTTON_BACK 205
+#define BUTTON_EXIT 206
+#define BUTTON_ABOUT 207
 
 bool visual_effects=false;
 bool installing=false;
 bool refresh=false;
+/*
+* sizeof(wchar_t)*16384=2 Byte*16384=32768=32KB
+*/
 wchar_t install_path[16384];
+/* Instance. */
 HINSTANCE hinstance;
+
+/* Installer status */
 
 enum statuses
 {
@@ -67,43 +81,14 @@ enum statuses
 
 BYTE status=0;
 
-LOGFONTW CurrentFont;
-HFONT font;
-
-void SetFont(HDC hdc,UINT font_size,LPCWSTR font_name)
-{
-    DeleteObject(font);
-    CurrentFont.lfCharSet=DEFAULT_CHARSET;
-    CurrentFont.lfItalic=false;
-    CurrentFont.lfHeight=font_size;
-    CurrentFont.lfWidth=font_size/2;
-    CurrentFont.lfEscapement=0;
-    CurrentFont.lfWeight=FW_NORMAL;
-    CurrentFont.lfUnderline=false;
-    CurrentFont.lfStrikeOut=false;
-    CurrentFont.lfQuality=PROOF_QUALITY;
-    lstrcpyW(CurrentFont.lfFaceName,font_name);
-    CurrentFont.lfPitchAndFamily=FF_DONTCARE;
-    CurrentFont.lfClipPrecision=CLIP_CHARACTER_PRECIS;
-    CurrentFont.lfOutPrecision=OUT_CHARACTER_PRECIS;
-    font=CreateFontIndirectW(&CurrentFont);
-    SelectObject(hdc,font);
-}
-void DeleteFont(void)
-{
-    DeleteObject(font);
-}
-void FontOut(HDC hdc,UINT x,UINT y,UINT font_size,LPCWSTR font_name,LPCWSTR output_str)
-{
-    SetFont(hdc,font_size,font_name);
-    TextOutW(hdc,x,y,output_str,wcslen(output_str));
-    DeleteFont();
-}
+/* Cancel install */
 
 void CancelInstall(void)
 {
     wstring install_p=install_path;
 }
+
+/* Draw background */
 
 void DrawSolidColorBackground(HDC hdc,COLORREF color)
 {
@@ -112,53 +97,67 @@ void DrawSolidColorBackground(HDC hdc,COLORREF color)
     FillRect(hdc,&client_rect,CreateSolidBrush(color));
 }
 
-void DrawGradientBackground(HDC hdc,BYTE init_r,BYTE init_g,BYTE init_b)
+void DrawGradientBackground(HDC hdc,COLORREF start_color,COLORREF end_color)
 {
-    UINT current_r=init_r;
-    UINT current_g=init_g;
-    UINT current_b=init_b;
+    TRIVERTEX vertex[2];
+    GRADIENT_RECT gradient_rect;
+    gradient_rect.UpperLeft=0;
+    gradient_rect.LowerRight=1;
     RECT client_rect;
     GetClientRect(main_window,&client_rect);
-    bool reserve_r=false;
-    bool reserve_g=false;
-    bool reserve_b=false;
-    for(int y=client_rect.top;y<client_rect.bottom;y++)
+    vertex[0].x=0;
+    vertex[0].y=0;
+    vertex[0].Red=GetRValue(start_color);
+    vertex[0].Green=GetGValue(start_color);
+    vertex[0].Blue=GetBValue(start_color);
+    vertex[0].Alpha=255;
+    vertex[1].x=client_rect.right;
+    vertex[1].y=client_rect.bottom;
+    vertex[1].Red=GetRValue(end_color);
+    vertex[1].Green=GetGValue(end_color);
+    vertex[1].Blue=GetBValue(end_color);
+    vertex[1].Alpha=255;
+    GradientFill(hdc,vertex,2,NULL,0,GRADIENT_FILL_RECT_V);
+}
+
+COLORREF GetEndColor(COLORREF start_color)
+{
+    bool direction_r=false;
+    bool direction_g=false;
+    bool direction_b=false;
+    BYTE current_r=GetRValue(start_color);
+    BYTE current_g=GetGValue(start_color);
+    BYTE current_b=GetBValue(start_color);
+    RECT client_rect;
+    GetClientRect(main_window,&client_rect);
+    if(current_r<255/2)
+        direction_r=true;
+    if(current_g<255/2)
+        direction_g=true;
+    if(current_b<255/2)
+        direction_b=true;
+    for(UINT y=0;y<client_rect.bottom;y++)
     {
-        RECT draw_rect=client_rect;
-        draw_rect.bottom=y+1;
-        draw_rect.top=y;
-        FillRect(hdc,&draw_rect,CreateSolidBrush(RGB(current_r,current_g,current_b)));
-        if(!reserve_r)
-            if(current_r==0)
-                reserve_r=true,current_r++;
-            else
-                current_r--;
-        else
-            if(current_r==255)
-                reserve_r=false,current_r--;
-            else
+        if(direction_r)
+            if(current_r!=255)
                 current_r++;
-        if(!reserve_g)
-            if(current_g==0)
-                reserve_g=true,current_g++;
-            else
-                current_g--;
         else
-            if(current_g==255)
-                reserve_g=false,current_g--;
-            else
+            if(current_r!=0)
+                current_r--;
+        if(direction_g)
+            if(current_g!=255)
                 current_g++;
-        if(!reserve_b)
-            if(current_b==0)
-                reserve_b=true,current_b++;
-            else
-                current_b--;
         else
-            if(current_b==255)
-                reserve_b=false,current_b--;
-            else
+            if(current_g!=0)
+                current_g--;
+        if(direction_b)
+            if(current_b!=255)
                 current_b++;
+        else
+            if(current_b!=0)
+                current_b--;
     }
+    return RGB(current_r,current_g,current_b);
 }
 
 bool IsObjectiveShellInstallationDirectory(void)
@@ -168,19 +167,19 @@ bool IsObjectiveShellInstallationDirectory(void)
     return true;
 }
 
-DWORD WINAPI DrawColorfulBackgroundThread(LPVOID lParam)
+DWORD WINAPI DrawBeautifulBackgroundThread(LPVOID param)
 {
     while(true)
     {
         RECT client_rect;
         GetClientRect(main_window,&client_rect);
-        InvalidateRect(main_window,&client_rect,false);
-        Sleep(70);
+        InvalidateRect(main_window,&client_rect,true);
+        Sleep(30);
     }
     return 0;
 }
 
-DWORD WINAPI StatusCheckThread(LPVOID lParam)
+DWORD WINAPI StatusCheckThread(LPVOID param)
 {
     while(true)
         if(status>INSTALL_DONE)
@@ -191,12 +190,18 @@ DWORD WINAPI StatusCheckThread(LPVOID lParam)
     return 0;
 }
 
+/* I don't know why this function make installer crash. */
 void IsVisualEffectEnabled(void)
 {
     FILE *fp;
     if((fp=fopen("./isvisualeffectenabled","r"))!=NULL)
         visual_effects=true;
     fclose(fp);
+}
+
+DWORD WINAPI BackgroundMusicThread(LPVOID param)
+{
+    return 0;
 }
 
 LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
@@ -213,8 +218,8 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     DestroyWindow(button_upgrade);
                     DestroyWindow(button_exit);
                     DestroyWindow(button_about);
-                    install_path_input=CreateWindowW(L"EDIT",L"C:\\Program Files\\Objective Shell\\",WS_CHILD|WS_VISIBLE,10,100,370,20,hwnd,INPUT_INSTALL_PATH,hinstance,NULL);
-                    button_next=CreateWindowW(L"BUTTON",L"Next >",WS_CHILD|WS_VISIBLE,390,100,80,20,hwnd,BUTTON_NEXT,hinstance,NULL);
+                    install_path_input=CreateWindowW(L"EDIT",L"C:\\Program Files\\Objective Shell\\",WS_CHILD|WS_VISIBLE,10,100,370,20,hwnd,(HMENU)INPUT_INSTALL_PATH,hinstance,NULL);
+                    button_next=CreateWindowW(L"BUTTON",L"Next >",WS_CHILD|WS_VISIBLE,390,100,80,20,hwnd,(HMENU)BUTTON_NEXT,hinstance,NULL);
                     UpdateWindow(main_window);
                     break;
                 case BUTTON_UPGRADE:
@@ -236,10 +241,10 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                             DestroyWindow(button_back);
                             DestroyWindow(button_next);
                             DestroyWindow(install_path_input);
-                            button_install=CreateWindowW(L"BUTTON",L"Install",WS_CHILD|WS_VISIBLE,10,50,150,25,main_window,BUTTON_INSTALL,hinstance,NULL);
-                            button_upgrade=CreateWindowW(L"BUTTON",L"Upgrade",WS_CHILD|WS_VISIBLE,10,80,150,25,main_window,BUTTON_UPGRADE,hinstance,NULL);
-                            button_about=CreateWindowW(L"BUTTON",L"About",WS_CHILD|WS_VISIBLE,10,110,150,25,main_window,BUTTON_ABOUT,hinstance,NULL);
-                            button_exit=CreateWindowW(L"BUTTON",L"Exit",WS_CHILD|WS_VISIBLE,10,140,150,25,main_window,BUTTON_EXIT,hinstance,NULL);
+                            button_install=CreateWindowW(L"BUTTON",L"Install",WS_CHILD|WS_VISIBLE,10,50,150,25,main_window,(HMENU)BUTTON_INSTALL,hinstance,NULL);
+                            button_upgrade=CreateWindowW(L"BUTTON",L"Upgrade",WS_CHILD|WS_VISIBLE,10,80,150,25,main_window,(HMENU)BUTTON_UPGRADE,hinstance,NULL);
+                            button_about=CreateWindowW(L"BUTTON",L"About",WS_CHILD|WS_VISIBLE,10,110,150,25,main_window,(HMENU)BUTTON_ABOUT,hinstance,NULL);
+                            button_exit=CreateWindowW(L"BUTTON",L"Exit",WS_CHILD|WS_VISIBLE,10,140,150,25,main_window,(HMENU)BUTTON_EXIT,hinstance,NULL);
                             status=READ_LICENSE;
                             refresh=true;
                             UpdateWindow(hwnd);
@@ -256,6 +261,8 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             break;
         case WM_DESTROY:
             CloseHandle(colorful_bg_thread);
+            CloseHandle(status_check_thread);
+            CloseHandle(background_music_thread);
             PostQuitMessage(0);
             break;
         case WM_PAINT:
@@ -269,29 +276,33 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             SetBkMode(hdc,TRANSPARENT);
             if(visual_effects)
             {
-                DrawGradientBackground(hdc,bg_r,bg_g,bg_b);
+                FILE *fp=fopen(".log","a+");
+                fprintf(fp,"R:%d G:%d B:%d\n",bg_r,bg_g,bg_b);
+                fclose(fp);
+                DrawGradientBackground(hdc,RGB(bg_r,bg_g,bg_b),GetEndColor(RGB(bg_r,bg_g,bg_b)));
+               // DrawSolidColorBackground(hdc,RGB(bg_r,bg_g,bg_b));
                 if(bg_loop_cnt==3)
                     bg_reserve_gradient=false;
                 if(bg_loop_cnt==255)
                     bg_reserve_gradient=true;
                 if(!bg_reserve_gradient)
                 {
-                    if(bg_r!=50)
+                    if(bg_r>0&&bg_loop_cnt%3==0)
                         bg_r-=2;
-                    if(bg_g!=50&&bg_loop_cnt%2==0)
-                        bg_g-=5;
-                    if(bg_b!=120&&bg_loop_cnt%3==0)
-                        bg_b--;
+                    if(bg_g>0&&bg_loop_cnt%5==0)
+                        bg_g-=2;
+                    if(bg_b>30&&bg_loop_cnt%7==0)
+                        bg_b-=2;
                     bg_loop_cnt++;
                 }
                 else
                 {
-                    if(bg_r!=170)
+                    if(bg_r<170)
                         bg_r+=2;
-                    if(bg_g!=170&&bg_loop_cnt%2==0)
-                        bg_g+=5;
-                    if(bg_b!=220&&bg_loop_cnt%3==0)
-                        bg_b++;
+                    if(bg_g<170&&bg_loop_cnt%2==0)
+                        bg_g+=2;
+                    if(bg_b<220&&bg_loop_cnt%3==0)
+                        bg_b+=2;
                     bg_loop_cnt--;
                 }
                 if(!bg_reserve_gradient)
@@ -316,7 +327,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 }
             }
             else
-                DrawSolidColorBackground(hdc,RGB(55,55,55));
+                DrawSolidColorBackground(hdc,RGB(0,170,255));
             if(visual_effects)
                 SetTextColor(hdc,RGB(text_b,text_b,text_g));
             else
@@ -324,12 +335,12 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             switch(status)
             {
                 case FIRST_STEP:
-                    FontOut(hdc,10,10,20,L"Courier New",L"Objective Shell Installer");
+                    FontOutW(hdc,10,10,20,true,false,false,L"Courier New",L"Objective Shell Installer");
                     //SendMessage(button_install,WM_SETFONT,NULL,(LPARAM)hfont);
                     break;
                 case SELECT_INSTALL_PATH:
-                    FontOut(hdc,10,10,20,L"Courier New",L"Select Install Path");
-                    FontOut(hdc,10,80,15,L"Courier New",L"Install Path:");
+                    FontOutW(hdc,10,10,20,false,false,false,L"Courier New",L"Select Install Path");
+                    FontOutW(hdc,10,80,20,false,false,false,L"Courier New",L"Install Path:");
                     break;
             }
             if(refresh)
@@ -350,6 +361,8 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             break;
         case WM_CLOSE:
         {
+            /* Ask user whether to exit setup or continue when
+               installer is installing Objective Shell but user wants to close window. */
             if(installing)
                 if(MessageBoxW(hwnd,L"Do you want to exit?",L"",MB_YESNO|MB_ICONQUESTION)==IDYES)
                 {
@@ -369,10 +382,13 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
     }
     return DefWindowProcW(hwnd,uMsg,wParam,lParam);
 }
+
+/* Main function. */
 int WINAPI wWinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPWSTR lpCmdLine,int nShowCmd)
 {
     visual_effects=true;
     hinstance=hInstance;
+    /* Register window class. */
     LPCWSTR mainclass_name=L"Objective Shell Installer";
     WNDCLASSW mainclass={};
     mainclass.lpszClassName=mainclass_name;
@@ -381,6 +397,7 @@ int WINAPI wWinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPWSTR lpCmdLine
     mainclass.hCursor=LoadCursorW(NULL,(LPCWSTR)IDC_ARROW);
     mainclass.hIcon=LoadIconW(hInstance,IDI_LOGO);
     RegisterClassW(&mainclass);
+    /* Create and show main window. */
     main_window=CreateWindowW(mainclass_name,L"Objective Shell Installer",WS_OVERLAPPEDWINDOW,5,25,500,400,NULL,NULL,hInstance,NULL);
     if(main_window==NULL)
     {
@@ -389,19 +406,23 @@ int WINAPI wWinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPWSTR lpCmdLine
     }
     ShowWindow(main_window,nShowCmd);
     //IsVisualEffectEnabled();
-    button_install=CreateWindowW(L"BUTTON",L"Install",WS_CHILD|WS_VISIBLE,10,50,150,25,main_window,BUTTON_INSTALL,hInstance,NULL);
-    button_upgrade=CreateWindowW(L"BUTTON",L"Upgrade",WS_CHILD|WS_VISIBLE,10,80,150,25,main_window,BUTTON_UPGRADE,hInstance,NULL);
-    button_about=CreateWindowW(L"BUTTON",L"About",WS_CHILD|WS_VISIBLE,10,110,150,25,main_window,BUTTON_ABOUT,hInstance,NULL);
-    button_exit=CreateWindowW(L"BUTTON",L"Exit",WS_CHILD|WS_VISIBLE,10,140,150,25,main_window,BUTTON_EXIT,hInstance,NULL);
+    /* Create buttons */
+    button_install=CreateWindowW(L"BUTTON",L"Install",WS_CHILD|WS_VISIBLE,10,50,150,25,main_window,(HMENU)BUTTON_INSTALL,hInstance,NULL);
+    button_upgrade=CreateWindowW(L"BUTTON",L"Upgrade",WS_CHILD|WS_VISIBLE,10,80,150,25,main_window,(HMENU)BUTTON_UPGRADE,hInstance,NULL);
+    button_about=CreateWindowW(L"BUTTON",L"About",WS_CHILD|WS_VISIBLE,10,110,150,25,main_window,(HMENU)BUTTON_ABOUT,hInstance,NULL);
+    button_exit=CreateWindowW(L"BUTTON",L"Exit",WS_CHILD|WS_VISIBLE,10,140,150,25,main_window,(HMENU)BUTTON_EXIT,hInstance,NULL);
+    /* Create threads to ensure that visual effects can work. */
     if(visual_effects)
-        colorful_bg_thread=CreateThread(NULL,0,DrawColorfulBackgroundThread,NULL,NULL,NULL);
+        colorful_bg_thread=CreateThread(NULL,0,DrawBeautifulBackgroundThread,NULL,NULL,NULL);
     status_check_thread=CreateThread(NULL,0,StatusCheckThread,NULL,NULL,NULL);
+    background_music_thread=CreateThread(NULL,0,BackgroundMusicThread,NULL,NULL,NULL);
     if(visual_effects)
         for(int i=0;i<=240;i++)
         {
             SetLayeredWindowAttributes(main_window,NULL,i,LWA_ALPHA);
             Sleep(1);
         }
+    /* Message loop. */
     MSG msg={};
     while(GetMessage(&msg,NULL,0,0))
 	{
