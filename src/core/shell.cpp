@@ -1,6 +1,10 @@
 #include "interpreter.hpp"
+#include <algorithm>
+using std::fill;
+
 unsigned int user_input_buffer_size=4096;
 wchar_t *user_input_buffer=new wchar_t[4096];
+
 int main(unsigned int argc,char **argv)
 {
     if(argc>1)
@@ -15,6 +19,7 @@ int main(unsigned int argc,char **argv)
     {
         printf("[OBJSHELL] >");
         fgetws(user_input_buffer,user_input_buffer_size,stdin);
-
+        ExecuteCommands(SeprateArguments(user_input_buffer));
+        fill(user_input_buffer,user_input_buffer+user_input_buffer_size*sizeof(wchar_t),L'\0');
     }
 }
