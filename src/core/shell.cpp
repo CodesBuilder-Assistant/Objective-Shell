@@ -9,17 +9,18 @@ int main(unsigned int argc,char **argv)
 {
     if(argc>1)
     {
-        for(unsigned int i;i<argc;i++)
+        for(unsigned int i=0;i<argc;i++)
             if(argv[i]=="-h"||argv[i]=="--help")
             {
                 puts("Objective Shell Help");
             }
     }
+
     while(true)
     {
-        printf("[OBJSHELL] >");
+        wprintf(L"[OBJSHELL] %ls>",current_dir);
         fgetws(user_input_buffer,user_input_buffer_size,stdin);
-        ExecuteCommands(SeprateArguments(user_input_buffer));
+        ExecuteCommand(SeprateArguments(user_input_buffer));
         fill(user_input_buffer,user_input_buffer+user_input_buffer_size*sizeof(wchar_t),L'\0');
     }
 }
