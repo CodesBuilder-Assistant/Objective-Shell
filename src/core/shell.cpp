@@ -7,6 +7,7 @@ wchar_t *user_input_buffer=new wchar_t[4096];
 
 int main(unsigned int argc,char **argv)
 {
+    GetCurrentDirectoryW(16384,current_dir);
     if(argc>1)
     {
         for(unsigned int i=0;i<argc;i++)
@@ -15,12 +16,11 @@ int main(unsigned int argc,char **argv)
                 puts("Objective Shell Help");
             }
     }
-
     while(true)
     {
         wprintf(L"[OBJSHELL] %ls>",current_dir);
         fgetws(user_input_buffer,user_input_buffer_size,stdin);
-        ExecuteCommand(SeprateArguments(user_input_buffer));
+        ExecuteCommand(GetArguments(user_input_buffer));
         fill(user_input_buffer,user_input_buffer+user_input_buffer_size*sizeof(wchar_t),L'\0');
     }
 }

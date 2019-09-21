@@ -7,11 +7,6 @@
 using std::string;
 using std::wstring;
 
-bool IsDirectory(const char *_path_)
-{
-
-}
-
 bool IsDirectory(const wchar_t *_path_)
 {
     #ifdef _WIN32
@@ -24,7 +19,11 @@ bool IsDirectory(const wchar_t *_path_)
     HANDLE find_handle;
     find_handle=FindFirstFileW(find_name.c_str(),&finddata);
     if(find_handle==INVALID_HANDLE_VALUE)
+    {
+        CloseHandle(find_handle);
         return false;
+    }
+    CloseHandle(find_handle);
     #endif
     return true;
 }

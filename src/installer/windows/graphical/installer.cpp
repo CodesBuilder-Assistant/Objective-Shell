@@ -39,7 +39,6 @@ HWND button_about;
 HWND feedback_window;
 
 /*
-* colorful_bg_thread:Make main window's background beautiful,but it will use a lot of system resources.
 * status_check_thread:Exit setup when status is a error value.
 */
 HANDLE colorful_bg_thread;
@@ -167,7 +166,7 @@ bool IsObjectiveShellInstallationDirectory(void)
     return true;
 }
 
-DWORD WINAPI DrawBeautifulBackgroundThread(LPVOID param)
+DWORD WINAPI DrawColourfulBackgroundThread(LPVOID param)
 {
     while(true)
     {
@@ -252,7 +251,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     }
                     break;
                 case BUTTON_ABOUT:
-                    MessageBoxW(main_window,L"Objective Shell\nCopyright(C)2019 CodesBuilder\n\nVersion:1.0.0.0001\nCodename:(to be determined)\nFor testing purposes only",L"About Objective Shell",MB_OK|MB_ICONINFORMATION);
+                    MessageBoxW(main_window,L"Objective Shell\nCopyright(C)2019 CodesBuilder\n\nVersion:1.0.0.0001\nCodename:Base\nFor testing purposes only",L"About Objective Shell",MB_OK|MB_ICONINFORMATION);
                     break;
                 case BUTTON_EXIT:
                     SendMessageW(hwnd,WM_CLOSE,NULL,NULL);
@@ -386,7 +385,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 /* Main function. */
 int WINAPI wWinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPWSTR lpCmdLine,int nShowCmd)
 {
-    visual_effects=true;
+    //visual_effects=true;
     hinstance=hInstance;
     /* Register window class. */
     LPCWSTR mainclass_name=L"Objective Shell Installer";
@@ -413,7 +412,7 @@ int WINAPI wWinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPWSTR lpCmdLine
     button_exit=CreateWindowW(L"BUTTON",L"Exit",WS_CHILD|WS_VISIBLE,10,140,150,25,main_window,(HMENU)BUTTON_EXIT,hInstance,NULL);
     /* Create threads to ensure that visual effects can work. */
     if(visual_effects)
-        colorful_bg_thread=CreateThread(NULL,0,DrawBeautifulBackgroundThread,NULL,NULL,NULL);
+        colorful_bg_thread=CreateThread(NULL,0,DrawColourfulBackgroundThread,NULL,NULL,NULL);
     status_check_thread=CreateThread(NULL,0,StatusCheckThread,NULL,NULL,NULL);
     background_music_thread=CreateThread(NULL,0,BackgroundMusicThread,NULL,NULL,NULL);
     if(visual_effects)
