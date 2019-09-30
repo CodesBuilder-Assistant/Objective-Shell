@@ -4,7 +4,7 @@
 */
 #ifndef INTERPRETER_HPP
 #define INTERPRETER_HPP
-#include <vector>
+#include <deque>
 #include <string>
 #include <wchar.h>
 #include <stdio.h>
@@ -16,83 +16,75 @@
 #pragma comment(lib,"shell32.lib")
 #endif
 
-using std::vector;
+using std::deque;
 using std::wstring;
 
 wchar_t current_dir[16384];
 int return_value=0;
-vector<wchar_t *>find_dirs;
+wstring *find_dirs;
 
-char cd(vector<wchar_t *>arguments)
-{
-    if(arguments.size()>1)
-    {
-        SetConsoleTextColor(WHITE);
-        printf("[");
-        SetConsoleTextColor(RED);
-        printf("Error");
-        SetConsoleTextColor(WHITE);
-        puts("]Too many arguments");
-        return 2;
-    }
-    else if(arguments.size()==0)
-        puts("Syntax:cd [directory]");
-    if(!IsDirectory(arguments[0]))
-    {
-        SetConsoleTextColor(WHITE);
-        printf("[");
-        SetConsoleTextColor(RED);
-        printf("Error");
-        SetConsoleTextColor(WHITE);
-        puts("]No such directory");
-        return 1;
-    }
-    wcscpy(current_dir,arguments[0]);
-    return 0;
-}
+unsigned int argument_count=0;
+deque<wstring>arguments;
 
-vector<wchar_t *> GetArguments(const wchar_t *command)
+void PartitionArguments(const wchar_t *args)
 {
-    vector<wchar_t *> ret_vector;
-    wstring current_part;
-    for(unsigned int i=0;i<wcslen(command);i++)
-        if(command[i]!=L' '&&command[i]!=L'\0'&&command[i]!=L'\n')
-            current_part+=command[i];
-        else
-            if(current_part!=L"")
-            {
-                ret_vector.push_back((wchar_t *)current_part.c_str());
-                current_part.clear();
-            }
-    return ret_vector;
-}
-
-void *ExecuteCommand(const vector<wchar_t *> args)
-{
-    if(args.size()==0)
-        return 0;
-    unsigned int need_end_count;
-    wchar_t *subject;
-    subject=args[0];
-    wprintf(subject);
-    vector<wchar_t *>arguments;
-    for(int i=1;i<args.size();i++)
-        arguments.push_back(args[i]);
-    if(subject==L"cd")
-        cd(arguments);
-    else
-    {
-        wstring args_str;
-        for(int i=0;i<arguments.size();i++)
+    wstring current_arg;
+    for(int i=0;i<wcslen(args);i++)
+        if(args[i]==L' '||args[i+1]==L'\0')
         {
-            args_str+=arguments[i];
-            args_str+=L' ';
+            if(current_arg.c_str()==L"")
+            {
+                current_arg.clear();
+                continue;
+            }
+            wstring push_string=current_arg;
+            current_arg.clear();
+            arguments.push_back(push_string);
         }
-        #ifdef _WIN32
-        PROCESS_INFORMATION process_info={};
-        CreateProcessW(arguments[0],(LPWSTR)args_str.c_str(),NULL,NULL,false,NULL,NULL,NULL,NULL,&process_info);
-        #endif
-    }
-    return 0;
+        else
+            current_arg+=args[i];
 }
+
+void ClearArguments(void)
+{
+    arguments.clear();
+}
+
+void ExecuteCommand(void)
+{
+    for(int i=0;i<arguments.size();i++)
+        wprintf(L"%ls\n",arguments[i].c_str());
+    return;
+    if(arguments.size()==0)
+        return;
+    if(arguments[0].c_str()==L"cd")
+    {
+        if(arguments.size()==1)
+            return;
+        else if(arguments.size()>2)
+        {
+            SetConsoleTextColor(WHITE);
+            printf("[");
+            SetConsoleTextColor(RED);
+            printf("Error");
+            SetConsoleTextColor(WHITE);
+            puts("]Too many arguments");
+            return;
+        }
+        if(!IsDirectory(arguments[1].c_str()))
+        {
+            SetConsoleTextColor(WHITE);
+            printf("[");
+            SetConsoleTextColor(RED);
+            printf("Error");
+            SetConsoleTextColor(WHITE);
+            puts("]No such directory");
+            return;
+        }
+        wcscpy(current_dir,arguments[1].c_str());
+    }
+    else
+        puts("Unknown command");
+}
+
 #endif

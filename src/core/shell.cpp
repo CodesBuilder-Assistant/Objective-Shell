@@ -20,7 +20,9 @@ int main(unsigned int argc,char **argv)
     {
         wprintf(L"[OBJSHELL] %ls>",current_dir);
         fgetws(user_input_buffer,user_input_buffer_size,stdin);
-        ExecuteCommand(GetArguments(user_input_buffer));
+        PartitionArguments(user_input_buffer);
+        ExecuteCommand();
+        ClearArguments();
         fill(user_input_buffer,user_input_buffer+user_input_buffer_size*sizeof(wchar_t),L'\0');
     }
 }

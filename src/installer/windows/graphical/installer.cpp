@@ -38,6 +38,8 @@ HWND button_exit;
 HWND button_about;
 HWND feedback_window;
 
+/* License contents */
+
 /*
 * status_check_thread:Exit setup when status is a error value.
 */
@@ -159,13 +161,6 @@ COLORREF GetEndColor(COLORREF start_color)
     return RGB(current_r,current_g,current_b);
 }
 
-bool IsObjectiveShellInstallationDirectory(void)
-{
-    wstring install_path_string=install_path;
-    wstring current_chkfile=install_path_string;
-    return true;
-}
-
 DWORD WINAPI DrawColourfulBackgroundThread(LPVOID param)
 {
     while(true)
@@ -211,14 +206,12 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             switch(LOWORD(wParam))
             {
                 case BUTTON_INSTALL:
-                    status++;
+                    status=READ_LICENSE;
                     refresh=true;
                     DestroyWindow(button_install);
                     DestroyWindow(button_upgrade);
                     DestroyWindow(button_exit);
                     DestroyWindow(button_about);
-                    install_path_input=CreateWindowW(L"EDIT",L"C:\\Program Files\\Objective Shell\\",WS_CHILD|WS_VISIBLE,10,100,370,20,hwnd,(HMENU)INPUT_INSTALL_PATH,hinstance,NULL);
-                    button_next=CreateWindowW(L"BUTTON",L"Next >",WS_CHILD|WS_VISIBLE,390,100,80,20,hwnd,(HMENU)BUTTON_NEXT,hinstance,NULL);
                     UpdateWindow(main_window);
                     break;
                 case BUTTON_UPGRADE:
@@ -229,7 +222,10 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     {
                         case SELECT_INSTALL_PATH:
                             GetWindowTextW(install_path_input,install_path,16384);
-
+                            break;
+                        case READ_LICENSE:
+                            install_path_input=CreateWindowW(L"EDIT",L"C:\\Program Files\\Objective Shell\\",WS_CHILD|WS_VISIBLE,10,100,370,20,hwnd,(HMENU)INPUT_INSTALL_PATH,hinstance,NULL);
+                            button_next=CreateWindowW(L"BUTTON",L"Next >",WS_CHILD|WS_VISIBLE,390,100,80,20,hwnd,(HMENU)BUTTON_NEXT,hinstance,NULL);
                             break;
                     }
                     break;
@@ -247,6 +243,8 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                             status=READ_LICENSE;
                             refresh=true;
                             UpdateWindow(hwnd);
+                            break;
+                        case READ_LICENSE:
                             break;
                     }
                     break;
@@ -279,7 +277,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 fprintf(fp,"R:%d G:%d B:%d\n",bg_r,bg_g,bg_b);
                 fclose(fp);
                 DrawGradientBackground(hdc,RGB(bg_r,bg_g,bg_b),GetEndColor(RGB(bg_r,bg_g,bg_b)));
-               // DrawSolidColorBackground(hdc,RGB(bg_r,bg_g,bg_b));
+                //DrawSolidColorBackground(hdc,RGB(bg_r,bg_g,bg_b));
                 if(bg_loop_cnt==3)
                     bg_reserve_gradient=false;
                 if(bg_loop_cnt==255)
@@ -334,12 +332,16 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             switch(status)
             {
                 case FIRST_STEP:
-                    FontOutW(hdc,10,10,20,true,false,false,L"Courier New",L"Objective Shell Installer");
+                    FontOutW(hdc,10,10,20,true,false,false,L"Monospace",L"Objective Shell Installer");
                     //SendMessage(button_install,WM_SETFONT,NULL,(LPARAM)hfont);
                     break;
+                case READ_LICENSE:
+                    FontOutW(hdc,10,10,20,true,false,false,L"Monospace",L"Read License");
+                    FontOutW(hdc,10,35,18,false,false,false,L"Monospace",L"Please read the license:");
+                    break;
                 case SELECT_INSTALL_PATH:
-                    FontOutW(hdc,10,10,20,false,false,false,L"Courier New",L"Select Install Path");
-                    FontOutW(hdc,10,80,20,false,false,false,L"Courier New",L"Install Path:");
+                    FontOutW(hdc,10,10,20,true,false,false,L"Monospace",L"Select Install Path");
+                    FontOutW(hdc,10,80,20,false,false,false,L"Monospace",L"Install Path:");
                     break;
             }
             if(refresh)
@@ -416,7 +418,7 @@ int WINAPI wWinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPWSTR lpCmdLine
     status_check_thread=CreateThread(NULL,0,StatusCheckThread,NULL,NULL,NULL);
     background_music_thread=CreateThread(NULL,0,BackgroundMusicThread,NULL,NULL,NULL);
     if(visual_effects)
-        for(int i=0;i<=240;i++)
+        for(int i=0;i<=236;i++)
         {
             SetLayeredWindowAttributes(main_window,NULL,i,LWA_ALPHA);
             Sleep(1);

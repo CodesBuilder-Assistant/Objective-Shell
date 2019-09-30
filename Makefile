@@ -35,7 +35,7 @@ installer_vc64:src\installer\windows\console\installer.c src\installer\windows\g
 	@-del *.obj
 install_windows:
 	@out\installer\ObjectiveShell_Installer.exe
-exec_core:
+core_test:
 	@-out\core\objshell.exe
 clean:
 	@-rm -rf out
