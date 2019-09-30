@@ -11,7 +11,10 @@
 #include <effects.hpp>
 #include <stdlib.h>
 #include <fs.hpp>
+
+/* Modules */
 #include "clear.hpp"
+#include "dir.hpp"
 
 #ifdef _WIN32
 #pragma comment(lib,"shell32.lib")
@@ -97,6 +100,13 @@ void ExecuteCommand(void)
             return;
         }
         ClearScreen();
+    }
+    else if(arguments[0]==L"dir")
+    {
+        if(arguments.size()==1)
+            dir(current_dir);
+        else
+            dir(arguments[1].c_str());
     }
     else
         puts("Unknown command");
