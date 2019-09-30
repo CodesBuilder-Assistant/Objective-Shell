@@ -11,6 +11,7 @@
 #include <effects.hpp>
 #include <stdlib.h>
 #include <fs.hpp>
+#include "clear.hpp"
 
 #ifdef _WIN32
 #pragma comment(lib,"shell32.lib")
@@ -32,7 +33,7 @@ void PartitionArguments(const wchar_t *args)
     for(int i=0;i<wcslen(args);i++)
         if(args[i]==L' '||args[i+1]==L'\0')
         {
-            if(current_arg.c_str()==L"")
+            if(current_arg==L"\0")
             {
                 current_arg.clear();
                 continue;
@@ -52,12 +53,9 @@ void ClearArguments(void)
 
 void ExecuteCommand(void)
 {
-    for(int i=0;i<arguments.size();i++)
-        wprintf(L"%ls\n",arguments[i].c_str());
-    return;
-    if(arguments.size()==0)
+    if(arguments.size()<1)
         return;
-    if(arguments[0].c_str()==L"cd")
+    if(arguments[0]==L"cd")
     {
         if(arguments.size()==1)
             return;
@@ -81,7 +79,24 @@ void ExecuteCommand(void)
             puts("]No such directory");
             return;
         }
-        wcscpy(current_dir,arguments[1].c_str());
+        #ifdef _WIN32
+        SetCurrentDirectoryW(arguments[1].c_str());
+        GetCurrentDirectoryW(16384,current_dir);
+        #endif
+    }
+    else if(arguments[0]==L"clear")
+    {
+        if(arguments.size()>1)
+        {
+            SetConsoleTextColor(WHITE);
+            printf("[");
+            SetConsoleTextColor(RED);
+            printf("Error");
+            SetConsoleTextColor(WHITE);
+            puts("]Too many arguments");
+            return;
+        }
+        ClearScreen();
     }
     else
         puts("Unknown command");
