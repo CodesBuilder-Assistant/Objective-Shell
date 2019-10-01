@@ -4,7 +4,7 @@
 */
 #ifndef INTERPRETER_HPP
 #define INTERPRETER_HPP
-#include <deque>
+#include <vector>
 #include <string>
 #include <wchar.h>
 #include <stdio.h>
@@ -20,7 +20,7 @@
 #pragma comment(lib,"shell32.lib")
 #endif
 
-using std::deque;
+using std::vector;
 using std::wstring;
 
 wchar_t current_dir[16384];
@@ -28,7 +28,7 @@ int return_value=0;
 wstring *find_dirs;
 
 unsigned int argument_count=0;
-deque<wstring>arguments;
+vector<wstring>arguments;
 
 void PartitionArguments(const wchar_t *args)
 {
@@ -107,6 +107,53 @@ void ExecuteCommand(void)
             dir(current_dir);
         else
             dir(arguments[1].c_str());
+    }
+    else if(arguments[0]==L"exit")
+    {
+        if(arguments.size()==1)
+            exit(0);
+        else if(arguments.size()>2)
+        {
+            SetConsoleTextColor(WHITE);
+            printf("[");
+            SetConsoleTextColor(RED);
+            printf("Error");
+            SetConsoleTextColor(WHITE);
+            puts("]Only need one return value");
+            return;
+        }
+        else
+        {
+            long long return_value;
+            for(int i=0;i<arguments[1].length();i++)
+                if(!(i>=0&&i<=9))
+                {
+                    SetConsoleTextColor(WHITE);
+                    printf("[");
+                    SetConsoleTextColor(RED);
+                    printf("Error");
+                    SetConsoleTextColor(WHITE);
+                    puts("]Invalid return value");
+                    return;
+                }
+            for(int i=0,j=arguments[1].length();i<arguments[1].length();i++,j--)
+            {
+                long long multiple;
+                for(int k=0;k<j;k++)
+                    multiple*=10;
+                return_value+=arguments[1].c_str()[i]-'0'*multiple;
+            }
+            if(return_value>INT32_MAX)
+            {
+                SetConsoleTextColor(WHITE);
+                printf("[");
+                SetConsoleTextColor(RED);
+                printf("Error");
+                SetConsoleTextColor(WHITE);
+                puts("]Too large return value.");
+            }
+            exit((int)return_value);
+        }
     }
     else
         puts("Unknown command");
