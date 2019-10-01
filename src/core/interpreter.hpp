@@ -14,7 +14,8 @@
 
 /* Modules */
 #include "clear.hpp"
-#include "dir.hpp"
+#include "ls.hpp"
+#include "alias.hpp"
 
 #ifdef _WIN32
 #pragma comment(lib,"shell32.lib")
@@ -56,6 +57,7 @@ void ClearArguments(void)
 
 void ExecuteCommand(void)
 {
+    ReplaceAliases();
     if(arguments.size()<1)
         return;
     if(arguments[0]==L"cd")
@@ -101,12 +103,12 @@ void ExecuteCommand(void)
         }
         ClearScreen();
     }
-    else if(arguments[0]==L"dir")
+    else if(arguments[0]==L"ls")
     {
         if(arguments.size()==1)
-            dir(current_dir);
+            ls(current_dir);
         else
-            dir(arguments[1].c_str());
+            ls(arguments[1].c_str());
     }
     else if(arguments[0]==L"exit")
     {
@@ -154,6 +156,56 @@ void ExecuteCommand(void)
             }
             exit((int)return_value);
         }
+    }
+    else if(arguments[0]==L"alias")
+    {
+        if(arguments.size()!=4)
+        {
+            SetConsoleTextColor(WHITE);
+            printf("[");
+            SetConsoleTextColor(RED);
+            printf("Error");
+            SetConsoleTextColor(WHITE);
+            puts("]Too few or too many arguments");
+            return;
+        }
+        if(arguments[2]!=L"=")
+        {
+            SetConsoleTextColor(WHITE);
+            printf("[");
+            SetConsoleTextColor(RED);
+            printf("Error");
+            SetConsoleTextColor(WHITE);
+            puts("]Invalid operator");
+            wprintf(L"%ls %ls ",arguments[0].c_str(),arguments[1].c_str());
+            #ifdef _WIN32
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),BACKGROUND_RED|BACKGROUND_INTENSITY);
+            wprintf(L"%ls",arguments[2].c_str());
+            SetConsoleTextColor(WHITE);
+            wprintf(L" %ls\n",arguments[3].c_str());
+            #endif
+            return;
+        }
+        AddAlias(arguments[3].c_str(),arguments[1].c_str());
+    }
+    else if(arguments[0]==L"help")
+    {
+        if(arguments.size()>1)
+        {
+            SetConsoleTextColor(WHITE);
+            printf("[");
+            SetConsoleTextColor(RED);
+            printf("Error");
+            SetConsoleTextColor(WHITE);
+            puts("]Too many arguments");
+            return;
+        }
+        puts("\nCommand list:");
+        puts("help - Show this list");
+        puts("cd - Change current directory");
+        puts("clear - Clear screen");
+        puts("ls - List files");
+        puts("exit - Exit\n");
     }
     else
         puts("Unknown command");

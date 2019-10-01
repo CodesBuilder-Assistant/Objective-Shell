@@ -1,12 +1,12 @@
-#ifndef DIR_HPP
-#define DIR_HPP
+#ifndef LS_HPP
+#define LS_HPP
 #ifdef _WIN32
 #include <Windows.h>
 #endif
 #include <wchar.h>
 #include <string>
 using std::wstring;
-void dir(const wchar_t *ls_dir)
+void ls(const wchar_t *ls_dir)
 {
     #ifdef _WIN32
     wchar_t *original_dir=new wchar_t[16384];
