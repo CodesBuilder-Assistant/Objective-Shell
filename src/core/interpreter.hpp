@@ -16,6 +16,7 @@
 #include "clear.hpp"
 #include "ls.hpp"
 #include "alias.hpp"
+#include "version.hpp"
 
 #ifdef _WIN32
 #pragma comment(lib,"shell32.lib")
@@ -53,6 +54,50 @@ void PartitionArguments(const wchar_t *args)
 void ClearArguments(void)
 {
     arguments.clear();
+}
+
+bool IsOperator(wchar_t *cmpstr)
+{
+    for(int i=0;i<wcslen(cmpstr);i++)
+        switch(cmpstr[i])
+        {
+            case L'+':
+                continue;
+            case L'-':
+                continue;
+            case L'*':
+                continue;
+            case L'/':
+                continue;
+            case L'!':
+                continue;
+            case L'=':
+                continue;
+            case L'&':
+                continue;
+            case L'^':
+                continue;
+            case L'%':
+                continue;
+            case L'$':
+                continue;
+            case L'@':
+                continue;
+            case L'~':
+                continue;
+            case L'<':
+                continue;
+            case L'>':
+                continue;
+            case L':':
+                continue;
+            case L'?':
+                continue;
+            case L'|':
+                continue;
+            default:
+                return false;
+        }
 }
 
 void ExecuteCommand(void)
@@ -152,7 +197,7 @@ void ExecuteCommand(void)
                 SetConsoleTextColor(RED);
                 printf("Error");
                 SetConsoleTextColor(WHITE);
-                puts("]Too large return value.");
+                puts("]Return value is too large.");
             }
             exit((int)return_value);
         }
@@ -206,6 +251,10 @@ void ExecuteCommand(void)
         puts("clear - Clear screen");
         puts("ls - List files");
         puts("exit - Exit\n");
+    }
+    else if(arguments[0]==L"ver")
+    {
+        ShowVersionInformation();
     }
     else
         puts("Unknown command");
