@@ -254,6 +254,32 @@ void ExecuteCommand(void)
     }
     else if(arguments[0]==L"ver")
     {
+        if(arguments.size()>1)
+            if(arguments.size()!=2)
+            {
+                SetConsoleTextColor(WHITE);
+                printf("[");
+                SetConsoleTextColor(RED);
+                printf("Error");
+                SetConsoleTextColor(WHITE);
+                puts("]Too many arguments");
+                return;
+            }
+            else if(arguments[1]!=L"CrEDItS")
+            {
+                SetConsoleTextColor(WHITE);
+                printf("[");
+                SetConsoleTextColor(RED);
+                printf("Error");
+                SetConsoleTextColor(WHITE);
+                puts("]Too many arguments");
+                return;
+            }
+            else
+            {
+                puts("Coming soon!");
+                return;
+            }
         ShowVersionInformation();
     }
     else

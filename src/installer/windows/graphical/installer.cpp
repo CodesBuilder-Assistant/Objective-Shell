@@ -249,7 +249,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     }
                     break;
                 case BUTTON_ABOUT:
-                    MessageBoxW(main_window,L"Objective Shell\nCopyright(C)2019 CodesBuilder\n\nVersion:1.0.0.0001\nCodename:Base\nFor testing purposes only",L"About Objective Shell",MB_OK|MB_ICONINFORMATION);
+                    MessageBoxW(main_window,L"Objective Shell\nCopyright(C)2019 CodesBuilder\n\nVersion:1.0.0.0001\nCodename:Quartz\nFor testing purposes only",L"About Objective Shell",MB_OK|MB_ICONINFORMATION);
                     break;
                 case BUTTON_EXIT:
                     SendMessageW(hwnd,WM_CLOSE,NULL,NULL);
