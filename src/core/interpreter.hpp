@@ -155,6 +155,10 @@ void ExecuteCommand(void)
         else
             ls(arguments[1].c_str());
     }
+    else if(arguments[0]==L"var")
+    {
+
+    }
     else if(arguments[0]==L"exit")
     {
         if(arguments.size()==1)
@@ -223,12 +227,6 @@ void ExecuteCommand(void)
             SetConsoleTextColor(WHITE);
             puts("]Invalid operator");
             wprintf(L"%ls %ls ",arguments[0].c_str(),arguments[1].c_str());
-            #ifdef _WIN32
-            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),BACKGROUND_RED|BACKGROUND_INTENSITY);
-            wprintf(L"%ls",arguments[2].c_str());
-            SetConsoleTextColor(WHITE);
-            wprintf(L" %ls\n",arguments[3].c_str());
-            #endif
             return;
         }
         AddAlias(arguments[3].c_str(),arguments[1].c_str());
