@@ -5,7 +5,7 @@ LOGFONTW CurrentFontW;
 LOGFONTA CurrentFontA;
 HFONT font;
 
-void SetFontW(HDC hdc,UINT font_size,bool bold,bool underline,bool italic,LPCWSTR font_name)
+void SetFontW(HDC hdc,UINT font_size,bool bold,bool underline,bool italic,LPCWSTR font_name) noexcept
 {
     DeleteObject(font);
     CurrentFontW.lfCharSet=DEFAULT_CHARSET;
@@ -27,7 +27,7 @@ void SetFontW(HDC hdc,UINT font_size,bool bold,bool underline,bool italic,LPCWST
     font=CreateFontIndirectW(&CurrentFontW);
     SelectObject(hdc,font);
 }
-void SetFontA(HDC hdc,UINT font_size,bool bold,bool underline,bool italic,LPCSTR font_name)
+void SetFontA(HDC hdc,UINT font_size,bool bold,bool underline,bool italic,LPCSTR font_name) noexcept
 {
     DeleteObject(font);
     CurrentFontA.lfCharSet=DEFAULT_CHARSET;
@@ -49,17 +49,17 @@ void SetFontA(HDC hdc,UINT font_size,bool bold,bool underline,bool italic,LPCSTR
     font=CreateFontIndirectA(&CurrentFontA);
     SelectObject(hdc,font);
 }
-void DeleteFont(void)
+void DeleteFont(void) noexcept
 {
     DeleteObject(font);
 }
-void FontOutW(HDC hdc,UINT x,UINT y,UINT font_size,bool bold,bool underline,bool italic,LPCWSTR font_name,LPCWSTR output_str)
+void FontOutW(HDC hdc,UINT x,UINT y,UINT font_size,bool bold,bool underline,bool italic,LPCWSTR font_name,LPCWSTR output_str) noexcept
 {
     SetFontW(hdc,font_size,bold,underline,italic,font_name);
     TextOutW(hdc,x,y,output_str,wcslen(output_str));
     DeleteFont();
 }
-void FontOutA(HDC hdc,UINT x,UINT y,UINT font_size,bool bold,bool underline,bool italic,LPCSTR font_name,LPCSTR output_str)
+void FontOutA(HDC hdc,UINT x,UINT y,UINT font_size,bool bold,bool underline,bool italic,LPCSTR font_name,LPCSTR output_str) noexcept
 {
     SetFontA(hdc,font_size,bold,underline,italic,font_name);
     TextOutA(hdc,x,y,output_str,strlen(output_str));
