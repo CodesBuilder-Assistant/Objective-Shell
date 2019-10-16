@@ -45,5 +45,6 @@ init:
     xor dx,dx
     ret
 main:
+    call init
 code ends
 end main
