@@ -2,7 +2,7 @@
 #define VERSION_HPP
 #include <stdio.h>
 #include <effects.hpp>
-void ShowVersionInformation(void)
+void ShowVersionInformation(void) noexcept
 {
     SetConsoleTextColor(LIGHTBLUE);
     puts("\nObjective Shell");
