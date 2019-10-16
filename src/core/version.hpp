@@ -9,7 +9,9 @@ void ShowVersionInformation(void) noexcept
     SetConsoleTextColor(LIGHTGREEN);
     puts("Codename 'Quartz'\n");
     SetConsoleTextColor(WHITE);
-    puts("1.0.0.0002(Secret Test 1) (Build 2)\n");
+    puts("1.0.0.0005(Secret Test 2) (Build 5)\n");
     puts("For testing purposes only\n");
+    SetConsoleTextColor(RED);
+    puts("Confidential Version");
 }
 #endif

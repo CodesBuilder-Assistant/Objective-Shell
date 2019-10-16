@@ -155,12 +155,66 @@ void ExecuteCommand(void)
         else
             ls(arguments[1].c_str());
     }
+    else if(arguments[0]==L"echo")
+    {
+        for(int i=1;i<arguments.size();i++)
+            wprintf(L"%ls",arguments[i].c_str());
+        puts("");
+    }
+    else if(arguments[0]==L"color")
+    {
+        if(arguments.size()>2)
+        {
+            SetConsoleTextColor(WHITE);
+            printf("[");
+            SetConsoleTextColor(RED);
+            printf("Error");
+            SetConsoleTextColor(WHITE);
+            puts("]Too many arguments");
+            return;
+        }
+        else if(arguments.size()==1)
+            return;
+        if(arguments[1]==L"red")
+            SetConsoleTextColor(RED);
+        else if(arguments[1]==L"green")
+            SetConsoleTextColor(GREEN);
+        else if(arguments[1]==L"blue")
+            SetConsoleTextColor(BLUE);
+        else if(arguments[1]==L"white")
+            SetConsoleTextColor(WHITE);
+        else if(arguments[1]==L"lightred")
+            SetConsoleTextColor(LIGHTRED);
+        else if(arguments[1]==L"lightgreen")
+            SetConsoleTextColor(LIGHTGREEN);
+        else if(arguments[1]==L"lightblue")
+            SetConsoleTextColor(LIGHTBLUE);
+        else if(arguments[1]==L"yellow")
+            SetConsoleTextColor(YELLOW);
+        else if(arguments[1]==L"purple")
+            SetConsoleTextColor(PURPLE);
+        else if(arguments[1]==L"lightyellow")
+            SetConsoleTextColor(LIGHTYELLOW);
+        else if(arguments[1]==L"lightpurple")
+            SetConsoleTextColor(LIGHTPURPLE);
+        else
+        {
+            SetConsoleTextColor(WHITE);
+            printf("[");
+            SetConsoleTextColor(RED);
+            printf("Error");
+            SetConsoleTextColor(WHITE);
+            puts("]Invalid color");
+            return;
+        }
+    }
     else if(arguments[0]==L"var")
     {
 
     }
     else if(arguments[0]==L"exit")
     {
+        SetConsoleTextColor(WHITE);
         if(arguments.size()==1)
             exit(0);
         else if(arguments.size()>2)
