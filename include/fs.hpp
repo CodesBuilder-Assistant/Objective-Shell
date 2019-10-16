@@ -7,7 +7,7 @@
 using std::string;
 using std::wstring;
 
-bool IsDirectory(const wchar_t *_path_)
+bool IsDirectory(const wchar_t *_path_) noexcept
 {
     #ifdef _WIN32
     if(GetFileAttributesW(_path_)!=FILE_ATTRIBUTE_DIRECTORY)
