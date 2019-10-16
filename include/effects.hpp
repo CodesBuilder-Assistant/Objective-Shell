@@ -24,7 +24,7 @@ enum colors
     CYAN
 };
 
-void SetConsoleTextColor(char color_id)
+void SetConsoleTextColor(char color_id) noexcept
 {
     switch(color_id)
     {
