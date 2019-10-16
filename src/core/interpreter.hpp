@@ -56,7 +56,7 @@ void ClearArguments(void)
     arguments.clear();
 }
 
-bool IsOperator(wchar_t *cmpstr)
+bool IsOperator(wchar_t *cmpstr) noexcept
 {
     for(int i=0;i<wcslen(cmpstr);i++)
         switch(cmpstr[i])
