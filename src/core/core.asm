@@ -4,7 +4,8 @@ user_input db 8193 dup (0)
 data ends
 code segment
 assume cs:code,ds:data
-;function:print
+
+;function name:print
 ;arguments:
 ;bx - string address
 print:
@@ -20,8 +21,14 @@ print:
     pop ax
     pop ds
     ret
+
+;function name:reboot
+;arguments:none
 reboot:
     int 19h
+
+;function name:clear_user_input_buffer
+;arguments:none
 clear_user_input_buffer:
     push ax
     push bx
@@ -37,6 +44,9 @@ clear_user_input_buffer:
     pop bx
     pop ax
     ret
+
+;function name:init
+;arguments:none
 init:
     call clear_user_input_buffer
     xor ax,ax
@@ -44,6 +54,8 @@ init:
     xor cx,cx
     xor dx,dx
     ret
+
+;main function
 main:
     call init
 code ends
