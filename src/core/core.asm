@@ -22,7 +22,9 @@ print:
     ret
 reboot:
     int 19h
-init:
+clear_user_input_buffer:
+    push ax
+    push bx
     mov ax,offset user_input
     mov bx,offset user_input
     add bx,8191
@@ -32,10 +34,16 @@ init:
     inc ax
     jne init_user_input_buffer
     mov [ax],'$'
+    pop bx
+    pop ax
+    ret
+init:
+    call clear_user_input_buffer
     xor ax,ax
     xor bx,bx
     xor cx,cx
     xor dx,dx
+    ret
 main:
 code ends
 end main
