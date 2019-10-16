@@ -3,7 +3,7 @@
 #ifdef _WIN32
 #include <Windows.h>
 #endif
-void ClearScreen(void)
+void ClearScreen(void) noexcept
 {
     #ifdef _WIN32
     CONSOLE_SCREEN_BUFFER_INFO buffer_info;
