@@ -9,14 +9,14 @@
 HWND credits_window;
 UINT frame=0;
 
-DWORD BackgroundMusicThread(LPVOID param)
+DWORD BackgroundMusicThread(LPVOID param) noexcept
 {
     while(1)
         PlaySoundW(L"res/credits.wav",NULL,SND_FILENAME|SND_NODEFAULT|SND_SYNC);
     return 0;
 }
 
-LRESULT CALLBACK CreditsWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
+LRESULT CALLBACK CreditsWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam) noexcept
 {
     switch(uMsg)
     {
