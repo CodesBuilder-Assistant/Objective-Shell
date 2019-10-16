@@ -91,14 +91,14 @@ void CancelInstall(void)
 
 /* Draw background */
 
-void DrawSolidColorBackground(HDC hdc,COLORREF color)
+void DrawSolidColorBackground(HDC hdc,COLORREF color) noexcept
 {
     RECT client_rect;
     GetClientRect(main_window,&client_rect);
     FillRect(hdc,&client_rect,CreateSolidBrush(color));
 }
 
-void DrawGradientBackground(HDC hdc,COLORREF start_color,COLORREF end_color)
+void DrawGradientBackground(HDC hdc,COLORREF start_color,COLORREF end_color) noexcept
 {
     TRIVERTEX vertex[2];
     GRADIENT_RECT gradient_rect;
@@ -121,7 +121,7 @@ void DrawGradientBackground(HDC hdc,COLORREF start_color,COLORREF end_color)
     GradientFill(hdc,vertex,2,NULL,0,GRADIENT_FILL_RECT_V);
 }
 
-COLORREF GetEndColor(COLORREF start_color)
+COLORREF GetEndColor(COLORREF start_color) noexcept
 {
     bool direction_r=false;
     bool direction_g=false;
@@ -161,7 +161,7 @@ COLORREF GetEndColor(COLORREF start_color)
     return RGB(current_r,current_g,current_b);
 }
 
-DWORD WINAPI DrawColourfulBackgroundThread(LPVOID param)
+DWORD WINAPI DrawColourfulBackgroundThread(LPVOID param) noexcept
 {
     while(true)
     {
@@ -185,7 +185,7 @@ DWORD WINAPI StatusCheckThread(LPVOID param)
 }
 
 /* I don't know why this function make installer crash. */
-void IsVisualEffectEnabled(void)
+void IsVisualEffectEnabled(void) noexcept
 {
     FILE *fp;
     if((fp=fopen("./isvisualeffectenabled","r"))!=NULL)
@@ -193,12 +193,12 @@ void IsVisualEffectEnabled(void)
     fclose(fp);
 }
 
-DWORD WINAPI BackgroundMusicThread(LPVOID param)
+DWORD WINAPI BackgroundMusicThread(LPVOID param) noexcept
 {
     return 0;
 }
 
-LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
+LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam) noexcept
 {
     switch(uMsg)
     {
