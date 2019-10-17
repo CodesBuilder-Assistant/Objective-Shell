@@ -1,3 +1,0 @@
-#include <Windows.h>
-#include "res.h"
-IDI_LOGO ICON "objshell_logo.ico"
