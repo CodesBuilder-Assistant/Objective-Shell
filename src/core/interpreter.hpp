@@ -51,11 +51,6 @@ void PartitionArguments(const wchar_t *args)
             current_arg+=args[i];
 }
 
-void ClearArguments(void)
-{
-    arguments.clear();
-}
-
 bool IsOperator(wchar_t *cmpstr) noexcept
 {
     for(int i=0;i<wcslen(cmpstr);i++)
@@ -160,6 +155,14 @@ void ExecuteCommand(void)
         for(int i=1;i<arguments.size();i++)
             wprintf(L"%ls",arguments[i].c_str());
         puts("");
+    }
+    else if(arguments[0]==L"stack")
+    {
+
+    }
+    else if(arguments[0]==L"call")
+    {
+
     }
     else if(arguments[0]==L"color")
     {

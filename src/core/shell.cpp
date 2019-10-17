@@ -24,7 +24,7 @@ int main(unsigned int argc,char **argv)
         fgetws(user_input_buffer,user_input_buffer_size,stdin);
         PartitionArguments(user_input_buffer);
         ExecuteCommand();
-        ClearArguments();
+        arguments.clear();
         fill(user_input_buffer,user_input_buffer+user_input_buffer_size*sizeof(wchar_t),L'\0');
     }
 }

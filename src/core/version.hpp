@@ -8,10 +8,11 @@ void ShowVersionInformation(void) noexcept
     puts("\nObjective Shell");
     SetConsoleTextColor(LIGHTGREEN);
     puts("Codename 'Quartz'\n");
+    puts("==========Confidential Version==========\n");
     SetConsoleTextColor(WHITE);
-    puts("1.0.0.0005(Secret Test 2) (Build 5)\n");
+    puts("1.0.0.0009(Secret Test 3) (Build 9)\n");
     puts("For testing purposes only\n");
     SetConsoleTextColor(RED);
-    puts("Confidential Version");
+    SetConsoleTextColor(WHITE);
 }
 #endif
