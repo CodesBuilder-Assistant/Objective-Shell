@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
+#include <dwmapi.h>
 #include <windows/font.hpp>
 #include <windows/latest_control.h>
 
@@ -14,6 +15,7 @@ using std::wstring;
 #pragma comment(lib,"gdi32.lib")
 #pragma comment(lib,"msimg32.lib")
 #pragma comment(lib,"winmm.lib")
+#pragma comment(lib,"dwmapi.lib")
 
 /* These variables used for visual effects */
 UINT bg_r=100;
@@ -26,6 +28,7 @@ UINT bg_loop_cnt=0;
 UINT fg_loop_cnt=0;
 bool bg_reserve_gradient=false;
 bool fg_reserve_gradient=false;
+bool extend_frame_to_client_area=false;
 
 /* Windows and controls. */
 HWND main_window;
@@ -87,6 +90,25 @@ BYTE status=0;
 void CancelInstall(void)
 {
     wstring install_p=install_path;
+}
+
+bool IsNeedExtendFrameIntoClientArea(void)
+{
+    SYSTEM_INFO sysinfo;
+    GetSystemInfo(&sysinfo);
+    OSVERSIONINFOW os_verinfo;
+    GetVersionExW(&os_verinfo);
+    if(os_verinfo.dwMajorVersion==6)
+    {
+        BOOL IsAeroEnabled;
+        DwmIsCompositionEnabled(&IsAeroEnabled);
+        if(IsAeroEnabled==FALSE)
+            return false;
+        else
+            return true;
+    }
+    else
+        return false;
 }
 
 /* Draw background */
@@ -262,6 +284,17 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             CloseHandle(background_music_thread);
             PostQuitMessage(0);
             break;
+        case WM_ERASEBKGND:
+            HDC hdc;
+            PAINTSTRUCT ps;
+            if(refresh)
+                hdc=GetDC(main_window);
+            else
+                hdc=BeginPaint(main_window,&ps);
+            RECT client_rect;
+            GetClientRect(main_window,&client_rect);
+            FillRect(hdc,&client_rect,RGB(0,0,0));
+            break;
         case WM_PAINT:
         {
             PAINTSTRUCT ps;
@@ -271,7 +304,16 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             else
                 hdc=BeginPaint(hwnd,&ps);
             SetBkMode(hdc,TRANSPARENT);
-            if(visual_effects)
+            if(extend_frame_to_client_area)
+            {
+                MARGINS mg={-1};
+                RECT client_rect;
+                GetClientRect(main_window,&client_rect);
+                FillRect(hdc,&client_rect,RGB(0,0,0));
+                mg.cyBottomHeight=50;
+                DwmExtendFrameIntoClientArea(main_window,&mg);
+            }
+            else if(visual_effects)
             {
                 FILE *fp=fopen(".log","a+");
                 fprintf(fp,"R:%d G:%d B:%d\n",bg_r,bg_g,bg_b);
@@ -354,10 +396,18 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             break;
         }
         case WM_CREATE:
-            if(visual_effects)
+            if(visual_effects&&!extend_frame_to_client_area)
             {
                 SetWindowLongW(hwnd,GWL_EXSTYLE,WS_EX_LAYERED);
                 SetLayeredWindowAttributes(hwnd,NULL,0,LWA_ALPHA);
+            }
+            else if(extend_frame_to_client_area)
+            {
+                DWM_BLURBEHIND bh={0};
+                bh.dwFlags=DWM_BB_ENABLE|DWM_BB_TRANSITIONONMAXIMIZED;
+                bh.fEnable=true;
+                bh.fTransitionOnMaximized=true;
+                bh.dwFlags|=DWM_BB_BLURREGION;
             }
             break;
         case WM_CLOSE:
@@ -387,6 +437,8 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 /* Main function. */
 int WINAPI wWinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPWSTR lpCmdLine,int nShowCmd)
 {
+    extend_frame_to_client_area=IsNeedExtendFrameIntoClientArea();
+    extend_frame_to_client_area=true;
     //visual_effects=true;
     hinstance=hInstance;
     /* Register window class. */

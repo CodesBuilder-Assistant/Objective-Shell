@@ -1,0 +1,17 @@
+[i] Objective Shell bug list
+
+Bug number      Problem                         Solved?
+---------------------------------------------------------------
+1               Shell will crash when you       ×
+                input two commands and these
+                commands not included 'ver'
+                or input 'exit'
+
+2               If 'mkfile' command executes    ×
+                successfully, you will get a
+                wrong information([OK]Created
+                file:mkfile)
+
+3               Command 'del' or 'rm' only can  ×
+                remove one file if you input
+                multiple files

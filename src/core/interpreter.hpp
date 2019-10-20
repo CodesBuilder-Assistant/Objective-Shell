@@ -8,6 +8,7 @@
 #include <string>
 #include <wchar.h>
 #include <stdio.h>
+#include <time.h>
 #include <effects.hpp>
 #include <stdlib.h>
 #include <fs.hpp>
@@ -129,7 +130,7 @@ void ExecuteCommand(void)
         GetCurrentDirectoryW(16384,current_dir);
         #endif
     }
-    else if(arguments[0]==L"clear")
+    else if(arguments[0]==L"clear"||arguments[0]==L"cls")
     {
         if(arguments.size()>1)
         {
@@ -143,14 +144,14 @@ void ExecuteCommand(void)
         }
         ClearScreen();
     }
-    else if(arguments[0]==L"ls")
+    else if(arguments[0]==L"ls"||arguments[0]==L"dir")
     {
         if(arguments.size()==1)
             ls(current_dir);
         else
             ls(arguments[1].c_str());
     }
-    else if(arguments[0]==L"echo")
+    else if(arguments[0]==L"echo"||arguments[0]==L"print")
     {
         for(int i=1;i<arguments.size();i++)
             wprintf(L"%ls",arguments[i].c_str());
@@ -215,6 +216,82 @@ void ExecuteCommand(void)
     {
 
     }
+    else if(arguments[0]==L"rm"||arguments[0]==L"del")
+    {
+        for(int i=1;i<arguments.size();i++)
+        {
+            #ifdef _WIN32
+            if(_wremove(arguments[i].c_str())!=0)
+            {
+                SetConsoleTextColor(WHITE);
+                printf("[");
+                SetConsoleTextColor(RED);
+                printf("Error");
+                SetConsoleTextColor(WHITE);
+                wprintf(L"]Unable to delete file:%ls\n",arguments[i].c_str());
+                continue;
+            }
+            #endif
+            SetConsoleTextColor(WHITE);
+            printf("[");
+            SetConsoleTextColor(GREEN);
+            printf("  OK  ");
+            SetConsoleTextColor(WHITE);
+            wprintf(L"]Deleted file:%ls\n",arguments[0].c_str());
+            return;
+        }
+    }
+    else if(arguments[0]==L"FFFFFFFFFFfuck")
+        while(true)
+        {
+            srand(time(NULL));
+            if(rand()%17==0)
+                SetConsoleTextColor(WHITE);
+            else if(rand()%3==0)
+                SetConsoleTextColor(RED);
+            else if(rand()%5==0)
+                SetConsoleTextColor(GREEN);
+            else if(rand()%7==0)
+                SetConsoleTextColor(BLUE);
+            else if(rand()%11==0)
+                SetConsoleTextColor(PURPLE);
+            else if(rand()%13==0)
+                SetConsoleTextColor(YELLOW);
+            else if(rand()%157==0)
+                SetConsoleTextColor(LIGHTPURPLE);
+            else if(rand()%137==0)
+                SetConsoleTextColor(LIGHTYELLOW);
+            else
+                SetConsoleTextColor(LIGHTBLUE);
+            printf("F");
+        }
+    else if(arguments[0]==L"mkfile")
+    {
+        for(int i=1;i<arguments.size();i++)
+        {
+            #ifdef _WIN32
+            FILE *create_file_fp;
+            if((create_file_fp=_wfopen(arguments[i].c_str(),L"w"))==NULL)
+            {
+                fclose(create_file_fp);
+                SetConsoleTextColor(WHITE);
+                printf("[");
+                SetConsoleTextColor(RED);
+                printf("Error");
+                SetConsoleTextColor(WHITE);
+                wprintf(L"]Unable to create file:%ls\n",arguments[i].c_str());
+                continue;
+            }
+            fclose(create_file_fp);
+            SetConsoleTextColor(WHITE);
+            printf("[");
+            SetConsoleTextColor(GREEN);
+            printf("  OK  ");
+            SetConsoleTextColor(WHITE);
+            wprintf(L"]Created file:%ls\n",arguments[0].c_str());
+            #endif
+        }
+    }
     else if(arguments[0]==L"exit")
     {
         SetConsoleTextColor(WHITE);
@@ -262,6 +339,9 @@ void ExecuteCommand(void)
             }
             exit((int)return_value);
         }
+    }
+    else if(arguments[0]==L"rm")
+    {
     }
     else if(arguments[0]==L"alias")
     {

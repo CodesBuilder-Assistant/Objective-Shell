@@ -2,17 +2,25 @@
 #define VERSION_HPP
 #include <stdio.h>
 #include <effects.hpp>
+unsigned int build=19;
 void ShowVersionInformation(void) noexcept
 {
     SetConsoleTextColor(LIGHTBLUE);
     puts("\nObjective Shell");
     SetConsoleTextColor(LIGHTGREEN);
     puts("Codename 'Quartz'\n");
-    puts("==========Confidential Version==========\n");
+    SetConsoleTextColor(LIGHTRED);
+    puts("==========Testing Version==========\n");
     SetConsoleTextColor(WHITE);
-    puts("1.0.0.0009(Secret Test 3) (Build 9)\n");
+    puts("Version:");
+    SetConsoleTextColor(GREEN);
+    printf("1.0.0.%d\n\n",build);
+    SetConsoleTextColor(WHITE);
+    puts("Build Date&Time:");
+    SetConsoleTextColor(YELLOW);
+    printf("%s\n %s\n\n",__DATE__,__TIME__);
+    SetConsoleTextColor(LIGHTBLUE);
     puts("For testing purposes only\n");
-    SetConsoleTextColor(RED);
     SetConsoleTextColor(WHITE);
 }
 #endif

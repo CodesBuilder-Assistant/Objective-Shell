@@ -10,13 +10,9 @@ typedef struct _command_history_unit_struct_
     _command_history_unit_struct_ *next;
 }command_history_unit;
 command_history_unit *command_history;
-void InitializeCommandHistoryList(void)
+void InitializationCommandHistoryList(void)
 {
     command_history=new command_history_unit[1];
     command_history[0].command={NULL};
-}
-void MoveHistoryPointerToTop(void)
-{
-    for()
 }
 #endif
