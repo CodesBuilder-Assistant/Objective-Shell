@@ -1,5 +1,6 @@
 data segment
-MARK_OF_GENUINE db '...OBJSHELLCOREDOS...','$'
+startup_info db 'Objective Shell',0dh,0ah,'Copyright(C)2019 CodesBuilder','$'
+interrupt_disabled db 0
 user_input db 512 dup (0)
 data ends
 
@@ -12,30 +13,61 @@ assume cs:code,ds:data,ss:stack
 
 ;function name:print
 ;arguments:
-;bx - string address
+;bx:string start address
 print:
-    push ds
-    push ax
-    mov ax,data
-    mov ds,ax
-    mov ah,09h
     push dx
+    push ah
+    mov ah,09h
     mov dx,bx
     int 21h
+    pop ah
     pop dx
-    pop ax
-    pop ds
+    ret
+
+;function name:putchar
+;arguments:
+;al:character
+putchar:
+    push dl
+    push ah
+    mov dl,al
+    mov ah,02h
+    int 21h
+    pop ah
+    pop dl
+    ret
+
+;function name:disable_int
+;arguments:none
+disable_int:
+    cli
+    mov interrupt_disabled,1
+    ret
+
+;function name:enable_int
+;arguments:none
+enable_int:
+    sti
+    mov interrupt_disabled,0
+    ret
+
+;function name:next_line
+;arguments:none
+next_line:
+    mov 
     ret
 
 ;function name:exit
 ;arguments:none
 exit:
     mov ah,4ch
+    sti
     int 21h
 
 ;function name:reboot
 ;arguments:none
 reboot:
+    sti
     int 19h
 
 ;function name:clear_user_input_buffer
@@ -58,6 +90,7 @@ clear_user_input_buffer:
 ;function name:init
 ;arguments:none
 init:
+    sti
     call clear_user_input_buffer
     xor ax,ax
     xor bx,bx
@@ -70,7 +103,9 @@ init:
 ;main function
 main:
     call init
-
+    mov bx,offset startup_info
+    call print
+    
     call exit
 code ends
 end main
