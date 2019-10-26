@@ -113,6 +113,26 @@ bool IsNeedExtendFrameIntoClientArea(void)
 
 /* Draw background */
 
+void DrawDefaultBackground(HDC hdc,HWND hwnd)
+{
+	RECT client_rect;
+	GetClientRect(hwnd,&client_rect);
+	BYTE current_r=210;
+	BYTE current_g=210;
+	BYTE current_b=255;
+	for(int y=client_rect.bottom,loop_cnt=0;y>=client_rect.top;y--,loop_cnt++)
+	{
+		RECT draw_rect=client_rect;
+		draw_rect.bottom=y;
+		draw_rect.top=y;
+		FillRect(hdc,&draw_rect,CreateSolidBrush(RGB(current_r,current_g,current_b)));
+		if(loop_cnt%5==0&&current_r!=50&&current_g!=40)
+			current_r-=2,current_g-=2;
+		if(loop_cnt%11==0&&current_b!=128)
+			current_b--;
+	}
+}
+
 void DrawSolidColorBackground(HDC hdc,COLORREF color) noexcept
 {
     RECT client_rect;
