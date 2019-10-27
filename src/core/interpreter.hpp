@@ -96,6 +96,25 @@ bool IsOperator(wchar_t *cmpstr) noexcept
         }
 }
 
+char ExecuteScript(const wchar_t *filename)
+{
+    FILE *script_fp;
+    #ifdef _WIN32
+    if((script_fp=_wfopen(filename,"r"))==NULL)
+    #endif
+    {
+        fclose(filename);
+        SetConsoleTextColor(WHITE);
+        printf("[");
+        SetConsoleTextColor(RED);
+        printf("Error");
+        SetConsoleTextColor(WHITE);
+        wprintf(L"Unable to execute script '%ls'\n",filename);
+    }
+    unsigned int current_line=1;
+    wstring current_line_command;
+}
+
 void ExecuteCommand(void)
 {
     ReplaceAliases();
