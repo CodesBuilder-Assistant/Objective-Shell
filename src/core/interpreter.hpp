@@ -31,7 +31,7 @@ int return_value=0;
 wstring *find_dirs;
 
 unsigned int argument_count=0;
-vector<wstring>arguments;
+vector<wstring> arguments;
 
 void PartitionArguments(const wchar_t *args)
 {
@@ -96,23 +96,45 @@ bool IsOperator(wchar_t *cmpstr) noexcept
         }
 }
 
+void ClearArguments(void)
+{
+    arguments.clear();
+}
+
+extern void ExecuteCommand(void);
+
 char ExecuteScript(const wchar_t *filename)
 {
     FILE *script_fp;
     #ifdef _WIN32
-    if((script_fp=_wfopen(filename,"r"))==NULL)
+    if((script_fp=_wfopen(filename,L"r"))==NULL)
     #endif
     {
-        fclose(filename);
+        fclose(script_fp);
         SetConsoleTextColor(WHITE);
         printf("[");
         SetConsoleTextColor(RED);
         printf("Error");
         SetConsoleTextColor(WHITE);
         wprintf(L"Unable to execute script '%ls'\n",filename);
+        return 0;
     }
     unsigned int current_line=1;
     wstring current_line_command;
+    wchar_t current_character;
+    while(!feof(script_fp))
+    {
+        current_character=fgetwc(script_fp);
+        if(current_character==L'\n')
+        {
+            PartitionArguments(current_line_command.c_str());
+            current_line_command.clear();
+            current_line++;
+            ExecuteCommand();
+        }
+        current_line_command+=current_character;
+    }
+    return 1;
 }
 
 void ExecuteCommand(void)
@@ -359,8 +381,10 @@ void ExecuteCommand(void)
             exit((int)return_value);
         }
     }
-    else if(arguments[0]==L"rm")
+    else if(arguments[0]==L"exec")
     {
+        for(int i=1;i<arguments.size();i++)
+            ExecuteScript(arguments[i].c_str());
     }
     else if(arguments[0]==L"alias")
     {

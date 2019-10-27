@@ -113,10 +113,10 @@ bool IsNeedExtendFrameIntoClientArea(void)
 
 /* Draw background */
 
-void DrawDefaultBackground(HDC hdc,HWND hwnd)
+void DrawDefaultBackground(HDC hdc)
 {
 	RECT client_rect;
-	GetClientRect(hwnd,&client_rect);
+	GetClientRect(main_window,&client_rect);
 	BYTE current_r=210;
 	BYTE current_g=210;
 	BYTE current_b=255;
@@ -124,7 +124,7 @@ void DrawDefaultBackground(HDC hdc,HWND hwnd)
 	{
 		RECT draw_rect=client_rect;
 		draw_rect.bottom=y;
-		draw_rect.top=y;
+		draw_rect.top=y-1;
 		FillRect(hdc,&draw_rect,CreateSolidBrush(RGB(current_r,current_g,current_b)));
 		if(loop_cnt%5==0&&current_r!=50&&current_g!=40)
 			current_r-=2,current_g-=2;
@@ -305,16 +305,19 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             PostQuitMessage(0);
             break;
         case WM_ERASEBKGND:
-            HDC hdc;
-            PAINTSTRUCT ps;
-            if(refresh)
-                hdc=GetDC(main_window);
-            else
-                hdc=BeginPaint(main_window,&ps);
-            RECT client_rect;
-            GetClientRect(main_window,&client_rect);
-            FillRect(hdc,&client_rect,RGB(0,0,0));
-            break;
+            if(extend_frame_to_client_area)
+            {
+                HDC hdc;
+                PAINTSTRUCT ps;
+                if(refresh)
+                    hdc=GetDC(main_window);
+                else
+                    hdc=BeginPaint(main_window,&ps);
+                RECT client_rect;
+                GetClientRect(main_window,&client_rect);
+                FillRect(hdc,&client_rect,RGB(0,0,0));
+                break;
+            }
         case WM_PAINT:
         {
             PAINTSTRUCT ps;
@@ -323,6 +326,9 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 hdc=GetDC(hwnd);
             else
                 hdc=BeginPaint(hwnd,&ps);
+            SetFontW(hdc,15,false,false,false,L"Segoe UI");
+            SendMessageW(button_install,WM_FONTCHANGE,(WPARAM)font,MAKELONG(true,0));
+            DeleteFont();
             SetBkMode(hdc,TRANSPARENT);
             if(extend_frame_to_client_area)
             {
@@ -386,7 +392,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 }
             }
             else
-                DrawSolidColorBackground(hdc,RGB(0,170,255));
+                DrawDefaultBackground(hdc);
             if(visual_effects)
                 SetTextColor(hdc,RGB(text_b,text_b,text_g));
             else
@@ -394,16 +400,16 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             switch(status)
             {
                 case FIRST_STEP:
-                    FontOutW(hdc,10,10,20,true,false,false,L"Monospace",L"Objective Shell Installer");
+                    FontOutW(hdc,10,10,20,true,false,false,L"Segoe UI",L"Objective Shell Installer");
                     //SendMessage(button_install,WM_SETFONT,NULL,(LPARAM)hfont);
                     break;
                 case READ_LICENSE:
-                    FontOutW(hdc,10,10,20,true,false,false,L"Monospace",L"Read License");
-                    FontOutW(hdc,10,35,18,false,false,false,L"Monospace",L"Please read the license:");
+                    FontOutW(hdc,10,10,20,true,false,false,L"Segoe UI",L"Read License");
+                    FontOutW(hdc,10,35,18,false,false,false,L"Segoe UI",L"Please read the license:");
                     break;
                 case SELECT_INSTALL_PATH:
-                    FontOutW(hdc,10,10,20,true,false,false,L"Monospace",L"Select Install Path");
-                    FontOutW(hdc,10,80,20,false,false,false,L"Monospace",L"Install Path:");
+                    FontOutW(hdc,10,10,20,true,false,false,L"Segoe UI",L"Select Install Path");
+                    FontOutW(hdc,10,80,20,false,false,false,L"Segoe UI",L"Install Path:");
                     break;
             }
             if(refresh)
@@ -458,7 +464,6 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 int WINAPI wWinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPWSTR lpCmdLine,int nShowCmd)
 {
     extend_frame_to_client_area=IsNeedExtendFrameIntoClientArea();
-    extend_frame_to_client_area=true;
     //visual_effects=true;
     hinstance=hInstance;
     /* Register window class. */
