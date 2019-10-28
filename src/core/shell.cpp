@@ -20,11 +20,14 @@ int main(unsigned int argc,char **argv)
     }
     while(true)
     {
-        wprintf(L"[OBJSHELL] %ls>",current_dir);
+        SetConsoleTextColor(LIGHTBLUE);
+        wprintf(L"[OBJSHELL]");
+        SetConsoleTextColor(WHITE);
+        wprintf(L" %ls>",current_dir);
         fgetws(user_input_buffer,user_input_buffer_size,stdin);
         PartitionArguments(user_input_buffer);
         ExecuteCommand();
-        arguments.clear();
+        ClearArguments();
         fill(user_input_buffer,user_input_buffer+user_input_buffer_size*sizeof(wchar_t),L'\0');
     }
 }

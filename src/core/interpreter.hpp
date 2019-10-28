@@ -17,6 +17,7 @@
 #include "clear.hpp"
 #include "ls.hpp"
 #include "alias.hpp"
+#include "shutdown.hpp"
 #include "version.hpp"
 
 #ifdef _WIN32
@@ -41,11 +42,11 @@ void PartitionArguments(const wchar_t *args)
         {
             if(current_arg==L"\0")
             {
-                current_arg.clear();
+                current_arg=L"";;
                 continue;
             }
             wstring push_string=current_arg;
-            current_arg.clear();
+            current_arg=L"";;
             arguments.push_back(push_string);
         }
         else
@@ -98,7 +99,10 @@ bool IsOperator(wchar_t *cmpstr) noexcept
 
 void ClearArguments(void)
 {
-    arguments.clear();
+    for(int i=0;i<arguments.size();i++)
+        arguments[i]=L"";
+    vector<wstring>empty_vector;
+    arguments.swap(empty_vector);
 }
 
 extern void ExecuteCommand(void);
@@ -128,7 +132,7 @@ char ExecuteScript(const wchar_t *filename)
         if(current_character==L'\n')
         {
             PartitionArguments(current_line_command.c_str());
-            current_line_command.clear();
+            current_line_command=L"";;
             current_line++;
             ExecuteCommand();
         }
@@ -459,6 +463,34 @@ void ExecuteCommand(void)
                 return;
             }
         ShowVersionInformation();
+    }
+    else if(arguments[0]==L"shutdown")
+    {
+        if(arguments.size()>1)
+        {
+            SetConsoleTextColor(WHITE);
+            printf("[");
+            SetConsoleTextColor(RED);
+            printf("Error");
+            SetConsoleTextColor(WHITE);
+            puts("]Too many arguments");
+            return;
+        }
+        shutdown();
+    }
+    else if(arguments[0]==L"reboot")
+    {
+        if(arguments.size()>1)
+        {
+            SetConsoleTextColor(WHITE);
+            printf("[");
+            SetConsoleTextColor(RED);
+            printf("Error");
+            SetConsoleTextColor(WHITE);
+            puts("]Too many arguments");
+            return;
+        }
+        reboot();
     }
     else
         puts("Unknown command");
