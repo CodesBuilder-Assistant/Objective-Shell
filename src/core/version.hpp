@@ -2,7 +2,7 @@
 #define VERSION_HPP
 #include <stdio.h>
 #include <effects.hpp>
-unsigned int build=31;
+unsigned int build=32;
 void ShowVersionInformation(void) noexcept
 {
     SetConsoleTextColor(LIGHTBLUE);

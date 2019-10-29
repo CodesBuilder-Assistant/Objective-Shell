@@ -427,12 +427,20 @@ void ExecuteCommand(void)
             puts("]Too many arguments");
             return;
         }
-        puts("\nCommand list:");
-        puts("help - Show this list");
-        puts("cd - Change current directory");
-        puts("clear - Clear screen");
-        puts("ls - List files");
-        puts("exit - Exit\n");
+        puts("\nUsable Commands:");
+        puts(" help         Show this list");
+        puts(" ver          Show version informations");
+        puts(" color        Change console text color");
+        puts(" shutdown     Shutdown your computer");
+        puts(" reboot       Restart your computer");
+        puts(" mkfile       Create a new file");
+        puts(" rm/del       Delete a file");
+        puts(" clear/cls    Clear console");
+        puts(" echo/print   Output a string");
+        puts(" ls/dir       List all files in a directory");
+        puts(" cd           Change current directory");
+        puts(" exec         Execute a script");
+        puts(" alias        Define a alias");
     }
     else if(arguments[0]==L"ver")
     {
