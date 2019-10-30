@@ -12,7 +12,6 @@
 #include <effects.hpp>
 #include <stdlib.h>
 #include <fs.hpp>
-#include <hardware.hpp>
 
 /* Modules */
 #include "clear.hpp"
@@ -20,6 +19,8 @@
 #include "alias.hpp"
 #include "shutdown.hpp"
 #include "version.hpp"
+#include "hardware.hpp"
+#include "hostname.hpp"
 
 #ifdef _WIN32
 #pragma comment(lib,"shell32.lib")
@@ -207,7 +208,8 @@ void ExecuteCommand(void)
     {
         if(arguments.size()==1)
         {
-
+            wprintf(L"Local Host Name:%ls\n",GetLocalHostName());
+            printf("CPU core count:%d\n",GetCpuCoreCount());
         }
     }
     else if(arguments[0]==L"stack")
