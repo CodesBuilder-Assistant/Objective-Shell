@@ -460,6 +460,11 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
     return DefWindowProcW(hwnd,uMsg,wParam,lParam);
 }
 
+LRESULT CALLBACK MainWindowHookProc(int nCode,WPARAM wParam,LPARAM lParam)
+{
+
+}
+
 /* Main function. */
 int WINAPI wWinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPWSTR lpCmdLine,int nShowCmd)
 {

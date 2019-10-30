@@ -12,6 +12,7 @@
 #include <effects.hpp>
 #include <stdlib.h>
 #include <fs.hpp>
+#include <hardware.hpp>
 
 /* Modules */
 #include "clear.hpp"
@@ -201,6 +202,13 @@ void ExecuteCommand(void)
         for(int i=1;i<arguments.size();i++)
             wprintf(L"%ls",arguments[i].c_str());
         puts("");
+    }
+    else if(arguments[0]==L"sysinfo")
+    {
+        if(arguments.size()==1)
+        {
+
+        }
     }
     else if(arguments[0]==L"stack")
     {
