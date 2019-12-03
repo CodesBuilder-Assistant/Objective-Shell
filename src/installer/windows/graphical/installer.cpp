@@ -304,20 +304,11 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             CloseHandle(background_music_thread);
             PostQuitMessage(0);
             break;
-        case WM_ERASEBKGND:
-            if(extend_frame_to_client_area)
-            {
-                HDC hdc;
-                PAINTSTRUCT ps;
-                if(refresh)
-                    hdc=GetDC(main_window);
-                else
-                    hdc=BeginPaint(main_window,&ps);
-                RECT client_rect;
-                GetClientRect(main_window,&client_rect);
-                FillRect(hdc,&client_rect,RGB(0,0,0));
-                break;
-            }
+        case WM_SIZE:
+            RECT client_rect;
+            GetClientRect(hwnd,&client_rect);
+            InvalidateRect(hwnd,&client_rect,false);
+            break;
         case WM_PAINT:
         {
             PAINTSTRUCT ps;
@@ -327,7 +318,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             else
                 hdc=BeginPaint(hwnd,&ps);
             SetFontW(hdc,15,false,false,false,L"Segoe UI");
-            SendMessageW(button_install,WM_FONTCHANGE,(WPARAM)font,MAKELONG(true,0));
+            SendMessageW(button_install,WM_SETFONT,(WPARAM)font,0);
             DeleteFont();
             SetBkMode(hdc,TRANSPARENT);
             if(extend_frame_to_client_area)
@@ -458,11 +449,6 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
         }
     }
     return DefWindowProcW(hwnd,uMsg,wParam,lParam);
-}
-
-LRESULT CALLBACK MainWindowHookProc(int nCode,WPARAM wParam,LPARAM lParam)
-{
-
 }
 
 /* Main function. */

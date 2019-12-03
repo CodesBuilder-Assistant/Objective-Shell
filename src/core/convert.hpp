@@ -1,44 +1,42 @@
 #ifndef CONVERT_HPP
 #define CONVERT_HPP
-#include <wchar.h>
-enum commands
+enum basic_commands
 {
-    ADD=0,
-    SUBTRACT,
-    MULTIPLE,
-    DIVISION,
-    MODULE,
-    LEFT_SHIFT,
-    RIGHT_SHIFT,
-    AND,
-    OR,
-    XOR,
-    IF,
-    ELIF,
-    ELSE,
-    VAR,
-    MACRO,
-    UNDEFINE,
-    REDEFINE,
-    VARACCESS,
-    CLASSACCESS,
+    COMPILED_START_SYMBOL=1,
+    COMPILED_FUNCTION_EXPORT,
+    COMPILER_FUNCTION_IMPORT,
+    COMPILER_IF,
+    COMPILER_ELSE,
+    COMPILER_ELIF,
+    COMPILER_SET,
+    COMPILER_ADD,
+    COMPILER_SUBTRACT,
+    COMPILER_MULTIPLE,
+    COMPILER_DIVIDE,
+    COMPILER_MODULE,
+    COMPILER_IMPORT,
+    COMPILER_WASTE_DATA_START,
+    COMPILER_WASTE_DATA_END,
+    COMPILER_DEF_VARIABLE,
+    COMPILER_DEF_ARRAY,
+    COMPILER_DEF_FUNCTION,
+    COMPILER_GOTO,
+    COMPILER_TAG,
+    COMPILER_CALL,
+    COMPILER_VARTYPE_INT,
+    COMPILER_VARTYPE_SHORT,
+    COMPILER_VARTYPE_LONG,
+    COMPILER_MODIFIER_UNSIGNED,
+    COMPILER_MODIFIER_SIGNED,
+    COMPILER_MODIFIER_GLOBAL,
+    COMPILER_MODIFIER_LOCAL,
+    COMPILER_MODIFIER_PUBLIC,
+    COMPILER_MODIFIER_PRIVATE,
+    COMPILER_TYPECAST,
+    COMPILER_EXIT
 };
-
-void EncryptCommand(const wchar_t *command,wchar_t *buffer)
+void TranslateCompiledCommand(const wchar_t *src_command,wchar_t *buffer)
 {
-    wchar_t *encrypted_command=new wchar_t[wcslen(command)+1];
-    for(int i=0;i<wcslen(command)-1;i++)
-        encrypted_command[i]=~(command[i]+3);
-    wcscpy(buffer,encrypted_command);
-    delete[] encrypted_command;
-}
-const wchar_t *DecryptCommand(const wchar_t *command,wchar_t *buffer)
-{
-    wchar_t *decrypted_command=new wchar_t[wcslen(command)+1];
-    for(int i=0;i<wcslen(command)-1;i++)
-        decrypted_command[i]=~command[i],decrypted_command-=3;
-    wcscpy(buffer,decrypted_command);
-    delete[] decrypted_command;
-}
 
+}
 #endif
