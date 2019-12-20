@@ -6,7 +6,8 @@
 using std::string;
 using std::wstring;
 
-bool strmatch(const wchar_t *match_source,const wchar_t *match_target)
+bool wcsmatch(const wchar_t *match_source,const wchar_t *match_target)
 {
+   for(int i=0;i<wcslen(match_source);i++)
 }
 #endif
